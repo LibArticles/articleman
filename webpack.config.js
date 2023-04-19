@@ -3,6 +3,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const GasPlugin = require("gas-webpack-plugin");
+const HandlebarsPlugin = require("handlebars-webpack-plugin");
 
 const isProduction = process.env.NODE_ENV == 'production';
 
@@ -18,9 +20,9 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'index.html',
+            template: 'pages/index.hbs',
         }),
-
+        new GasPlugin(),
         new MiniCssExtractPlugin(),
 
         // Add your plugins here
@@ -41,6 +43,10 @@ const config = {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: 'asset',
             },
+            {
+              test: /\.hbs$/,
+              loader: "handlebars-loader"
+            }
 
             // Add your rules for custom modules here
             // Learn more about loaders from https://webpack.js.org/loaders/
