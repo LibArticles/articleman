@@ -4,7 +4,9 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const GasPlugin = require("gas-webpack-plugin");
-const HandlebarsPlugin = require("handlebars-webpack-plugin");
+const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
+
+
 
 const isProduction = process.env.NODE_ENV == 'production';
 
@@ -14,17 +16,23 @@ const stylesHandler = MiniCssExtractPlugin.loader;
 
 
 const config = {
-    entry: './src/index.ts',
+    entry: {
+        frontend: './src/frontend/index.ts',
+        backend: './src/backend/index.ts',
+    },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'dist'),
+      filename: '[name].js'
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'pages/index.hbs',
+            template: 'pages/index.html',
         }),
         new GasPlugin(),
         new MiniCssExtractPlugin(),
-
+        new HtmlInlineScriptPlugin({
+          scriptMatchPattern: [/frontend.js/]
+        })
         // Add your plugins here
         // Learn more about plugins from https://webpack.js.org/configuration/plugins/
     ],
@@ -42,10 +50,6 @@ const config = {
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: 'asset',
-            },
-            {
-              test: /\.hbs$/,
-              loader: "handlebars-loader"
             }
 
             // Add your rules for custom modules here
