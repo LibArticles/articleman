@@ -15,24 +15,20 @@ const stylesHandler = MiniCssExtractPlugin.loader;
 
 
 
-const config = {
-    entry: {
-        frontend: './src/frontend/index.ts',
-        backend: './src/backend/index.ts',
-    },
+const frontEndConfig = {
+    entry: './src/frontend/index.ts',
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: '[name].js'
+      filename: 'articleman-client.js'
     },
     plugins: [
         new HtmlWebpackPlugin({
             template: 'pages/index.hbs',
-            inject: false,
+            inject: true,
         }),
-        new GasPlugin(),
         new MiniCssExtractPlugin(),
         new HtmlInlineScriptPlugin({
-          scriptMatchPattern: [/frontend.js/],
+          scriptMatchPattern: [/articleman-client.js/],
         })
         // Add your plugins here
         // Learn more about plugins from https://webpack.js.org/configuration/plugins/
@@ -63,16 +59,43 @@ const config = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+        alias: {
+          handlebars: 'handlebars/dist/handlebars.min.js'
+        }
     },
 };
 
+const backEndConfig = {
+  entry: './src/backend/index.ts',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'articleman-backend.js'
+  },
+  plugins: [
+      new GasPlugin(),
+  ],
+  module: {
+      rules: [
+          {
+              test: /\.(ts|tsx)$/i,
+              loader: 'ts-loader',
+              exclude: ['/node_modules/'],
+          }
+      ],
+  },
+  resolve: {
+      extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+  },
+};
+
+
 module.exports = () => {
     if (isProduction) {
-        config.mode = 'production';
-        
-        
+        frontEndConfig.mode = 'production';
+        backEndConfig.mode = 'production';
     } else {
-        config.mode = 'development';
+        frontEndConfig.mode = 'development';
+        backEndConfig.mode = 'development';
     }
-    return config;
+    return [frontEndConfig, backEndConfig];
 };
