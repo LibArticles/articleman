@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Articleman</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lexend:400,500,600,700">
+    <style>
+      *:not(.icon) {
+        font-family: 'Lexend', sans-serif;
+      }
+      #downwarning {
+        animation: fadein 0.5s ease-in-out 5s forwards;
+      }
+      @keyframes fadein {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <p id="downwarning">There isn&apos;t currently a page loaded. If this screen stays up, there&apos;s been a problem preventing Articleman from loading. Contact blue linden or a maintainer of this library.</p>
+    </div>
+  </body>
+</html>

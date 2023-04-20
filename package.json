@@ -23,6 +23,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "handlebars": "^4.7.7",
     "worktapper": "^1.1.0"
   }
 }
