@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import {algorithms} from "worktapper";
 let view = document.getElementById("app");
 
 let loader = Handlebars.compile(`
