@@ -24,7 +24,7 @@ const frontEndConfig = {
     plugins: [
         new HtmlWebpackPlugin({
             template: 'pages/index.hbs',
-            inject: true,
+            inject: "body",
         }),
         new MiniCssExtractPlugin(),
         new HtmlInlineScriptPlugin({
