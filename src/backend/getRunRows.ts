@@ -1,6 +1,6 @@
 function contiguousArrayItems(array: any[], atIndex: number) {
-  let startIndex: number,
-      endIndex: number;
+  let startIndex: number | undefined = undefined,
+      endIndex:   number | undefined = undefined;
 
   for (let i = atIndex, len = array.length; i < len; i++) { // iterate forward from the starting point to get end index
     if(array[i] == array[atIndex]) { // if the value of this element and the original element match, this is part of a contiguous run of elements.
@@ -19,9 +19,11 @@ function contiguousArrayItems(array: any[], atIndex: number) {
   }
 
 
-  return {
+  if (startIndex !== undefined && endIndex !== undefined) { 
+    return {
     start: startIndex,
     end: endIndex
   };
+}
 }
 
