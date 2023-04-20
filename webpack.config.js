@@ -26,12 +26,13 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'pages/index.html',
+            template: 'pages/index.hbs',
+            inject: false,
         }),
         new GasPlugin(),
         new MiniCssExtractPlugin(),
         new HtmlInlineScriptPlugin({
-          scriptMatchPattern: [/frontend.js/]
+          scriptMatchPattern: [/frontend.js/],
         })
         // Add your plugins here
         // Learn more about plugins from https://webpack.js.org/configuration/plugins/
@@ -50,6 +51,10 @@ const config = {
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: 'asset',
+            },
+            {
+                test: /\.hbs$/i,
+                loader: 'handlebars-loader',
             }
 
             // Add your rules for custom modules here
