@@ -20,7 +20,11 @@ module.exports = {
   'plugins': [
     '@typescript-eslint',
     'jsdoc',
-  ],
+    'googleappsscript'
+    ],
+  'env': {
+    "googleappsscript/googleappsscript": true
+  },
   'rules': {
     'no-await-in-loop': 'error',
     'no-unreachable-loop': 'error',

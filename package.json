@@ -13,8 +13,10 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
+    "banner-plugin": "^1.0.10",
     "css-loader": "^6.7.3",
     "eslint": "^8.38.0",
+    "eslint-plugin-googleappsscript": "^1.0.4",
     "gas-webpack-plugin": "^2.4.0",
     "handlebars-loader": "^1.7.3",
     "html-inline-script-webpack-plugin": "^3.1.0",
@@ -30,6 +32,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "@types/google-apps-script": "^1.0.61",
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.7",
     "worktapper": "^1.1.1"

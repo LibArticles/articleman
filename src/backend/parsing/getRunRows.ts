@@ -1,4 +1,4 @@
-function contiguousArrayItems(array: any[], atIndex: number) {
+export function contiguousArrayItems(array: any[], atIndex: number) {
   let startIndex: number | undefined = undefined,
       endIndex:   number | undefined = undefined;
 

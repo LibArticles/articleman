@@ -23,7 +23,7 @@ const frontEndConfig = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'pages/index.hbs',
+            template: 'src/frontend/pages/index.hbs',
             inject: "body",
         }),
         new MiniCssExtractPlugin(),
@@ -39,6 +39,10 @@ const frontEndConfig = {
                 test: /\.(ts|tsx)$/i,
                 loader: 'ts-loader',
                 exclude: ['/node_modules/'],
+            },
+            { // handlebars files used on the client side that webpack shouldn't template for us
+              test: /\.dry\.hbs$/i,
+              loader: 'asset/source',
             },
             {
                 test: /\.s[ac]ss$/i,
