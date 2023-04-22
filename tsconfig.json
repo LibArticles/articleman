@@ -6,7 +6,8 @@
     "noImplicitAny": true,
     "module": "es2022",
     "target": "es2018",
-    "allowJs": true
+    "allowJs": true,
+    "allowArbitraryExtensions": true,
   },
   "include": ["src/**/*"]
 }
