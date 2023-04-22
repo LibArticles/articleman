@@ -2,7 +2,6 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const GasPlugin = require("gas-webpack-plugin");
 const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
 
@@ -14,8 +13,6 @@ const progressHandler = (percentage, message, ...args) => {
 const isProduction = process.env.NODE_ENV == 'production';
 
 const { ProgressPlugin } = require('webpack');
-
-const stylesHandler = MiniCssExtractPlugin.loader;
 
 
 
@@ -30,7 +27,6 @@ const frontEndConfig = {
             template: 'src/frontend/pages/index.hbs',
             inject: "body",
         }),
-        new MiniCssExtractPlugin(),
         new HtmlInlineScriptPlugin({
           scriptMatchPattern: [/articleman-client.js/],
         }),
@@ -46,12 +42,12 @@ const frontEndConfig = {
                 exclude: ['/node_modules/'],
             },
             { // handlebars files used on the client side that webpack shouldn't template for us
-              test: /\.dry\.hbs$/i,
-              type: 'asset/source',
+                test: /\.dry\.hbs$/i,
+                type: 'asset/source',
             },
             {
                 test: /\.s[ac]ss$/i,
-                use: [stylesHandler, 'css-loader', 'sass-loader'],
+                use: ['style-loader', 'css-loader', 'sass-loader'],
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
@@ -69,10 +65,10 @@ const frontEndConfig = {
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
         alias: {
-          handlebars: 'handlebars/dist/handlebars.min.js',
-          "raw.hbs.d.ts": false,
+            handlebars: 'handlebars/dist/handlebars.min.js',
+            "raw.hbs.d.ts": false,
         }
-    },
+    }
 };
 
 const backEndConfig = {

@@ -1,0 +1,20 @@
+<div>
+  <div class="columnselect" id="{{id}}">
+    <select name="{{id}}-type" id="{{id}}-type" class="type">
+      {{#each types}}
+        {{if this.selected}}
+          <option value="{{this.value}}" selected>{{this.value}}</option>
+        {{else}}
+          <option value="{{this.value}}">{{this.value}}</option>
+        {{/if}}
+      {{/each}}
+    </select>
+    <input type="text" name="{{id}}-name" id="{{id}}-name" class="name" placeholder="Name of attribute..." value="{{name}}"/>
+    <div class="column-selector" id="{{id}}-column-selector">
+      <input name="{{id}}-column-selector-text" id="{{id}}-column-selector-text" class="column-selector-text">
+      <div class="column-selector-button" id="{{id}}-column-selector-button">
+        <div>Pick...</div>
+      </div>
+    </div>
+  </div>
+</div>
