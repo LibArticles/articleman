@@ -1,3 +1,5 @@
+import { setSettings, getSettings } from "./comms/getSettings.js";
+
 // @ts-ignore
 global.onOpen = function onOpen() {
   // start the user interface as a dialog in google sheets
@@ -8,6 +10,11 @@ global.onOpen = function onOpen() {
     .addItem('Open help...', 'showHelp')
     .addToUi();
 }
+
+// @ts-ignore
+global.setSettings = setSettings;
+// @ts-ignore
+global.getSettings = getSettings;
 
 // @ts-ignore
 global.onSelectionChange = () => {
