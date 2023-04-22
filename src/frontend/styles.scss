@@ -1,6 +1,11 @@
 .bigtitle {
-  font-size:1.3em;
-  font-weight:500;
+  font-size:1.5em;
+  font-weight:600;
+}
+
+.subtitle {
+  font-size:1.1em;
+  font-weight:400;
 }
 
 .columnselect {
@@ -11,13 +16,16 @@
 }
 
 .header {
-  font-size:1.6rem;
+  font-size:1.2rem;
   font-weight:500;
-  padding: 0.5em;
+  padding: 0.7em;
   .inner {
-    & * {
-      display: inline;
-    }
+    vertical-align: middle;
+    display: flex;
+    justify-content: left;
+    gap: 0.3em;
+    flex-direction: row;
+
     .title {
       font-weight:600
     }
@@ -26,6 +34,17 @@
     }
     .page {
       font-weight:400
+    }
+    .status {
+      display: flex;
+      .inner {
+        width: 0.6em;
+        height: 0.6em;
+        background: var(--text-color);
+        border-radius: 50%;
+        margin-top: auto;
+        margin-bottom: auto;
+      }
     }
   }
 }
