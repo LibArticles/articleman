@@ -65,6 +65,10 @@ const frontEndConfig = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+        extensionAlias: {
+          '.js': ['.ts', '.js'],
+          '.mjs': ['.mts', '.mjs'],
+        },
         alias: {
             handlebars: 'handlebars/dist/handlebars.min.js',
             "raw.hbs.d.ts": false,
@@ -91,8 +95,13 @@ const backEndConfig = {
           }
       ],
   },
+  devtool: false,
   resolve: {
       extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+      extensionAlias: {
+        '.js': ['.ts', '.js'],
+        '.mjs': ['.mts', '.mjs'],
+      },
   },
 };
 
