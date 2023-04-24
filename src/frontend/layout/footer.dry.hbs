@@ -1,26 +1,26 @@
 <div>
   <div class="footer">
-    <div class="button">
+    <div class="button{{#if (eq page "home")}} highlighted {{/if}}">
       <img src="{{home-icon}}">
       <span>Home</span>
     </div>
     {{#if isAdmin}}
-      <div class="button">
+      <div class="button{{#if (eq page "people")}} highlighted {{/if}}">
         <img src="{{people-icon}}">
         <span>People</span>
       </div>
-      <div class="button">
+      <div class="button{{#if (eq page "settings")}} highlighted {{/if}}">
         <img src="{{settings-icon}}">
         <span>Settings</span>
       </div>
     {{#else}}
-      <div class="button">
+      <div class="button{{#if (eq page "you")}} highlighted {{/if}}">
         <img src="{{you-icon}}">
         <span>Your work</span>
       </div>
     {{/if}}
     {{#if isDebugMode}}
-      <div class="button">
+      <div class="button{{#if (eq page "debug")}} highlighted {{/if}}">
         <img src="{{debug-icon}}">
         <span>System</span>
       </div>
