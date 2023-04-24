@@ -1,27 +1,27 @@
 <div>
   <div class="footer">
     <div class="button{{#if page.home}} highlighted {{/if}}">
-      <img src="{{icons.home}}">
+      {{{icons.home}}}
       <span>Home</span>
     </div>
     {{#if isAdmin}}
       <div class="button{{#if page.people}} highlighted {{/if}}">
-        <img src="{{icons.people}}">
+        {{{icons.people}}}
         <span>People</span>
       </div>
       <div class="button{{#if page.settings}} highlighted {{/if}}">
-        <img src="{{icons.settings}}">
+        {{{icons.settings}}}
         <span>Settings</span>
       </div>
     {{else}}
       <div class="button{{#if page.you}} highlighted {{/if}}">
-        <img src="{{icons.you}}">
+        {{{icons.you}}}
         <span>Your work</span>
       </div>
     {{/if}}
     {{#if isDebugMode}}
       <div class="button{{#if page.debug}} highlighted {{/if}}">
-        <img src="{{icons.debug}}">
+        {{{icons.debug}}}
         <span>System</span>
       </div>
     {{/if}}

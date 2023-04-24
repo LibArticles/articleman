@@ -50,8 +50,12 @@ const frontEndConfig = {
                 test: /\.s[ac]ss$/i,
                 use: ['style-loader', 'css-loader', 'sass-loader'],
             },
+            { // inline svgs fully
+                test: /\.svg$/i,
+                type: 'asset/source',
+            },
             {
-                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+                test: /\.(eot|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: 'asset',
             },
             {
