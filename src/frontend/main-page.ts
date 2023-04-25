@@ -59,23 +59,9 @@ let columnSelect = Handlebars.compile(ColumnSelect);
 document.getElementById("main-container").innerHTML = bigTitle({
   text: "Articles aren't loading right now.",
 }) + subTitle({
-  text: "By a mysterious ghost",
-}) + columnSelect({
-  types: [
-    { value: {
-      long: "Article name",
-      short: "thingName"
-    }, selected: false},
-    { value: {
-      long: "Task",
-      short: "task"
-    }, selected: false},
-    { value: {
-      long: "Run",
-      short: "run"
-    }, selected: false},
-  ],
-  id: "bhfdwjfbwhjfbwhjfbnh"
-});
+  text: "A mysterious ghost",
+})
+
+document.querySelector('.footer .button.home').classList.add('active');
 
 console.timeEnd('render');
