@@ -1,34 +1,34 @@
 <div>
   <div class="footer">
-    <div class="button home{{#if page.home}} active {{/if}}">
+    <div tabindex="70" class="button home{{#if page.home}} active {{/if}}">
       <div class="icon">
         {{{icons.home}}}
       </div>
       <span>Home</span>
     </div>
     {{#if isAdmin}}
-      <div class="button admin{{#if page.people}} active {{/if}}">
+      <div tabindex="71" class="button admin{{#if page.people}} active {{/if}}">
         <div class="icon">
           {{{icons.people}}}
         </div>
         <span>People</span>
       </div>
-      <div class="button settings{{#if page.settings}} active {{/if}}">
+      <div tabindex="72" class="button settings{{#if page.settings}} active {{/if}}">
         <div class="icon">
           {{{icons.settings}}}
         </div>
         <span>Settings</span>
       </div>
     {{else}}
-      <div class="button you{{#if page.you}} active {{/if}}">
+      <div tabindex="73" class="button you{{#if page.me}} active {{/if}}">
         <div class="icon">
-          {{{icons.you}}}
+          {{{icons.me}}}
         </div>
         <span>Your work</span>
       </div>
     {{/if}}
     {{#if isDebugMode}}
-      <div class="button debug{{#if page.debug}} active {{/if}}">
+      <div tabindex="74" class="button debug{{#if page.debug}} active {{/if}}">
         <div class="icon">
           {{{icons.debug}}}
         </div>

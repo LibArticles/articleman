@@ -1,6 +1,19 @@
 .main-container {
   padding: 0.8em;
   flex: 1 0 auto;
+  .button {
+    padding: 0.4em;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+    border: 3px solid var(--text-color);
+  }
+  .columnselect {
+    input {
+      font-size:1em;
+      font-weight:400;
+    }
+  }
 }
 
 .bigtitle {
@@ -13,12 +26,7 @@
   font-weight:400;
 }
 
-.columnselect {
-  input {
-    font-size:1em;
-    font-weight:400;
-  }
-}
+
 
 .header-container {
   position: sticky;
@@ -72,6 +80,8 @@
       font-weight: 500;
       padding: 0.4em;
       border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
       .icon {
         width: 30px;
         height: 30px;
