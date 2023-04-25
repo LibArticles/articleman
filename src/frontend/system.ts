@@ -29,7 +29,7 @@ export default function renderSystem() {
   }) + subTitle({
     text: "Debugging options and troubleshooting doodads",
   }) + `
-  <div class="adminbutton">
+  <div class="button adminbutton">
     Switch to Worker Mode
   </div>
   `;
