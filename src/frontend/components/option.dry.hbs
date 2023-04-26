@@ -1,0 +1,23 @@
+<div>
+  <div class="option">
+    <label for="{{id}}">
+      {{label}}
+    </label>
+    {{#if type.select}}
+      <select id="{{id}}" name="{{id}}">
+        {{#each options}}
+          <option value="{{this.id}}" {{#if this.active}}selected{{/if}}>{{this.longName}}</option>
+        {{/each}}
+      </select>
+    {{else if type.checkbox}}
+      <input type="checkbox" id="{{id}}" name="{{id}}" {{#if active}}checked{{/if}}>
+    {{else if type.radio}}
+      {{#each options}}
+        <input type="radio" id="{{this.id}}" name="{{this.id}}" value="{{this.id}}" {{#if this.active}}checked{{/if}}>
+        <label for="{{this.id}}">{{this.longName}}</label>
+      {{/each}}
+    {{else if type.text}}
+      <input type="text" id="{{id}}" name="{{id}}" value="{{value}}">
+    {{/if}}
+  </div>
+</div>
