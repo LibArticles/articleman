@@ -44,11 +44,9 @@ const backEndConfig = {
 
 module.exports = () => {
     if (isProduction) {
-        frontEndConfig.mode = 'production';
         backEndConfig.mode = 'production';
     } else {
-        frontEndConfig.mode = 'development';
         backEndConfig.mode = 'development';
     }
-    return [frontEndConfig, backEndConfig];
+    return backEndConfig;
 };
