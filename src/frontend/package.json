@@ -69,12 +69,17 @@
     "stylelint-config-standard": "^32.0.0",
     "stylelint-prettier": "^3.0.0",
     "tracked-built-ins": "^3.1.1",
-    "webpack": "^5.78.0"
+    "webpack": "^5.81.0"
   },
   "engines": {
     "node": "16.* || >= 18"
   },
   "ember": {
     "edition": "octane"
+  },
+  "dependencies": {
+    "glob": "^10.2.2",
+    "html-inline-script-webpack-plugin": "^3.1.0",
+    "html-webpack-plugin": "^5.5.1"
   }
 }
