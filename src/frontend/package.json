@@ -11,7 +11,7 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "ember build --environment=production",
+    "build": "rm -rf ./dist/* && mkdir -p prebundle && ember build --environment=production && inline-assets ./prebundle/index.html ./dist/index.html && rm -rf ./prebundle/",
     "lint": "concurrently \"npm:lint:*(!fix)\" --names \"lint:\"",
     "lint:css": "stylelint \"**/*.css\"",
     "lint:css:fix": "concurrently \"npm:lint:css -- --fix\"",
@@ -31,8 +31,14 @@
     "@ember/optional-features": "^2.0.0",
     "@ember/string": "^3.0.1",
     "@ember/test-helpers": "^2.9.3",
+    "@embroider/compat": "^2.1.1",
+    "@embroider/core": "^2.1.1",
+    "@embroider/webpack": "^2.1.1",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
+    "@glint/core": "^1.0.2",
+    "@glint/environment-ember-loose": "^1.0.2",
+    "@glint/template": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "broccoli-asset-rev": "^3.0.0",
@@ -41,6 +47,7 @@
     "ember-cli": "^4.12.1",
     "ember-cli-app-version": "^6.0.0",
     "ember-cli-babel": "^7.26.11",
+    "ember-cli-concat": "^2.3.0",
     "ember-cli-dependency-checker": "^3.3.1",
     "ember-cli-htmlbars": "^6.2.0",
     "ember-cli-inject-live-reload": "^2.1.0",
@@ -61,6 +68,7 @@
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-qunit": "^7.3.4",
+    "inline-assets": "^1.4.8",
     "loader.js": "^4.7.0",
     "prettier": "^2.8.7",
     "qunit": "^2.19.4",
@@ -77,10 +85,5 @@
   },
   "ember": {
     "edition": "octane"
-  },
-  "dependencies": {
-    "glob": "^10.2.2",
-    "html-inline-script-webpack-plugin": "^3.1.0",
-    "html-webpack-plugin": "^5.5.1"
   }
 }
