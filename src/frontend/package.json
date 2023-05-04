@@ -85,5 +85,8 @@
   },
   "ember": {
     "edition": "octane"
+  },
+  "dependencies": {
+    "postmate": "^1.5.2"
   }
 }

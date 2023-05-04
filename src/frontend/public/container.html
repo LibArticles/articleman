@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://unpkg.com/postmate@1.5.2/build/postmate.min.js"></script>
+  </head>
+  <body>
+    <h1>
+      Articleman is loading.
+    </h1>
+    <p>
+      Postmate is initializing the Ember container...
+    </p>
+    <p>
+      If this message does not disappear, please check your browser console for errors. Something probably went really wrong.
+    </p>
+    <script>
+      const handshake = new Postmate({
+        container: document.body,
+        url: 'https://articleman.bluelinden.art/',
+      });
+      handshake.then(child => {
+        child.on('ready', () => {
+          console.log('Ember container is ready.');
+        });
+        child.on('error', err => {
+          console.log('Ember container errored.');
+          console.log(err);
+        });
+        child.on('close', () => {
+          console.log('Ember container closed.');
+        });
+      });
+    </script>
+  </body>
+</html>
