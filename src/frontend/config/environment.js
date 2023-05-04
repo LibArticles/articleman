@@ -5,7 +5,7 @@ module.exports = function (environment) {
     modulePrefix: 'frontend',
     environment,
     rootURL: '/',
-    locationType: 'history',
+    locationType: 'none',
     EmberENV: {
       EXTEND_PROTOTYPES: false,
       FEATURES: {
