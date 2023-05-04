@@ -58,7 +58,7 @@ function setSettings(settings) {
   \**********************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"frontendUrl":"https://articleman.bluelinden.art"}');
+module.exports = JSON.parse('{"frontendUrl":"https://articleman.bluelinden.art/"}');
 
 /***/ })
 
