@@ -2,20 +2,37 @@
 <html lang="en">
   <head>
     <script src="https://unpkg.com/postmate@1.5.2/build/postmate.min.js"></script>
+    <style>
+      #appcontainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
-    <h1>
-      Articleman is loading.
-    </h1>
-    <p>
-      Postmate is initializing the Ember container...
-    </p>
-    <p>
-      If this message does not disappear, please check your browser console for errors. Something probably went really wrong.
-    </p>
+    <div id="appcontainer">
+      <h1>
+        Articleman is loading.
+      </h1>
+      <p>
+        Postmate is initializing the Ember container...
+      </p>
+      <p>
+        If this message does not disappear, please check your browser console for errors. Something probably went really wrong.
+      </p>
+    </div>
     <script>
       const handshake = new Postmate({
-        container: document.body,
+        container: document.getElementById('appcontainer'),
         url: 'https://articleman.bluelinden.art/',
       });
       handshake.then(child => {
@@ -30,6 +47,7 @@
           console.log('Ember container closed.');
         });
       });
+      document.querySelectorAll('#appcontainer h1, #appcontainer p').forEach(el => el.style.display = 'none');
     </script>
   </body>
 </html>
