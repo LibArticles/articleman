@@ -13,7 +13,7 @@ const isProduction = process.env.NODE_ENV == 'production';
 const { ProgressPlugin } = require('webpack');
 
 const backEndConfig = {
-  entry: './src/backend/index.ts',
+  entry: './src/backend/index.mts',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'articleman-backend.js'
@@ -28,7 +28,7 @@ const backEndConfig = {
               test: /\.(ts|tsx)$/i,
               loader: 'ts-loader',
               exclude: ['/node_modules/'],
-          }
+          },
       ],
   },
   devtool: false,

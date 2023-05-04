@@ -50,6 +50,16 @@ function setSettings(settings) {
 }
 
 
+/***/ }),
+
+/***/ "./src/config.json":
+/*!*************************!*\
+  !*** ./src/config.json ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = JSON.parse('{"frontendUrl":"https://articleman.bluelinden.art"}');
+
 /***/ })
 
 /******/ 	});
@@ -123,48 +133,56 @@ function setSettings(settings) {
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-/*!******************************!*\
-  !*** ./src/backend/index.ts ***!
-  \******************************/
+/*!*******************************!*\
+  !*** ./src/backend/index.mts ***!
+  \*******************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _comms_getSettings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./comms/getSettings.js */ "./src/backend/comms/getSettings.ts");
+/* harmony import */ var _config_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config.json */ "./src/config.json");
+
+
+
 
 // @ts-ignore
 __webpack_require__.g.onOpen = function onOpen() {
-    // start the user interface as a dialog in google sheets
-    let sheet = SpreadsheetApp.getActiveSpreadsheet();
-    SpreadsheetApp.getUi()
-        .createMenu('Articleman')
-        .addItem('Open Articleman...', 'showSidebar')
-        .addItem('Open help...', 'showHelp')
-        .addToUi();
-};
+  // start the user interface as a dialog in google sheets
+  let sheet = SpreadsheetApp.getActiveSpreadsheet();
+  SpreadsheetApp.getUi()
+  .createMenu('Articleman')
+    .addItem('Open Articleman...', 'showSidebar')
+    .addItem('Open help...', 'showHelp')
+    .addToUi();
+}
+
 // @ts-ignore
 __webpack_require__.g.setSettings = _comms_getSettings_js__WEBPACK_IMPORTED_MODULE_0__.setSettings;
 // @ts-ignore
 __webpack_require__.g.getSettings = _comms_getSettings_js__WEBPACK_IMPORTED_MODULE_0__.getSettings;
+
 // @ts-ignore
 __webpack_require__.g.onSelectionChange = () => {
-    const sheet = SpreadsheetApp.getActiveSheet();
-    const row = sheet.getActiveCell().getRow();
-    const column = sheet.getActiveCell().getColumn();
-    const cache = CacheService.getUserCache();
-    cache.put('currentRow', JSON.stringify({
-        row: row,
-        column: column,
-        sheet: sheet.getName(),
-    }), 21600);
-};
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const row = sheet.getActiveCell().getRow();
+  const column = sheet.getActiveCell().getColumn();
+  const cache = CacheService.getUserCache();
+  cache.put('currentRow', JSON.stringify({
+    row: row,
+    column: column,
+    sheet: sheet.getName(),
+  }), 21600);
+}
+
 // @ts-ignore
 __webpack_require__.g.showSidebar = () => {
-    SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutputFromFile('frontend').setTitle('Articleman'));
-};
+  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(_config_json__WEBPACK_IMPORTED_MODULE_1__.frontendUrl)).setTitle('Articleman'));
+
+}
+
 // @ts-ignore
 __webpack_require__.g.showHelp = () => {
-    CacheService.getUserCache().put('help', 'true', 20); // @ts-ignore
-    __webpack_require__.g.showSidebar();
-};
-
+  CacheService.getUserCache().put('help', 'true', 20); // @ts-ignore
+  __webpack_require__.g.showSidebar();
+}
 })();
 
 /******/ })()
