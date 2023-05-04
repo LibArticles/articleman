@@ -16,7 +16,8 @@
       "*": [
         "types/*"
       ]
-    }
+    },
+    "resolveJsonModule": true,
   },
   "include": [
     "app/**/*",

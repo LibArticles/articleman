@@ -1,5 +1,7 @@
 import { setSettings, getSettings } from "./comms/getSettings.js";
 
+import config from "../config.json"
+
 // @ts-ignore
 global.onOpen = function onOpen() {
   // start the user interface as a dialog in google sheets
@@ -31,7 +33,7 @@ global.onSelectionChange = () => {
 
 // @ts-ignore
 global.showSidebar = () => {
-  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutputFromFile('frontend').setTitle('Articleman'));
+  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(config.frontendUrl)).setTitle('Articleman'));
 
 }
 
