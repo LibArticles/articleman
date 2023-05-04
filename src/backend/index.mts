@@ -1,6 +1,6 @@
 import { setSettings, getSettings } from "./comms/getSettings.js";
 
-import config from "../config.json"
+import config from "../frontend/config.json"
 
 // @ts-ignore
 global.onOpen = function onOpen() {

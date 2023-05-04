@@ -52,10 +52,10 @@ function setSettings(settings) {
 
 /***/ }),
 
-/***/ "./src/config.json":
-/*!*************************!*\
-  !*** ./src/config.json ***!
-  \*************************/
+/***/ "./src/frontend/config.json":
+/*!**********************************!*\
+  !*** ./src/frontend/config.json ***!
+  \**********************************/
 /***/ ((module) => {
 
 module.exports = JSON.parse('{"frontendUrl":"https://articleman.bluelinden.art"}');
@@ -138,7 +138,7 @@ var __webpack_exports__ = {};
   \*******************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _comms_getSettings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./comms/getSettings.js */ "./src/backend/comms/getSettings.ts");
-/* harmony import */ var _config_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config.json */ "./src/config.json");
+/* harmony import */ var _frontend_config_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../frontend/config.json */ "./src/frontend/config.json");
 
 
 
@@ -174,7 +174,7 @@ __webpack_require__.g.onSelectionChange = () => {
 
 // @ts-ignore
 __webpack_require__.g.showSidebar = () => {
-  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(_config_json__WEBPACK_IMPORTED_MODULE_1__.frontendUrl)).setTitle('Articleman'));
+  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(_frontend_config_json__WEBPACK_IMPORTED_MODULE_1__.frontendUrl)).setTitle('Articleman'));
 
 }
 

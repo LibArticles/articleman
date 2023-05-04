@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('../config.json');
+const config = require('./config.json');
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
