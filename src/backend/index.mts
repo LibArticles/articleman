@@ -33,7 +33,7 @@ global.onSelectionChange = () => {
 
 // @ts-ignore
 global.showSidebar = () => {
-  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(config.frontendUrl)).setTitle('Articleman'));
+  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(config.containerUrl)).setTitle('Articleman'));
 }
 
 // @ts-ignore

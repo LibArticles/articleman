@@ -58,7 +58,7 @@ function setSettings(settings) {
   \**********************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"frontendUrl":"https://articleman.bluelinden.art/"}');
+module.exports = JSON.parse('{"frontendUrl":"https://articleman.bluelinden.art/","containerUrl":"https://articleman.bluelinden.art/container.html"}');
 
 /***/ })
 
@@ -174,10 +174,7 @@ __webpack_require__.g.onSelectionChange = () => {
 
 // @ts-ignore
 __webpack_require__.g.showSidebar = () => {
-  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(`
-  <style>* {margin: 0; padding: 0; border: 0;}</style>
-  <iframe src="${_frontend_config_json__WEBPACK_IMPORTED_MODULE_1__.frontendUrl}"></iframe>`).setTitle('Articleman'));
-
+  SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(_frontend_config_json__WEBPACK_IMPORTED_MODULE_1__.containerUrl)).setTitle('Articleman'));
 }
 
 // @ts-ignore
