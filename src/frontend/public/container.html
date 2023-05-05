@@ -11,7 +11,7 @@
         justify-content: center;
         align-items: center;
       }
-      iframe {
+      .ember-app {
         width: 100%;
         height: 100%;
         border: 0;
@@ -42,10 +42,13 @@
       const handshake = new Postmate({
         container: document.getElementById('appcontainer'),
         url: 'https://articleman.bluelinden.art/',
+        classListArray: ['ember-app'],
+        name: 'articleman-frontend',
       });
       handshake.then(child => {
         child.on('ready', () => {
           console.log('Ember container is ready.');
+          document.querySelectorAll('#appcontainer h1, #appcontainer p').forEach(el => el.style.display = 'none');
         });
         child.on('error', err => {
           console.log('Ember container errored.');
@@ -54,8 +57,13 @@
         child.on('close', () => {
           console.log('Ember container closed.');
         });
+        child.on('event', data => {
+          console.log('Ember container sent an event.');
+          console.log(data);
+        });
+        
       });
-      document.querySelectorAll('#appcontainer h1, #appcontainer p').forEach(el => el.style.display = 'none');
+      
     </script>
   </body>
 </html>
