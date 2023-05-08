@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="https://unpkg.com/postmate@1.5.2/build/postmate.min.js"></script>
+    <script src="https://unpkg.com/casement@1.2.1/dist/casement.min.js"></script>
     <style>
       #appcontainer {
         width: 100vw;
@@ -39,30 +39,13 @@
       </p>
     </div>
     <script>
-      const handshake = new Postmate({
-        container: document.getElementById('appcontainer'),
+      const outside = new casement.Outside({
         url: 'https://articleman.bluelinden.art/',
-        classListArray: ['ember-app'],
-        name: 'articleman-frontend',
-      });
-      handshake.then(child => {
-        child.on('ready', () => {
-          console.log('Ember container is ready.');
-          document.querySelectorAll('#appcontainer h1, #appcontainer p').forEach(el => el.style.display = 'none');
-        });
-        child.on('error', err => {
-          console.log('Ember container errored.');
-          console.log(err);
-        });
-        child.on('close', () => {
-          console.log('Ember container closed.');
-        });
-        child.on('event', data => {
-          console.log('Ember container sent an event.');
-          console.log(data);
-        });
-        
-      });
+        container: document.getElementById('appcontainer'),
+        onReady: () => {
+          console.log('Ember container is ready.')
+        }
+      })
       
     </script>
   </body>

@@ -1,20 +1,15 @@
 import Adapter from '@ember-data/adapter';
 import postmate from 'postmate';
-import config from '../../config.json'
 
-export default class BackendAdapter extends Adapter {
+export default class CustomAdapter extends Adapter {
+  parent: postmate.Parent;
+  handshakePromise: Promise<void>;
+
   constructor() {
     super(...arguments);
 
-    const connection = new postmate.Model({
-      // Provide required handshakeOrigin.
-      // This is used for security purposes to prevent
-      // other domains from using the connection.
-      handshakeOrigin: config.frontendUrl,
-
-      // The parent origin. The parent will gain access to
-      // the child model instance and be able to interact with it.
-      parentOrigin: config.containerUrl,
+    const connection = new postmate.ParentAPI({
+      // options
     });
 
     this.parent = new postmate.Parent({
@@ -22,37 +17,51 @@ export default class BackendAdapter extends Adapter {
       // options
     });
 
-    this.parent.on('request', (data) => {
-      this.handleRequest(data);
+    // Use a Promise to wait for the handshake to complete
+    this.handshakePromise = new Promise((resolve, reject) => {
+      this.parent.on('handshake', () => {
+        // Handshake complete
+        resolve();
+      });
+      this.parent.on('error', (error) => {
+        // Error during handshake
+        reject(error);
+      });
     });
   }
 
-  findRecord(store, type, id, snapshot) {
+  async findRecord(store, type, id, snapshot) {
+    await this.handshakePromise;
     return this._request('findRecord', { type: type.modelName, id });
   }
 
-  findAll(store, type, sinceToken, snapshotRecordArray) {
+  async findAll(store, type, sinceToken, snapshotRecordArray) {
+    await this.handshakePromise;
     return this._request('findAll', { type: type.modelName });
   }
 
-  query(store, type, query) {
+  async query(store, type, query) {
+    await this.handshakePromise;
     return this._request('query', { type: type.modelName, query });
   }
 
-  createRecord(store, type, snapshot) {
+  async createRecord(store, type, snapshot) {
+    await this.handshakePromise;
     const { modelName } = type;
     const data = this.serialize(snapshot, { includeId: true });
     return this._request('createRecord', { type: modelName, data });
   }
 
-  updateRecord(store, type, snapshot) {
+  async updateRecord(store, type, snapshot) {
+    await this.handshakePromise;
     const { modelName } = type;
     const id = snapshot.id;
     const data = this.serialize(snapshot, { includeId: true });
     return this._request('updateRecord', { type: modelName, id, data });
   }
 
-  deleteRecord(store, type, snapshot) {
+  async deleteRecord(store, type, snapshot) {
+    await this.handshakePromise;
     const { modelName } = type;
     const id = snapshot.id;
     return this._request('deleteRecord', { type: modelName, id });
