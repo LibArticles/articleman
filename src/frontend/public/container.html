@@ -32,16 +32,17 @@
         Articleman is loading.
       </h1>
       <p>
-        Postmate is initializing the Ember container...
+        Casement is initializing the Ember container...
       </p>
       <p>
-        If this message does not disappear, please check your browser console for errors. Something probably went really wrong.
+        If this message does not disappear, Articleman did not confirm it was ready to communicate via Casement, whether because it is not loaded or because of a security issue or internal error.
       </p>
     </div>
     <script>
       const outside = new casement.Outside({
         url: 'https://articleman.bluelinden.art/',
         container: document.getElementById('appcontainer'),
+        name: 'ember-app',
         onReady: () => {
           document.querySelectorAll('h1, p').forEach(el => el.remove());
         }

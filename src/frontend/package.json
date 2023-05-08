@@ -91,7 +91,6 @@
   "dependencies": {
     "@tsconfig/ember": "^2.0.0",
     "@types/ember": "^4.0.3",
-    "casement": "^1.2.2",
-    "postmate": "^1.5.2"
+    "casement": "^1.2.3"
   }
 }
