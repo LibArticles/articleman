@@ -4,34 +4,35 @@ import RouterService from '@ember/routing/router-service';
 import { action } from '@ember/object';
 
 export default class HeaderComponent extends Component { // @ts-ignore
-  @service('router') router;
-  title = '';
+  @service('router') router: RouterService;
+  page: string = '';
+  title: string = 'Articleman';
 
   constructor(owner: unknown, args: {}) {
     super(owner, args);
-    this.setTitle();
+    this.setPage();
   }
 
   @action
-  setTitle() {
+  setPage() {
     const currentRouteName = this.router.currentRouteName;
     switch (currentRouteName) {
       case 'index':
-        this.title = 'Home';
+        this.page = 'Home';
         break;
       case 'settings':
-        this.title = 'Settings';
+        this.page = 'Settings';
         break;
       case 'system':
-        this.title = 'System';
+        this.page = 'System';
         break;
       case 'license':
-        this.title = 'License';
+        this.page = 'License';
         break;
       default:
-        this.title = 'My Website';
+        this.page = 'My Website';
         break;
     }
-    document.title = this.title;
+    document.title = this.page;
   }
 }
