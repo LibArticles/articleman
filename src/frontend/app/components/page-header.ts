@@ -16,14 +16,17 @@ export default class HeaderComponent extends Component { // @ts-ignore
   setTitle() {
     const currentRouteName = this.router.currentRouteName;
     switch (currentRouteName) {
-      case 'home':
-        this.title = 'Home Page';
+      case 'index':
+        this.title = 'Home';
         break;
-      case 'about':
-        this.title = 'About Us';
+      case 'settings':
+        this.title = 'Settings';
         break;
-      case 'contact':
-        this.title = 'Contact Us';
+      case 'system':
+        this.title = 'System';
+        break;
+      case 'license':
+        this.title = 'License';
         break;
       default:
         this.title = 'My Website';
