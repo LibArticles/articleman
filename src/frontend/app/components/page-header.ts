@@ -3,9 +3,9 @@ import { inject as service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
 import { action } from '@ember/object';
 
-export default class HeaderComponent extends Component {
-  @service router!: RouterService;
-  title: string = '';
+export default class HeaderComponent extends Component { // @ts-ignore
+  @service('router') router;
+  title = '';
 
   constructor(owner: unknown, args: {}) {
     super(owner, args);

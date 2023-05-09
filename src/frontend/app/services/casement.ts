@@ -2,7 +2,7 @@ import Service from '@ember/service';
 import { Inside } from 'casement'
 
 export default class CasementService extends Service {
-  inside: Inside;
+  public inside: Inside;
   constructor() {
     super(...arguments);
     this.inside = new Inside({

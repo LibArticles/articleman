@@ -10,6 +10,11 @@ module.exports = function (defaults) {
     fingerprint: {
       enabled: false,
     },
+    babel: {
+      // add typescript support
+      plugins: [require.resolve('ember-auto-import/babel-plugin'), require.resolve('@babel/plugin-transform-typescript')],
+
+    }
   });
 
   const { Webpack } = require('@embroider/webpack');
