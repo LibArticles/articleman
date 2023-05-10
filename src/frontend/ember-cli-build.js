@@ -6,15 +6,13 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function (defaults) {
   const app = new EmberApp(defaults, {
-    // Add options here
-    fingerprint: {
-      enabled: false,
-    },
     babel: {
       // add typescript support
-      plugins: [require.resolve('ember-auto-import/babel-plugin'), require.resolve('@babel/plugin-transform-typescript')],
-
-    }
+      plugins: [
+        require.resolve('ember-auto-import/babel-plugin'),
+        require.resolve('@babel/plugin-transform-typescript'),
+      ],
+    },
   });
 
   const { Webpack } = require('@embroider/webpack');
