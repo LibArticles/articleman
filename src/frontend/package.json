@@ -92,6 +92,6 @@
   "dependencies": {
     "@tsconfig/ember": "^2.0.0",
     "@types/ember": "^4.0.3",
-    "casement": "^2.0.0"
+    "casement": "^2.0.1"
   }
 }
