@@ -19,6 +19,13 @@ module.exports = function (defaults) {
   return require('@embroider/compat').compatBuild(app, Webpack, {
     packagerOptions: {
       publicAssetURL: config.frontendUrl,
+      webpackConfig: {
+        resolve: {
+          alias: {
+            casement: 'casement/dist/casement.min.js',
+          },
+        },
+      },
     },
   });
   // return app.toTree();
