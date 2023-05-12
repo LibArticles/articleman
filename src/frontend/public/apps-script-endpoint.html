@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="https://unpkg.com/casement@2.0.3/dist/casement.min.js"></script>
+    <script src="https://unpkg.com/casement@2.1.0/dist/casement.min.js"></script>
     <style>
       #appcontainer {
         width: 100vw;
@@ -45,7 +45,8 @@
         name: 'ember-app',
         onReady: () => {
           document.querySelectorAll('h1, p').forEach(el => el.remove());
-        }
+        },
+        debug: true,
       })
       
     </script>

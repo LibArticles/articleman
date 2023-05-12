@@ -8,6 +8,7 @@ export default class CasementService extends Service {
     this.inside = new Inside({
       name: 'ember-app',
       allowedDomain: 'https://articleman.bluelinden.art',
+      debug: true,
     });
   }
 }
