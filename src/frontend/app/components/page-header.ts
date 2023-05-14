@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
 import { action } from '@ember/object';
+import { next } from '@ember/runloop';
 
 export default class HeaderComponent extends Component {
   @service router!: RouterService;
@@ -9,8 +10,13 @@ export default class HeaderComponent extends Component {
 
   constructor(owner: unknown, args: {}) {
     super(owner, args);
-    this.setTitle();
+    next(this, this.setTitle);
     this.router.on('routeDidChange', this.setTitle);
+  }
+
+  didInsertElement() {
+    super.didInsertElement();
+    this.setTitle();
   }
 
   @action
