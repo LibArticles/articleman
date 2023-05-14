@@ -3,36 +3,38 @@ import { inject as service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
 import { action } from '@ember/object';
 
-export default class HeaderComponent extends Component { // @ts-ignore
-  @service('router') router: RouterService;
-  page: string = '';
-  title: string = 'Articleman';
+export default class HeaderComponent extends Component {
+  @service router!: RouterService;
+  title: string = '';
 
   constructor(owner: unknown, args: {}) {
     super(owner, args);
-    this.setPage();
+    this.setTitle();
+    this.router.on('routeDidChange', this.setTitle);
   }
 
   @action
-  setPage() {
+  setTitle() {
     const currentRouteName = this.router.currentRouteName;
     switch (currentRouteName) {
       case 'index':
-        this.page = 'Home';
+        this.title = 'Home Page';
         break;
-      case 'settings':
-        this.page = 'Settings';
+      case 'about':
+        this.title = 'About Us';
         break;
-      case 'system':
-        this.page = 'System';
-        break;
-      case 'license':
-        this.page = 'License';
+      case 'contact':
+        this.title = 'Contact Us';
         break;
       default:
-        this.page = 'My Website';
+        this.title = 'My Website';
         break;
     }
-    document.title = this.page;
+    document.title = this.title;
+  }
+
+  willDestroy() {
+    super.willDestroy();
+    this.router.off('routeDidChange', this.setTitle);
   }
 }
