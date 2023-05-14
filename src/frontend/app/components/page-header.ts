@@ -5,36 +5,40 @@ import { action } from '@ember/object';
 
 export default class HeaderComponent extends Component {
   @service router!: RouterService;
-  title: string = '';
+  title: string = 'Articleman';
+  page: string = 'Home';
 
   constructor(owner: unknown, args: {}) {
     super(owner, args);
-    this.setTitle();
-    this.router.on('routeDidChange', this.setTitle);
+    this.setPage();
+    this.router.on('routeDidChange', this.setPage);
   }
 
   @action
-  setTitle() {
+  setPage() {
     const currentRouteName = this.router.currentRouteName;
     switch (currentRouteName) {
       case 'index':
-        this.title = 'Home Page';
+        this.page = 'Home';
         break;
-      case 'about':
-        this.title = 'About Us';
+      case 'settings':
+        this.page = 'Settings';
         break;
-      case 'contact':
-        this.title = 'Contact Us';
+      case 'system':
+        this.page = 'System';
+        break;
+      case 'license':
+        this.page = 'License';
         break;
       default:
-        this.title = 'Uhhh...';
+        this.page = 'Uhhh...';
         break;
     }
-    document.title = this.title;
+    document.title = this.title + ' - ' + this.page;
   }
 
   willDestroy() {
     super.willDestroy();
-    this.router.off('routeDidChange', this.setTitle);
+    this.router.off('routeDidChange', this.setPage);
   }
 }
