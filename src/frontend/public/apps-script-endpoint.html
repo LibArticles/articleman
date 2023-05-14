@@ -57,7 +57,7 @@
       </div>
     <script>
       setTimeout(() => {
-        document.querySelector('.errormsg').style.display = 'block';
+        if(document.querySelector('.errormsg')) document.querySelector('.errormsg').style.display = 'block';
       }, 5000);
       window.outside = new casement.Outside({
         pageUrl: 'https://articleman.bluelinden.art/',
