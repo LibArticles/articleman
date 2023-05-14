@@ -30,6 +30,12 @@ export default class HeaderComponent extends Component {
       case 'license':
         this.page = 'License';
         break;
+      case 'people': 
+        this.page = 'People';
+        break;
+      case 'work':
+        this.page = 'Your work';
+        break;
       default:
         this.page = 'Uhhh...';
         break;
