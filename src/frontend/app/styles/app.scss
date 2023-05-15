@@ -1,4 +1,4 @@
-/* Ember supports plain CSS out of the box. More info: https://cli.emberjs.com/release/advanced-use/stylesheets/ */
+// Main app styles, text and bg colors can be changed if you want.
 
 $text-color: #5c3600;
 $bg-color: #fbd6a2;
@@ -9,4 +9,40 @@ $bg-color: #fbd6a2;
 body {
   background: $bg-color;
   color: $text-color;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  // Align the header content to the left, and make it 100% wide. Add padding on all sides to make it look nice. Inline all the elements inside the header.
+  background: $bg-color;
+  color: $text-color;
+  text-align: left;
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  flex-direction: row;
+  gap: 0.3em;
+  padding: 0.8em;
+  font-size: 1.2em;
+
+  * {
+    display: inline;
+  }
+  .title {
+    font-weight: 600;
+  }
+  .separator {
+    font-weight: 400;
+  }
+  .page {
+    font-weight: 400;
+  }
 }
