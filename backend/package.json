@@ -1,7 +1,7 @@
 {
   "version": "0.0.1",
   "description": "Articleman, risen from the embers.",
-  "name": "articleman",
+  "name": "articleman-backend",
   "scripts": {
     "build": "webpack",
     "build:dev": "webpack --mode=development",
