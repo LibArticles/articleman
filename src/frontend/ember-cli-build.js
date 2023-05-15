@@ -1,13 +1,16 @@
 'use strict';
 
 const config = require('./config.json');
+const path = require('path');
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+const { Webpack } = require('@embroider/webpack');
+const CustomFingerprintPlugin = require('./CustomFingerprintPlugin');
+const replace = require('broccoli-replace');
 
 module.exports = function (defaults) {
   const app = new EmberApp(defaults, {
     babel: {
-      // add typescript support
       plugins: [
         require.resolve('ember-auto-import/babel-plugin'),
         require.resolve('@babel/plugin-transform-typescript'),
@@ -30,37 +33,41 @@ module.exports = function (defaults) {
       prepend: '<base href="/" />',
       exclude: ['index.html'],
     },
+    sassOptions: {
+      extension: 'scss',
+      implementation: require('sass'),
+    },
   });
 
-  const { Webpack } = require('@embroider/webpack');
+  app.registry.add('css', new CustomFingerprintPlugin());
+
   return require('@embroider/compat').compatBuild(app, Webpack, {
     packagerOptions: {
       publicAssetURL: config.frontendUrl,
       webpackConfig: {
         resolve: {
           alias: {
-            casement: 'casement/dist/casement.min.js',
+            casement: path.resolve(
+              __dirname,
+              'node_modules/casement/dist/casement.min.js'
+            ),
           },
         },
-        module: {
-          rules: [
-            {
-              test: /\.scss$/,
-              use: [
-                {
-                  loader: 'file-loader',
-                  options: {
-                    name: '[path][name]-[contenthash].[ext]',
-                  },
-                },
-                'extract-loader',
-                'css-loader',
-                'sass-loader',
-              ],
-            },
-          ],
-        },
       },
+    },
+    postprocessTree(type, tree) {
+      if (type === 'all') {
+        const assetMap = require('./dist/assets/assetMap.json'); // Adjust the path to the asset map file if necessary
+
+        return replace(tree, {
+          files: ['index.html'],
+          patterns: Object.keys(assetMap).map((originalPath) => ({
+            match: originalPath,
+            replacement: assetMap[originalPath],
+          })),
+        });
+      }
+      return tree;
     },
   });
 };

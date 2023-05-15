@@ -44,6 +44,7 @@
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "broccoli-asset-rev": "^3.0.0",
+    "broccoli-replace": "^2.0.2",
     "concurrently": "^8.0.1",
     "css-loader": "^6.7.3",
     "ember-auto-import": "^2.6.3",
