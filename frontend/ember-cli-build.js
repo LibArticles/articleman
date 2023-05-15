@@ -5,8 +5,7 @@ const path = require('path');
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const { Webpack } = require('@embroider/webpack');
-const CustomFingerprintPlugin = require('./CustomFingerprintPlugin');
-const replace = require('broccoli-replace');
+const Fingerprinter = require('./builder/fingerprinter.js')
 
 module.exports = function (defaults) {
   const app = new EmberApp(defaults, {
@@ -39,8 +38,6 @@ module.exports = function (defaults) {
     },
   });
 
-  app.registry.add('css', new CustomFingerprintPlugin());
-
   return require('@embroider/compat').compatBuild(app, Webpack, {
     packagerOptions: {
       publicAssetURL: config.frontendUrl,
@@ -53,21 +50,10 @@ module.exports = function (defaults) {
             ),
           },
         },
+        plugins: [
+          new Fingerprinter(),
+        ]
       },
-    },
-    postprocessTree(type, tree) {
-      if (type === 'all') {
-        const assetMap = require('./dist/assets/assetMap.json'); // Adjust the path to the asset map file if necessary
-
-        return replace(tree, {
-          files: ['index.html'],
-          patterns: Object.keys(assetMap).map((originalPath) => ({
-            match: originalPath,
-            replacement: assetMap[originalPath],
-          })),
-        });
-      }
-      return tree;
     },
   });
 };
