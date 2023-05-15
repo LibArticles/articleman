@@ -13,6 +13,23 @@ module.exports = function (defaults) {
         require.resolve('@babel/plugin-transform-typescript'),
       ],
     },
+    fingerprint: {
+      extensions: [
+        'js',
+        'css',
+        'png',
+        'jpg',
+        'gif',
+        'map',
+        'svg',
+        'woff',
+        'woff2',
+        'ttf',
+        'eot',
+      ],
+      prepend: '<base href="/" />',
+      exclude: ['index.html'],
+    },
   });
 
   const { Webpack } = require('@embroider/webpack');
@@ -25,8 +42,25 @@ module.exports = function (defaults) {
             casement: 'casement/dist/casement.min.js',
           },
         },
+        module: {
+          rules: [
+            {
+              test: /\.scss$/,
+              use: [
+                {
+                  loader: 'file-loader',
+                  options: {
+                    name: '[path][name]-[contenthash].[ext]',
+                  },
+                },
+                'extract-loader',
+                'css-loader',
+                'sass-loader',
+              ],
+            },
+          ],
+        },
       },
     },
   });
-  // return app.toTree();
 };
