@@ -5,7 +5,6 @@ const path = require('path');
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const { Webpack } = require('@embroider/webpack');
-const Fingerprinter = require('./builder/fingerprinter.js')
 
 module.exports = function (defaults) {
   const app = new EmberApp(defaults, {
@@ -16,20 +15,9 @@ module.exports = function (defaults) {
       ],
     },
     fingerprint: {
-      extensions: [
-        'js',
-        'css',
-        'png',
-        'jpg',
-        'gif',
-        'map',
-        'svg',
-        'woff',
-        'woff2',
-        'ttf',
-        'eot',
-      ],
-      prepend: '<base href="/" />',
+      // fingerprint even in dev mode, so that we can use the fingerprinted
+      // filenames in the index.html
+      enabled: true,
       exclude: ['index.html'],
     },
     sassOptions: {
@@ -49,11 +37,12 @@ module.exports = function (defaults) {
               'node_modules/casement/dist/casement.min.js'
             ),
           },
+          extensions: ['.js', '.json', '.ts', '.scss', '.css', '.hbs', '.html'],
         },
-        plugins: [
-          new Fingerprinter(),
-        ]
       },
     },
+    staticAddonTrees: true,
+    staticAddonTestSupportTrees: true,
+    // add the sass tree to the build
   });
 };
