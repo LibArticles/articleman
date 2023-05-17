@@ -18,6 +18,7 @@ module.exports = function (defaults) {
       // fingerprint even in dev mode, so that we can use the fingerprinted
       // filenames in the index.html
       enabled: true,
+      extensions: ['js', 'css', 'png', 'jpg', 'gif', 'map', 'svg', 'woff2'],
       exclude: ['index.html'],
     },
     sassOptions: {
