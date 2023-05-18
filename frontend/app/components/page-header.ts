@@ -2,10 +2,12 @@ import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
 import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
 export default class HeaderComponent extends Component {
   @service router!: RouterService;
-  title: string = 'Articleman';
+
+  @tracked title: string = 'Articleman';
   page: string = 'Home';
 
   constructor(owner: unknown, args: {}) {

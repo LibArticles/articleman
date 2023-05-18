@@ -49,7 +49,7 @@ body {
   }
 }
 
-#main {
+.main {
   display: flex;
   flex-direction: column;
   justify-content: left;
@@ -59,8 +59,7 @@ body {
 }
 
 .footer {
-  background: $bg-color;
-  color: $text-color;
+  background: $bg-color !important;
   position: sticky;
   display: flex;
   bottom: 0;
@@ -73,6 +72,7 @@ body {
   padding-bottom: 0.4em;
   background-color: var(--bg-color);
   .button {
+    color: $text-color !important;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;

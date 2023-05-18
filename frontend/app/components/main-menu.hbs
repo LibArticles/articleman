@@ -1,26 +1,26 @@
 <div class="footer">
-  <LinkTo @route="index" class="item">
+  <LinkTo @route="index" class="button">
     {{svg-jar 'home' width="30px" class='icon'}}
     <div class="text">Home</div>
   </LinkTo>
   {{#if this.isAdmin}}
-  <LinkTo @route="people" class="item">
+  <LinkTo @route="people" class="button">
     {{svg-jar 'people' width="30px" class='icon'}}
     <div class="text">People</div>
   </LinkTo>
-  <LinkTo @route="settings" class="item">
+  <LinkTo @route="settings" class="button">
     {{svg-jar 'settings' width="30px" class='icon'}}
     <div class="text">Settings</div>
   </LinkTo>
   {{/if}}
   {{#if this.isWorker}}
-  <LinkTo @route='work' class="item">
+  <LinkTo @route='work' class="button">
     {{svg-jar 'me' width="30px" class='icon'}}
     <div class="text">My Work</div>
   </LinkTo>
   {{/if}}
   {{#if this.isDebug}}
-  <LinkTo @route="system" class="item">
+  <LinkTo @route="system" class="button">
     {{svg-jar 'debug' width="30px" class='icon'}}
     <div class="text">System</div>
   </LinkTo>
