@@ -14,6 +14,9 @@ module.exports = function (defaults) {
         require.resolve('@babel/plugin-transform-typescript'),
       ],
     },
+    svgJar: {
+      sourceDirs: ['public/assets/images'],
+    }
     fingerprint: {
       // fingerprint even in dev mode, so that we can use the fingerprinted
       // filenames in the index.html
