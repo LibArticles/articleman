@@ -16,7 +16,7 @@ module.exports = function (defaults) {
     },
     svgJar: {
       sourceDirs: ['public/assets/images'],
-    }
+    },
     fingerprint: {
       // fingerprint even in dev mode, so that we can use the fingerprinted
       // filenames in the index.html
