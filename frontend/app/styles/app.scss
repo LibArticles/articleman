@@ -21,6 +21,7 @@ body {
 .header {
   // Align the header content to the left, and make it 100% wide. Add padding on all sides to make it look nice. Inline all the elements inside the header.
   background: $bg-color;
+  position: sticky;
   color: $text-color;
   text-align: left;
   width: 100%;
@@ -48,16 +49,19 @@ body {
   }
 }
 
-.main {
-  flex-grow: 1;
+#main {
   display: flex;
   flex-direction: column;
   justify-content: left;
   align-items: left;
   padding: 0.5em;
+  flex: 1 0 auto;
 }
 
 .footer {
+  background: $bg-color;
+  color: $text-color;
+  position: sticky;
   display: flex;
   bottom: 0;
   flex-direction: row;

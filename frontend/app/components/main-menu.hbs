@@ -3,20 +3,26 @@
     {{svg-jar 'home' width="30px" class='icon'}}
     <div class="text">Home</div>
   </LinkTo>
+  {{#if this.isAdmin}}
   <LinkTo @route="people" class="item">
     {{svg-jar 'people' width="30px" class='icon'}}
     <div class="text">People</div>
-  </LinkTo>
-  <LinkTo @route='work' class="item">
-    {{svg-jar 'me' width="30px" class='icon'}}
-    <div class="text">My Work</div>
   </LinkTo>
   <LinkTo @route="settings" class="item">
     {{svg-jar 'settings' width="30px" class='icon'}}
     <div class="text">Settings</div>
   </LinkTo>
+  {{/if}}
+  {{#if this.isWorker}}
+  <LinkTo @route='work' class="item">
+    {{svg-jar 'me' width="30px" class='icon'}}
+    <div class="text">My Work</div>
+  </LinkTo>
+  {{/if}}
+  {{#if this.isDebug}}
   <LinkTo @route="system" class="item">
     {{svg-jar 'debug' width="30px" class='icon'}}
     <div class="text">System</div>
   </LinkTo>
+  {{/if}}
 </div>

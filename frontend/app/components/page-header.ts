@@ -34,13 +34,17 @@ export default class HeaderComponent extends Component {
         this.page = 'People';
         break;
       case 'work':
-        this.page = 'Your work';
+        this.page = 'Work';
         break;
       default:
         this.page = 'Uhhh...';
         break;
     }
     document.title = this.title + ' - ' + this.page;
+  }
+
+  handleRouteChange() {
+    this.setPage();
   }
 
   willDestroy() {
