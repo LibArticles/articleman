@@ -11,9 +11,10 @@ module.exports = function (defaults) {
     babel: {
       plugins: [
         require.resolve('ember-auto-import/babel-plugin'),
-        require.resolve('@babel/plugin-transform-typescript'),
+        // require.resolve('@babel/plugin-transform-typescript'),
       ],
     },
+    tests: false,
     svgJar: {
       sourceDirs: ['public/images/icons'],
     },
