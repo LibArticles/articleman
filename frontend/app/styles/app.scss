@@ -87,13 +87,14 @@ body {
     border-radius: 5px;
     cursor: pointer;
     user-select: none;
+    text-decoration: none;
     .icon {
       width: 30px;
       height: 30px;
     }
     &.active {
-      background-color: var(--text-color);
-      color: var(--bg-color);
+      background-color: $text-color;
+      color: $bg-color;
     }
   }
 }

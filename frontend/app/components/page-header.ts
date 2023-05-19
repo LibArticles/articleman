@@ -16,7 +16,6 @@ export default class HeaderComponent extends Component {
     this.router.on('routeDidChange', this.setPage);
   }
 
-  @action
   setPage() {
     const currentRouteName = this.router.currentRouteName;
     switch (currentRouteName) {
