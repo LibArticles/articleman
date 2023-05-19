@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://unpkg.com/casement@3.0.5/dist/casement.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap" rel="stylesheet">
+    <style>
+      #appcontainer {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: none;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background: #5c3600;
+        color: #fbd6a2;
+        font-family: 'Lexend', sans-serif;
+      }
+      .loading h1 {
+        font-size: 2em;
+        margin: 0;
+        padding: 0;
+        font-weight: 500;
+      }
+      .loading {
+        text-align: center;
+      }
+      html, body, #appcontainer {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="appcontainer">
+      <div class="loading">
+        <h1>
+          Articleman is a blue linden product.
+        </h1>
+        <p>
+          Loading...
+        </p>
+        <p class="errormsg" style="display: none">
+          If you see this message for more than a few seconds, please check your internet connection and your browser console. Remember that this is beta software and it&apos;s very likely that something is broken.
+        </p>
+      </div>
+    <script>
+      setTimeout(() => {
+        if(document.querySelector('.errormsg')) document.querySelector('.errormsg').style.display = 'block';
+      }, 5000);
+      window.outside = new casement.Outside({
+        pageUrl: 'https://articleman.bluelinden.art/',
+        container: document.getElementById('appcontainer'),
+        name: 'ember-app',
+        onReady: () => {
+          document.querySelector('.loading').remove();
+          document.querySelector('iframe').style.display = 'block';
+        },
+        debug: true,
+      })
+      
+    </script>
+  </body>
+</html>

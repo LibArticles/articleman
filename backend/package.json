@@ -1,0 +1,63 @@
+{
+  "version": "0.0.1",
+  "description": "Articleman, risen from the embers.",
+  "name": "articleman-backend",
+  "scripts": {
+    "build": "webpack",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "watch": "webpack --watch",
+    "lint": "concurrently \"npm:lint:*(!fix)\" --names \"lint:\"",
+    "lint:css": "stylelint \"**/*.css\"",
+    "lint:css:fix": "concurrently \"npm:lint:css -- --fix\"",
+    "lint:fix": "concurrently \"npm:lint:*:fix\" --names \"fix:\"",
+    "lint:hbs": "ember-template-lint .",
+    "lint:hbs:fix": "ember-template-lint . --fix",
+    "lint:js": "eslint . --cache",
+    "lint:js:fix": "eslint . --fix",
+    "start": "ember serve",
+    "test": "concurrently \"npm:lint\" \"npm:test:*\" --names \"lint,test:\"",
+    "test:ember": "ember test"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.21.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
+    "banner-plugin": "^1.0.10",
+    "css-loader": "^6.7.3",
+    "eslint": "^8.37.0",
+    "eslint-plugin-googleappsscript": "^1.0.4",
+    "gas-webpack-plugin": "^2.4.0",
+    "handlebars-loader": "^1.7.3",
+    "html-inline-script-webpack-plugin": "^3.1.0",
+    "html-webpack-plugin": "^5.5.1",
+    "mini-css-extract-plugin": "^2.7.5",
+    "prettier": "^2.8.7",
+    "sass": "^1.62.0",
+    "sass-loader": "^13.2.2",
+    "style-loader": "^3.3.2",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.78.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.61",
+    "fs": "^0.0.1-security",
+    "handlebars": "^4.7.7",
+    "postmate": "^1.5.2",
+    "worktapper": "^1.1.1"
+  },
+  "private": true,
+  "repository": "",
+  "author": "",
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
+  "engines": {
+    "node": "14.* || 16.* || >= 18"
+  }
+}
