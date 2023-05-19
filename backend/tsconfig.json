@@ -10,6 +10,6 @@
     "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "node_modules/@types"],
   "exclude": ["node_modules", "dist", "src/frontend"],
 }

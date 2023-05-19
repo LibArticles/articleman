@@ -44,10 +44,8 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
-    "@types/google-apps-script": "^1.0.61",
+    "@types/google-apps-script": "^1.0.64",
     "fs": "^0.0.1-security",
-    "handlebars": "^4.7.7",
-    "postmate": "^1.5.2",
     "worktapper": "^1.1.1"
   },
   "private": true,

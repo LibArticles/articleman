@@ -1,6 +1,6 @@
 import { setSettings, getSettings } from "./comms/getSettings.js";
 
-import config from "../frontend/config.json"
+import config from "../../config.json"
 
 // @ts-ignore
 global.onOpen = function onOpen() {
@@ -39,5 +39,11 @@ global.showSidebar = () => {
 // @ts-ignore
 global.showHelp = () => {
   CacheService.getUserCache().put('help', 'true', 20); // @ts-ignore
+  global.showSidebar();
+}
+
+// @ts-ignore
+global.onInstall = function onInstall() {
+  // @ts-ignore
   global.showSidebar();
 }
