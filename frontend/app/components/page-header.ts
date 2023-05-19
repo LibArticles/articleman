@@ -8,14 +8,20 @@ export default class HeaderComponent extends Component {
   @service router!: RouterService;
 
   @tracked title: string = 'Articleman';
-  page: string = 'Home';
+  @tracked page: string = 'Home';
 
   constructor(owner: unknown, args: {}) {
     super(owner, args);
     this.setPage();
-    this.router.on('routeDidChange', this.setPage);
+    this.router.on('routeDidChange', this.setPage.bind(this));
   }
 
+  // // on page change, update the page title
+  // onRouteChange() {
+  //   this.setPage();
+  // }
+
+  @action
   setPage() {
     const currentRouteName = this.router.currentRouteName;
     switch (currentRouteName) {
@@ -44,12 +50,14 @@ export default class HeaderComponent extends Component {
     document.title = this.title + ' - ' + this.page;
   }
 
-  handleRouteChange() {
+  @action
+  didInsert() {
     this.setPage();
   }
 
+  @action
   willDestroy() {
     super.willDestroy();
-    this.router.off('routeDidChange', this.setPage);
+
   }
 }
