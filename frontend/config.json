@@ -1,1 +1,3 @@
-../config.json
+{
+  "frontendUrl": "https://articleman.bluelinden.art/",
+}
