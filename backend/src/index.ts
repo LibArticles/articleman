@@ -1,11 +1,9 @@
-import { setSettings, getSettings } from "./comms/getSettings.js";
+import { setSettings, getSettings } from "./comms/get-settings.js";
 
 import config from "../config.json"
 
 // @ts-ignore
 global.onOpen = function onOpen() {
-  // start the user interface as a dialog in google sheets
-  let sheet = SpreadsheetApp.getActiveSpreadsheet();
   SpreadsheetApp.getUi()
   .createMenu('Articleman')
     .addItem('Open Articleman...', 'showSidebar')

@@ -1,5 +1,5 @@
 export default class RawDataSetManager {
-  static getDataSets() {
+  static async getDataSets() {
     // get all named ranges
     return SpreadsheetApp.getActiveSpreadsheet().getNamedRanges().filter((set) => {
       return (
@@ -14,7 +14,7 @@ export default class RawDataSetManager {
       );
     })
   }
-  static getDataSet(name: string) {
+  static async getDataSet(name: string) {
     return SpreadsheetApp.getActiveSpreadsheet().getNamedRanges().filter((set) => {
       return (
         // if the named range has the same name
@@ -29,7 +29,9 @@ export default class RawDataSetManager {
     })[0];
   }
 
-  static createDataSet(name: string, range: string) {
+
+
+  static async createDataSet(name: string, range: string) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet();
     const dataSet = sheet.getRange(range).addDeveloperMetadata('articlemanManagedDataset', 'true');
     
@@ -48,7 +50,7 @@ export default class RawDataSetManager {
     return dataSet;
   }
 
-  static updateDataSet(name: string, range: string) {
+  static updateDataSetRange(name: string, range: string) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet();
     const dataSet = sheet.getNamedRanges().filter((set) => set.getName() === `AMDS_${name}`)[0];
 
