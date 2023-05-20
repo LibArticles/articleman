@@ -23,10 +23,9 @@ global.onSelectionChange = () => {
   const sheet = SpreadsheetApp.getActiveSheet();
   const row = sheet.getActiveCell().getRow();
   const column = sheet.getActiveCell().getColumn();
-  const cache = CacheService.getUserCache();
-  cache.put('currentRow', JSON.stringify({
-    row: row,
-    column: column,
+  CacheService.getUserCache().put('currentRow', JSON.stringify({
+    row,
+    column,
     sheet: sheet.getName(),
   }), 21600);
 }
