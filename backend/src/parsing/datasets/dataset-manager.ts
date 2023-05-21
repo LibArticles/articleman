@@ -1,4 +1,5 @@
-import RawDataSetManager from "./named-dataset";
+import RawDataSetManager from "./raw-data-manager";
+import CacheManager from "./cache-manager";
 
 export default class DataSetManager {
 
@@ -16,39 +17,49 @@ export default class DataSetManager {
   }
 
   static async getObjects() {
-    const dataSets = await this.getColumns();
-    const objects: Record<string, Record<string, any>[]> = {};
+    // check if the cache is up to date
+    if (await CacheManager.checkForChanges()) {
+      // if it is, get the object array from the cache
+      return await CacheManager.getFromCache();
+    } else {
+      // if it isn't, create the object array from the spreadsheet and commit it to the cache
+      const dataSets = await this.getColumns();
+      const objects: Record<string, Record<string, any>[]> = {};
 
-    // get all sheets, iterate through them
-    Object.keys(dataSets).forEach((sheetName) => {
-      // initialize the sheet's object
-      objects[sheetName] = [];
+      // get all sheets, iterate through them
+      Object.keys(dataSets).forEach((sheetName) => {
+        // initialize the sheet's object
+        objects[sheetName] = [];
 
-      // get all columns from the sheet
-      const dataSet = dataSets[sheetName];
+        // get all columns from the sheet
+        const dataSet = dataSets[sheetName];
 
-      // get the column names
-      const columns = Object.keys(dataSet);
+        // get the column names
+        const columns = Object.keys(dataSet);
 
-      // for each column at the row's position, add the value to the object
-      columns.forEach((column) => {
+        // for each column at the row's position, add the value to the object
+        columns.forEach((column) => {
 
-        // get the values of the column
-        const values = dataSet[column].getValues();
+          // get the values of the column
+          const values = dataSet[column].getValues();
 
-        // for each row, add the value to the object
-        values.forEach((row, index) => {
-          // initialize the object
-          if (!objects[sheetName][index]) {
-            objects[sheetName][index] = {};
-          }
-          // add the value to the object, using the column name as the key
-          objects[sheetName][index][column] = row[0];
+          // for each row, add the value to the object
+          values.forEach((row, index) => {
+            // initialize the object
+            if (!objects[sheetName][index]) {
+              objects[sheetName][index] = {};
+            }
+            // add the value to the object, using the column name as the key
+            objects[sheetName][index][column] = row[0];
+          });
         });
       });
-    });
 
-    return objects;
+      // commit the object array to the cache
+      await CacheManager.commit(objects, SpreadsheetApp.getActiveSpreadsheet().getSheets().map((sheet) => sheet.getDataRange().getValues()));
+
+      return objects;
+    }
   }
 
   static async updateObject(sheetName: string, object: Record<string, any>, position: number) {
