@@ -36,12 +36,6 @@ module.exports = function (defaults) {
       publicAssetURL: config.frontendUrl,
       webpackConfig: {
         resolve: {
-          alias: {
-            casement: path.resolve(
-              __dirname,
-              'node_modules/casement/dist/casement.min.js'
-            ),
-          },
           extensions: ['.js', '.json', '.ts', '.scss', '.css', '.hbs', '.html'],
         },
       },
