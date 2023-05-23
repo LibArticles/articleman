@@ -10,7 +10,8 @@ export default class HeaderComponent extends Component {
   @tracked title: string = 'Articleman';
   @tracked page: string = 'Home';
 
-  init() {
+  constructor(owner: unknown, args: any) {
+    super(owner, args);
     this.router.on('routeDidChange', () => {
       this.setPage();
     }
