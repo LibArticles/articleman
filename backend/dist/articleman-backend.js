@@ -61,7 +61,7 @@ function setSettings(settings) {
   \*********************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-module.exports = JSON.parse('{"containerUrl":"https://articleman.bluelinden.art/apps-script-endpoint"}');
+module.exports = JSON.parse('{"containerUrl":"https://articleman.bluelinden.art/"}');
 
 /***/ })
 
