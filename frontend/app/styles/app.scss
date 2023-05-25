@@ -18,7 +18,21 @@ body {
   padding: 0;
 }
 
-
+.loading-screen  {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  position: absolute;
+  .logo {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+  }
+}
 
 .header {
   // Align the header content to the left, and make it 100% wide. Add padding on all sides to make it look nice. Inline all the elements inside the header.
