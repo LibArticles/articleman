@@ -35,7 +35,11 @@ module.exports = function (defaults) {
 
   return require('@embroider/compat').compatBuild(app, Webpack, {
     packagerOptions: {
-      publicAssetURL: config.frontendUrl,
+      // if in production mode, use the production API URL, else use the current domain
+      publicAssetURL:
+        EmberApp.env() === 'production' || process.env.CF_PAGES === 1
+          ? config.frontendUrl
+          : '/',
       webpackConfig: {
         resolve: {
           extensions: ['.js', '.json', '.ts', '.scss', '.css', '.hbs', '.html'],
