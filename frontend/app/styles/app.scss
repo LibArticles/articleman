@@ -9,6 +9,7 @@ $bg-color: #fbd6a2;
 body {
   background: $bg-color;
   color: $text-color;
+  font-family: Lexend, sans-serif;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -16,6 +17,11 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
+}
+
+.heading {
+  font-family: Fraunces, serif;
+  font-weight: 400;
 }
 
 .loading-screen  {

@@ -24,6 +24,9 @@ module.exports = function (defaults) {
       extensions: ['js', 'css', 'png', 'jpg', 'gif', 'map', 'svg', 'woff2'],
       exclude: ['index.html'],
     },
+    sourceMaps: {
+      enabled: false,
+    },
     sassOptions: {
       extension: 'scss',
       implementation: require('sass'),
