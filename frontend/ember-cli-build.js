@@ -1,7 +1,6 @@
 'use strict';
 
 const config = require('./config.json');
-const path = require('path');
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const { Webpack } = require('@embroider/webpack');
@@ -16,7 +15,7 @@ module.exports = function (defaults) {
     },
     tests: false,
     svgJar: {
-      sourceDirs: ['public/images/icons'],
+      sourceDirs: ['public/images/icons', 'public/images/logos'],
     },
     fingerprint: {
       // fingerprint even in dev mode, so that we can use the fingerprinted

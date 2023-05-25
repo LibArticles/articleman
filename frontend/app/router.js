@@ -11,4 +11,5 @@ Router.map(function () {
   this.route('system');
   this.route('people');
   this.route('work');
+  this.route('datasets');
 });
