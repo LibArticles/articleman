@@ -1,5 +1,3 @@
 node_modules
 package-lock.json
 frontend/config/depconfig.json
-.yarn/cache
-.pnp.cjs

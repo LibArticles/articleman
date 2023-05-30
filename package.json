@@ -4,7 +4,8 @@
   "description": "a blue linden product for journalism teams.",
   "main": "backend/index.mts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:frontend": "cd frontend && ember build"
   },
   "repository": {
     "type": "git",
@@ -27,8 +28,5 @@
     "url": "https://github.com/bluelinden/articleman/issues"
   },
   "homepage": "https://github.com/bluelinden/articleman#readme",
-  "packageManager": "yarn@3.5.1",
-  "devDependencies": {
-    "yarn-plugin-ignore-add-options": "^0.1.0"
-  }
+  "packageManager": "yarn@3.5.1"
 }
