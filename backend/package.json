@@ -46,6 +46,7 @@
   "dependencies": {
     "@shelf/fast-chunk-string": "^3.0.0",
     "@types/google-apps-script": "^1.0.64",
+    "articleman": "^0.0.3",
     "fs": "^0.0.1-security",
     "sializer": "^0.2.0",
     "worktapper": "^1.1.1"

@@ -126,6 +126,7 @@
   },
   "dependencies": {
     "@tsconfig/ember": "^2.0.0",
-    "@types/ember": "^4.0.3"
+    "@types/ember": "^4.0.3",
+    "articleman": "^0.0.3"
   }
 }
