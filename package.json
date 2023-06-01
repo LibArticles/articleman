@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/bluelinden/articleman#readme",
   "dependencies": {
-    "pnpm": "^8.2.0"
+    "pnpm": "^8.6.0"
   }
 }
