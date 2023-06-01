@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/bluelinden/articleman/issues"
   },
-  "homepage": "https://github.com/bluelinden/articleman#readme"
+  "homepage": "https://github.com/bluelinden/articleman#readme",
+  "dependencies": {
+    "pnpm": "^8.2.0"
+  }
 }
