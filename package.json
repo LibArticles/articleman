@@ -5,7 +5,8 @@
   "main": "backend/index.mts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:frontend": "cd frontend && ember build"
+    "build:frontend": "cd frontend && ember build",
+    "preinstall": "npx only-allow pnpm"
   },
   "repository": {
     "type": "git",
@@ -18,15 +19,10 @@
     "hr",
     "worktapper"
   ],
-  "workspaces": [
-    "backend",
-    "frontend"
-  ],
   "author": "blue linden",
   "license": "AGPL-3.0-only",
   "bugs": {
     "url": "https://github.com/bluelinden/articleman/issues"
   },
-  "homepage": "https://github.com/bluelinden/articleman#readme",
-  "packageManager": "yarn@3.5.1"
+  "homepage": "https://github.com/bluelinden/articleman#readme"
 }
