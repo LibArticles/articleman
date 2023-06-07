@@ -1,30 +1,46 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
+import RouteInfo from '@ember/routing/-private/route-info';
 
+interface RouteData {
+  name: string;
+  userId?: string;
+  // Add any other data you want to save here
+}
 
-// this service keeps an array of every route that has been visited
 export default class RouteHistoryService extends Service {
   @service router!: RouterService;
-  routeHistory: string[] = [];
+  routeHistory: RouteData[] = [];
 
   init() {
     super.init();
 
-    this.router.on('routeDidChange', () => {
-      const currentRoute = this.router.currentRouteName;
-      this.routeHistory.push(currentRoute);
+    
+
+    this.router.on('routeDidChange', (transition) => {
+      const currentRoute = transition.to.name;
+      const routeData: RouteData = { name: currentRoute };
+      
+      // If the current route is a user route, save the user ID
+      if (currentRoute.startsWith('user/')) {
+        const userId = currentRoute.substring(5);
+        routeData.userId = userId;
+      }
+      
+      this.routeHistory.push(routeData);
     });
   }
 
-  // on click, pop the last route from the history stack and navigate to the one before.
   back() {
+    this.router.transitionTo(
+      this.routeHistory[this.routeHistory.length - 2]!.name
+    );
     this.routeHistory.pop();
-    this.router.transitionTo(this.previousRoute);
   }
 
   get previousRoute() {
-    return this.routeHistory[this.routeHistory.length - 1]!;
+    return this.routeHistory[this.routeHistory.length - 2]!;
   }
 
   get startingRoute() {
@@ -32,10 +48,7 @@ export default class RouteHistoryService extends Service {
   }
 }
 
-// Don't remove this declaration: this is what enables TypeScript to resolve
-// this service using `Owner.lookup('service:route-history')`, as well
-// as to check when you pass the service name as an argument to the decorator,
-// like `@service('route-history') declare altName: RouteHistoryService;`.
+// TypeScript declaration for the service
 declare module '@ember/service' {
   interface Registry {
     'route-history': RouteHistoryService;
