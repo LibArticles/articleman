@@ -2,7 +2,8 @@
 
 # upload it to cloudflare pages afterward using wrangler
 
-dist: jammy
+dist: focal
+virt: lxd
 arch:
   - arm64-graviton2
 language: node_js
