@@ -29,5 +29,5 @@ jobs:
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
         CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_PAGES_ACCOUNT_ID }}
-        CLOUDFLARE_PAGES_BRANCH: ${{ env.CF_PAGES_BRANCH }}
-        CLOUDFLARE_PAGES_NAME: ${{ env.CF_PAGES_NAME }}
+        CLOUDFLARE_PAGES_BRANCH: ${{ vars.CF_PAGES_BRANCH }}
+        CLOUDFLARE_PAGES_NAME: ${{ vars.CF_PAGES_NAME }}
