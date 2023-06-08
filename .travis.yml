@@ -2,22 +2,37 @@
 
 # upload it to cloudflare pages afterward using wrangler
 
+
+# use ubuntu 20.04
 dist: focal
+os: linux
+
+# use the new container based travis workers
 virt: lxd
+
+# use arm64 based travis workers
 arch:
   - arm64-graviton2
+
+# use latest stable nodejs release
 language: node_js
 node_js:
   - node
+
+# cache pnpm and corepack
 cache:
   npm: false
   directories:
     - "~/.pnpm-store"
     - "~/.cache/node/corepack"
+
+# pnpm install
 before_install:
   - corepack enable
   - corepack prepare pnpm@latest-8 --activate
   - pnpm config set store-dir ~/.pnpm-store
+
+# install, build and test
 install:
   - pnpm install
 script:
