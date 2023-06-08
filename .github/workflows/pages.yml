@@ -23,9 +23,9 @@ jobs:
     - name: Install dependencies
       run: pnpm install
     - name: Build for development
-      run: ./ci-build.sh
+      run: ./.ci-build.sh
     - name: Deploy to Pages
-      run: ./ci-deploy.sh
+      run: ./.ci-deploy.sh
       env:
         CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
         CLOUDFLARE_PAGES_ACCOUNT_ID: ${{ secrets.CF_PAGES_ACCOUNT_ID }}
