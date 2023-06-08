@@ -12,6 +12,7 @@ cache:
   npm: false
   directories:
     - "~/.pnpm-store"
+    - "~/.cache/node/corepack"
 before_install:
   - corepack enable
   - corepack prepare pnpm@latest-8 --activate
