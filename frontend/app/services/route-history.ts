@@ -1,11 +1,10 @@
 import Service from '@ember/service';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
-import RouteInfo from '@ember/routing/-private/route-info';
 
 interface RouteData {
   name: string;
-  userId?: string;
+  params: any;
   // Add any other data you want to save here
 }
 
@@ -20,12 +19,12 @@ export default class RouteHistoryService extends Service {
 
     this.router.on('routeDidChange', (transition) => {
       const currentRoute = transition.to.name;
-      const routeData: RouteData = { name: currentRoute };
+      const routeData: RouteData = { name: currentRoute,
+                                     params: {} };
       
-      // If the current route is a user route, save the user ID
-      if (currentRoute.startsWith('user/')) {
-        const userId = currentRoute.substring(5);
-        routeData.userId = userId;
+      // save the route's model
+      if(transition.to.params) {
+        routeData.params = transition.to.params;
       }
       
       this.routeHistory.push(routeData);
@@ -34,7 +33,8 @@ export default class RouteHistoryService extends Service {
 
   back() {
     this.router.transitionTo(
-      this.routeHistory[this.routeHistory.length - 2]!.name
+      this.routeHistory[this.routeHistory.length - 2]!.name,
+      this.routeHistory[this.routeHistory.length - 2]!.params
     );
     this.routeHistory.pop();
   }

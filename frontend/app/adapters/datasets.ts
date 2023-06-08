@@ -1,3 +1,5 @@
-import JSONAPIAdapter from '@ember-data/adapter/json-api';
+import Adapter from '@ember-data/adapter';
 
-export default class DatasetsAdapter extends JSONAPIAdapter {}
+export default class DatasetsAdapter extends Adapter {
+
+}

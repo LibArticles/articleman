@@ -1,0 +1,22 @@
+# pnpm install on node 18, switch to frontend/ and pnpm exec ember build
+
+# upload it to cloudflare pages afterward using wrangler
+
+dist: jammy
+language: node_js
+node_js:
+  - 18
+cache:
+  npm: false
+  directories:
+    - "~/.pnpm-store"
+before_install:
+  - corepack enable
+  - corepack prepare pnpm@latest-8 --activate
+  - pnpm config set store-dir ~/.pnpm-store
+install:
+  - pnpm install
+script:
+  - ./.ci-build.sh
+after_success: 
+  - ./.ci-deploy.sh
