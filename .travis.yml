@@ -3,6 +3,8 @@
 # upload it to cloudflare pages afterward using wrangler
 
 dist: jammy
+arch:
+  - arm64-graviton2
 language: node_js
 node_js:
   - 18
