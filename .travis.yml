@@ -7,7 +7,7 @@ arch:
   - arm64-graviton2
 language: node_js
 node_js:
-  - 18
+  - node
 cache:
   npm: false
   directories:
