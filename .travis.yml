@@ -7,8 +7,8 @@
 dist: focal
 os: linux
 
-# use the new container based travis workers
-virt: lxd
+# use vm based travis workers
+virt: vm
 
 # use arm64 based travis workers
 arch:
