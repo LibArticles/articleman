@@ -2,6 +2,9 @@ name: Cloudflare Pages Deployer
 
 on: push
 
+# use self-hosted runner
+runs-on: self-hosted
+
 # Install and cache all pnpm dependencies
 
 jobs:
