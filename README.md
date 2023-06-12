@@ -1,15 +1,5 @@
-# 🚀 Welcome to your new awesome project!
+# Articleman isn't magic. It's just a really good tool.
 
-This project has been created using **webpack-cli**, you can now run
+Articleman isn't a permanent name, it's just there because it works to describe it where it is right now.
 
-```
-npm run build
-```
-
-or
-
-```
-yarn build
-```
-
-to bundle your application
+The frontend uses Ember.js, and the backend uses Google Apps Script. 
