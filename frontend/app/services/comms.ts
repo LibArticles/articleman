@@ -1,6 +1,4 @@
-import Service from '@ember/service';
-import RSVP from 'rsvp';
-import { service } from '@ember/service';
+import Service, { service } from '@ember/service';
 import ErrorService from './error';
 import recognizedCommands from '../../../shared/recognized-commands.json'
 
@@ -13,7 +11,7 @@ export default class CommsService extends Service {
 
   // communicate with the backend
   command(action: string, payload: object | number | string | boolean | Array<any>) {
-    return new RSVP.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const commands = Object.keys(recognizedCommands);
 
       if (!commands.includes(action)) {
@@ -35,7 +33,7 @@ export default class CommsService extends Service {
   }
 
   heartbeat() {
-    return new RSVP.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const transactionID = this.generateTransactionId();
 
       function handleSuccess(result: any, receivedTransactionID: string) {

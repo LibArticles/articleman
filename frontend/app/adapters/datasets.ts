@@ -33,6 +33,22 @@ export default class DatasetsAdapter extends Adapter {
     })
   }
 
+  updateRecord<K extends string | number>(store: Store, type: ModelSchema<K>, snapshot: Snapshot<K>): RSVP.Promise<any> {
+    return new RSVP.Promise((resolve, reject) => {
+      this.comms.command(commands.updateItem, { item: snapshot.record }).then((result) => {
+        resolve(result);
+      });
+    })
+  }
+
+  deleteRecord<K extends string | number>(store: Store, type: ModelSchema<K>, snapshot: Snapshot<K>): RSVP.Promise<any> {
+    return new RSVP.Promise((resolve, reject) => {
+      this.comms.command(commands.deleteItem, { id: snapshot.id }).then((result) => {
+        resolve(result);
+      });
+    })
+  }
+
   shouldReloadRecord<K extends string | number>(store: Store, snapshot: Snapshot<K>): boolean {
     return true;
   }
