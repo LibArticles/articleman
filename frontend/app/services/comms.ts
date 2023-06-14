@@ -1,28 +1,66 @@
 import Service from '@ember/service';
 import RSVP from 'rsvp';
+import { service } from '@ember/service';
+import ErrorService from './error';
+import recognizedCommands from '../../../shared/recognized-commands.json'
 
 declare const google: any;
 
-interface Payload {
-  content: string | object | number | boolean | null;
-}
-
 export default class CommsService extends Service {
+  mode: "webapp" | "jsapi" = "jsapi";
+
+  @service error!: ErrorService;
+
   // communicate with the backend
-  send(action: string, payload: Payload) {
+  command(action: string, payload: object | number | string | boolean | Array<any>) {
     return new RSVP.Promise((resolve, reject) => {
-      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).send(action, payload);
+      const commands = Object.keys(recognizedCommands);
+
+      if (!commands.includes(action)) {
+        reject(new Error(this.error.type.developer.unrecognizedCommand));
+        return;
+      }
+
+      const transactionID = this.generateTransactionId();
+
+      function handleSuccess(result: any, receivedTransactionID: string) {
+        if (result.transactionID === transactionID && 
+            receivedTransactionID === transactionID) {
+          resolve(result);
+        }
+      }
+
+      google.script.run.withSuccessHandler(handleSuccess).withFailureHandler(reject).command(action, payload);
     });
   }
 
   heartbeat() {
     return new RSVP.Promise((resolve, reject) => {
-      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).heartbeat();
+      const transactionID = this.generateTransactionId();
+
+      function handleSuccess(result: any, receivedTransactionID: string) {
+        if (result.transactionID === transactionID && 
+            receivedTransactionID === transactionID) {
+          resolve(result);
+        }
+      }
+
+      google.script.run.withSuccessHandler(handleSuccess).withFailureHandler(reject).withUserObject(transactionID).heartbeat(transactionID);
+
     });
   }
 
   generateTransactionId() {
     return "transactionID-" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
+
+  handleError(error: Error) {
+    console.error(error);
+    function startsWith(str: string) {
+      return error.message.indexOf(str) === 0;
+    }
+
+    // TODO: handle errors using the error service
   }
 }
 
