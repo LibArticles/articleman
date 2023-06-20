@@ -30,8 +30,8 @@ function onInstall() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getSettings": () => (/* binding */ getSettings),
-/* harmony export */   "setSettings": () => (/* binding */ setSettings)
+/* harmony export */   getSettings: () => (/* binding */ getSettings),
+/* harmony export */   setSettings: () => (/* binding */ setSettings)
 /* harmony export */ });
 function getSettings() {
     return {
@@ -55,13 +55,13 @@ function setSettings(settings) {
 
 /***/ }),
 
-/***/ "./config.json":
-/*!*********************!*\
-  !*** ./config.json ***!
-  \*********************/
+/***/ "../shared/config.json":
+/*!*****************************!*\
+  !*** ../shared/config.json ***!
+  \*****************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-module.exports = JSON.parse('{"containerUrl":"https://articleman.bluelinden.art/"}');
+module.exports = JSON.parse('{"frontendUrl":"https://articleman.bluelinden.art/","containerUrl":"https://articleman.bluelinden.art/"}');
 
 /***/ })
 
@@ -141,7 +141,7 @@ var __webpack_exports__ = {};
   \**********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _comms_get_settings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./comms/get-settings.js */ "./src/comms/get-settings.ts");
-/* harmony import */ var _config_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config.json */ "./config.json");
+/* harmony import */ var _shared_config_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/config.json */ "../shared/config.json");
 
 
 // @ts-ignore
@@ -169,7 +169,7 @@ __webpack_require__.g.onSelectionChange = () => {
 };
 // @ts-ignore
 __webpack_require__.g.showSidebar = () => {
-    SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(_config_json__WEBPACK_IMPORTED_MODULE_1__.containerUrl)).setTitle('Articleman'));
+    SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutput(UrlFetchApp.fetch(_shared_config_json__WEBPACK_IMPORTED_MODULE_1__.containerUrl)).setTitle('Articleman'));
 };
 // @ts-ignore
 __webpack_require__.g.showHelp = () => {

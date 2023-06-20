@@ -23,9 +23,11 @@
   "type": "commonjs",
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.21.0",
+    "@types/node": "^20.3.1",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "banner-plugin": "^1.0.10",
+    "buffer": "^6.0.3",
     "eslint": "^8.37.0",
     "eslint-plugin-googleappsscript": "^1.0.4",
     "gas-webpack-plugin": "^2.4.0",
@@ -38,8 +40,8 @@
   "dependencies": {
     "@shelf/fast-chunk-string": "^3.0.0",
     "@types/google-apps-script": "^1.0.64",
+    "@valentech/sializer": "^0.3.7",
     "fs": "^0.0.1-security",
-    "sializer": "^0.2.0",
     "worktapper": "^1.1.1"
   },
   "private": true,

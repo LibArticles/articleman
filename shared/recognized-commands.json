@@ -1,12 +1,9 @@
 {
   "getEmail": "getEmail",
   "getUserDetails": "getUserDetails",
-  "getUsersList": "getUsersList",
-  "getAllItemsOfType": "getAllItemsOfType",
-  "getItem": "getItem",
-  "getItems": "getItems",
+  "getMatchingItem": "getMatchingItem",
+  "getMatchingItems": "getMatchingItems",
   "createItem": "createItem",
   "updateItem": "updateItem",
-  "deleteItem": "deleteItem",
-  "queryItems": "queryItems"
+  "deleteItem": "deleteItem"
 }

@@ -10,7 +10,7 @@ const progressHandler = (percentage, message, ...args) => {
 
 const isProduction = process.env.NODE_ENV == 'production';
 
-const { ProgressPlugin } = require('webpack');
+const { ProgressPlugin, ProvidePlugin } = require('webpack');
 
 const backEndConfig = {
   entry: './src/index.ts',
@@ -21,6 +21,9 @@ const backEndConfig = {
   plugins: [
       new GasPlugin(),
       new ProgressPlugin(progressHandler),
+      new ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      })
   ],
   module: {
       rules: [

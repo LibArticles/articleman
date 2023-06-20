@@ -9,7 +9,7 @@ export default class DataSetManager {
 
     const dataSets = await RawDataSetManager.getDataSets();
     dataSets.forEach((dataSet) => {
-      columns[dataSet.getRange().getSheet().getName()]
+      columns[dataSet.getRange().getSheet().getSheetId()]
       [dataSet.getName()
         .replace('AMDS_', '')] = dataSet.getRange();
     });

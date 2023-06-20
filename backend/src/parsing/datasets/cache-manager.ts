@@ -1,4 +1,4 @@
-import { sia, desia } from 'sializer';
+import { sia, desia } from '@valentech/sializer';
 import fastChunkString from '@shelf/fast-chunk-string';
 
 export default class CacheManager {
@@ -20,7 +20,7 @@ export default class CacheManager {
     cache.put('latestDigest', digest);
 
     // commit the object array to the 'latestObjectArray' key, splitting it up if longer than 100,000 characters
-    const objectArrayString = sia(objectArray);
+    const objectArrayString = sia(objectArray).toString();
 
     // split the string into an array of chunks in a quick way
     const chunks = fastChunkString(objectArrayString, {size:100000, unicodeAware: false});
@@ -73,7 +73,7 @@ export default class CacheManager {
     }
 
     // return the objectified version of the chunks, using sializer
-    return desia(chunks.join(''));
+    return desia(Buffer.from(chunks.join('')));
   }
 
 
