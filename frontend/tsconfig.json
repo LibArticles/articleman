@@ -17,6 +17,9 @@
       "frontend/*": [
         "app/*"
       ],
+      "shared/*": [
+        "../shared/*"
+      ],
       "*": [
         "types/*"
       ],
