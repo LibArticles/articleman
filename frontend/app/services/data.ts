@@ -1,7 +1,7 @@
 import Service from '@ember/service';
 import { service } from '@ember/service';
 import CommsService from './comms';
-import recognizedCommands from '../../../shared/recognized-commands.json'
+import recognizedCommands from 'shared/recognized-commands.json'
 
 export default class DataService extends Service {
   @service comms!: CommsService;

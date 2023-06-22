@@ -1,6 +1,6 @@
 import Service, { service } from '@ember/service';
 import ErrorService from './error';
-import recognizedCommands from '../../../shared/recognized-commands.json'
+import recognizedCommands from 'shared/recognized-commands.json'
 
 declare const google: any;
 

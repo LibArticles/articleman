@@ -20,7 +20,7 @@ export default class DataSetManager {
     // check if the cache is up to date
     if (await CacheManager.checkForChanges()) {
       // if it is, get the object array from the cache
-      return await CacheManager.getFromCache();
+      return CacheManager.getFromCache();
     } else {
       // if it isn't, create the object array from the spreadsheet and commit it to the cache
       const dataSets = await this.getColumns();
