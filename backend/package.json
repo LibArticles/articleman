@@ -40,8 +40,10 @@
   "dependencies": {
     "@shelf/fast-chunk-string": "^3.0.0",
     "@types/google-apps-script": "^1.0.64",
+    "@types/uuid": "^9.0.2",
     "@valentech/sializer": "^0.3.7",
     "fs": "^0.0.1-security",
+    "uuid": "^9.0.0",
     "worktapper": "^1.1.1"
   },
   "private": true,

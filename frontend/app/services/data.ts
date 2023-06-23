@@ -10,16 +10,16 @@ export default class DataService extends Service {
     return this.comms.command(recognizedCommands.getMatchingItem, { query: { id } });
   }
 
-  updateItem(data: object) {
-    return this.comms.command(recognizedCommands.updateItem, { data });
+  updateItem(id: string, data: object) {
+    return this.comms.command(recognizedCommands.updateItem, { query: id, data });
   }
 
-  createItem(data: object) {
-    return this.comms.command(recognizedCommands.createItem, { data });
+  createItem(id: string, data: object) {
+    return this.comms.command(recognizedCommands.createItem, { query: id, data });
   }
 
   deleteItem(id: string) {
-    return this.comms.command(recognizedCommands.deleteItem, { id });
+    return this.comms.command(recognizedCommands.deleteItem, { query: id });
   }
 
   getOldestMatchingItem(query: object) {
