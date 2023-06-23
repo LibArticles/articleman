@@ -22,3 +22,9 @@ export default class BackButtonComponent extends Component {
   }
 
 }
+
+<template>
+  <button type="button" class="nav-back" {{on 'click' this.back}}>
+    
+  </button>
+</template>

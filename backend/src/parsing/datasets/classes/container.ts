@@ -42,10 +42,10 @@ export default class AMContainer {
   constructor(input: containerConstructor) {
     this.caches = input.caches;
     this.spreadsheetID = input.spreadsheetID;
-    for (const groupID of Object.keys(data)) {
+    for (const groupID of Object.keys(input.data)) {
       const groupData = input.data[groupID];
 
-      this.groups[groupID] = new AMGroup(this, groupID, mappings[groupID], groupData);
+      this.groups[groupID] = new AMGroup(this, groupID, input.mappings[groupID], groupData);
     }
   }
   
