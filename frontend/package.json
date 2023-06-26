@@ -106,5 +106,8 @@
   },
   "ember": {
     "edition": "octane"
+  },
+  "dependencies": {
+    "@glint/environment-ember-template-imports": "^1.0.2"
   }
 }
