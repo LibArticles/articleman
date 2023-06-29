@@ -1,0 +1,19 @@
+# English internationalization entries
+chrome:
+  menu:
+    home: Home
+    system: System
+    settings: Settings
+    mywork: My Work
+    people: People
+  header: 
+    product: Articleman
+    product_short: AM
+    home: Home
+    system: System
+    settings: Settings
+    mywork: My Work
+    people: People
+
+meta:
+  product: Articleman

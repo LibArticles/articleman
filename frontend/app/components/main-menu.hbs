@@ -1,28 +1,28 @@
 <div class="footer">
   <LinkTo @route="index" class="button">
     {{svg-jar 'home' width="30px" class='icon'}}
-    <div class="text">Home</div>
+    <div class="text">{{t "chrome.menu.home"}}</div>
   </LinkTo>
   {{#if this.isAdmin}}
   <LinkTo @route="people" class="button">
     {{svg-jar 'people' width="30px" class='icon'}}
-    <div class="text">People</div>
+    <div class="text">{{t "chrome.menu.people"}}</div>
   </LinkTo>
   <LinkTo @route="settings" class="button">
     {{svg-jar 'settings' width="30px" class='icon'}}
-    <div class="text">Settings</div>
+    <div class="text">{{t "chrome.menu.settings"}}</div>
   </LinkTo>
   {{/if}}
   {{#if this.isWorker}}
   <LinkTo @route='work' class="button">
     {{svg-jar 'me' width="30px" class='icon'}}
-    <div class="text">My Work</div>
+    <div class="text">{{t "chrome.menu.mywork"}}</div>
   </LinkTo>
   {{/if}}
   {{#if this.isDebug}}
   <LinkTo @route="system" class="button">
     {{svg-jar 'debug' width="30px" class='icon'}}
-    <div class="text">System</div>
+    <div class="text">{{t "chrome.header.system"}}</div>
   </LinkTo>
   {{/if}}
 </div>

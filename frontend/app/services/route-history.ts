@@ -1,16 +1,12 @@
+// https://api.emberjs.com/ember/5.0/classes/RouterService/properties/currentURL?anchor=currentURL
+
 import Service from '@ember/service';
 import { service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
 
-interface RouteData {
-  name: string;
-  params: any;
-  // Add any other data you want to save here
-}
-
 export default class RouteHistoryService extends Service {
   @service router!: RouterService;
-  routeHistory: RouteData[] = [];
+  routeHistory: string[] = [];
 
   init() {
     super.init();
@@ -19,23 +15,23 @@ export default class RouteHistoryService extends Service {
 
     this.router.on('routeDidChange', (transition) => {
       const currentRoute = transition.to.name;
-      const routeData: RouteData = { name: currentRoute,
-                                     params: {} };
-      
-      // save the route's model
-      if(transition.to.params) {
-        routeData.params = transition.to.params;
-      }
+      const routeData = this.router.currentURL;
       
       this.routeHistory.push(routeData);
     });
   }
 
   back() {
-    this.router.transitionTo(
-      this.routeHistory[this.routeHistory.length - 2]!.name,
-      this.routeHistory[this.routeHistory.length - 2]!.params
-    );
+    if (this.routeHistory.length > 2) {
+      this.router.transitionTo(
+        this.routeHistory[this.routeHistory.length - 2]!
+      );
+    } else {
+      if (this.router.currentRoute.parent) {
+        // if there is no previous, go to the parent route
+        this.router.transitionTo(this.router.currentRoute.parent.name);
+      }
+    }
     this.routeHistory.pop();
   }
 
