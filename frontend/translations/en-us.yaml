@@ -9,11 +9,18 @@ chrome:
   header: 
     product: Articleman
     product_short: AM
-    home: Home
+    index: Home
     system: System
-    settings: Settings
-    mywork: My Work
+    settings:
+      index: Settings
+      datasets: Datasets
+    work:
+      me: My Work
+      user_no_s: "{name}'s Work"
+      user_s: "{name}' Work"
     people: People
+    
+missing: "!!!TRANSLATEME!!!"
 
 meta:
   product: Articleman

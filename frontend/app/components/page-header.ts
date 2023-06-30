@@ -3,12 +3,14 @@ import { inject as service } from '@ember/service';
 import RouterService from '@ember/routing/router-service';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import IntlService from 'ember-intl/services/intl';
 
 export default class HeaderComponent extends Component {
   @service router!: RouterService;
+  @service intl!: IntlService;
 
-  @tracked title: string = 'Articleman';
-  @tracked page: string = 'Home';
+  @tracked title: string = this.intl.t('chrome.header.product');
+  @tracked page: string = this.intl.t('chrome.header.index');
 
   constructor(owner: unknown, args: any) {
     super(owner, args);
@@ -19,43 +21,9 @@ export default class HeaderComponent extends Component {
     this.setPage();
   }
 
-  @action
-  setPage() {
+  @action setPage() {
     const currentRouteName = this.router.currentRouteName;
-    switch (currentRouteName) {
-      case 'index':
-        this.page = 'Home';
-        break;
-      case 'settings':
-        this.page = 'Settings';
-        break;
-      case 'system':
-        this.page = 'System';
-        break;
-      case 'license':
-        this.page = 'License';
-        break;
-      case 'people': 
-        this.page = 'People';
-        break;
-      case 'work':
-        this.page = 'Work';
-        break;
-      default:
-        this.page = 'Uhhh...';
-        break;
-    }
+    this.page = this.intl.t(`chrome.header.${currentRouteName}`);
     document.title = this.title + ' - ' + this.page;
-  }
-
-  @action
-  didInsert() {
-    this.setPage();
-  }
-
-  @action
-  willDestroy() {
-    super.willDestroy();
-
   }
 }
