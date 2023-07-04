@@ -1,5 +1,6 @@
 <div class="header">
-  <div class="title">{{this.title}}</div>
-  <div class="separator">&gt;</div>
+  {{#if this.needsBackButton}}
+    <BackButton />
+  {{/if}}
   <div class="page">{{this.page}}</div>
 </div>

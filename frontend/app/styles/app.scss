@@ -1,7 +1,16 @@
 // Main app styles, text and bg colors can be changed if you want.
+@use 'fx';
 
-$text-color: #5c3600;
-$bg-color: #fbd6a2;
+
+:root {
+  --bg-color: #fbd6a2;
+  --text-color: #5c3600;
+  --hl-color: #f2c78a;
+}
+
+$text-color: var(--text-color);
+$bg-color: var(--bg-color);
+$hl-color: var(--hl-color);
 
 * {
   font-family: Lexend, sans-serif;
@@ -21,24 +30,8 @@ body {
 
 .heading {
   font-family: 'Fraunces';
-  font-weight: 400;
+  font-weight: 600;
   font-variation-settings: 'opsz' 34, 'SOFT' 72, 'WONK' 1;
-}
-
-.loading-screen  {
-  width: 100vw;
-  height: 100vh;
-  background: #000;
-  position: absolute;
-  .logo {
-    width: 200px;
-    height: 200px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff;
-  }
 }
 
 .header {
@@ -49,8 +42,8 @@ body {
   text-align: left;
   width: 100%;
   display: flex;
-  align-items: start;
-  justify-content: start;
+  align-items: center;
+  justify-content: space-between;
   flex-direction: row;
   gap: 0.3em;
   padding: 0.8em;
@@ -59,17 +52,38 @@ body {
   top: 0;
   box-sizing: border-box;
 
-  * {
-    display: inline;
-  }
-  .title {
-    font-weight: 600;
-  }
-  .separator {
-    font-weight: 400;
+  .back-button {
+    position: absolute;
+    margin-left: 0;
+    button {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      align-items: center;
+      color: $text-color;
+      font-size: inherit;
+      background: $bg-color;
+      padding-top: 0;
+      padding-bottom: 0;
+      border: none;
+      height: 30px;
+      cursor: pointer;
+      .icon {
+        height: 24px;
+        width: auto;
+      }
+      .label {
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+    }
+    
   }
   .page {
-    font-weight: 400;
+    font-weight: 600;
+    vertical-align: middle;
+    text-align: center;
+    flex-grow: 1;
   }
 }
 
@@ -81,6 +95,36 @@ body {
   padding: 0.5em;
   flex: 1 0 auto;
   box-sizing: border-box;
+  .nav-button {
+    background: $hl-color;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    gap: 10px;
+    padding: 10px;
+    @include fx.pixel-corners-6;
+    color: $text-color;
+    text-decoration: none;
+    padding-right: 15px;
+    .icon {
+      height: 24px;
+      width: auto;
+    }
+    .label {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+    .arrow {
+      flex-grow: 1;
+      justify-content: end;
+      display: flex;
+      svg {
+        height: 24px;
+        width: auto;
+        transform: rotate(180deg);
+      }
+    }
+  }
 }
 
 .footer {
@@ -107,7 +151,7 @@ body {
     font-size: 0.9em;
     font-weight: 500;
     padding: 0.4em;
-    border-radius: 5px;
+    @include fx.pixel-corners-6;
     cursor: pointer;
     user-select: none;
     text-decoration: none;

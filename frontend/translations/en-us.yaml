@@ -19,7 +19,8 @@ chrome:
       user_no_s: "{name}'s Work"
       user_s: "{name}' Work"
     people: People
-    
+    back: Back
+
 missing: "!!!TRANSLATEME!!!"
 
 meta:

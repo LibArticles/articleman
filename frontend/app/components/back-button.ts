@@ -1,16 +1,22 @@
 import Component from '@glimmer/component';
 import { service } from '@ember/service';
-import type RouterHistoryService from 'frontend/services/route-history';
+import { tracked } from '@glimmer/tracking'
+import type RouteHistoryService from 'frontend/services/route-history';
 import { action } from '@ember/object';
-import RouterService from '@ember/routing/router-service';
+import { EmptyObject } from '@glimmer/component/-private/component';
+
 
 export default class BackButtonComponent extends Component {
-  @service routerHistory!: RouterHistoryService;
-  @service router!: RouterService;
+  @service routeHistory!: RouteHistoryService;
 
-  @action
-  back() {
-    this.routerHistory.back();
+  constructor(owner: unknown, args: EmptyObject) {
+    super(owner, args);
+  }
+
+
+
+  @action back() {
+    this.routeHistory.back();
   }
 
 }

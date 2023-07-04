@@ -8,31 +8,21 @@ export default class RouteHistoryService extends Service {
   @service router!: RouterService;
   routeHistory: string[] = [];
 
-  init() {
-    super.init();
-
-    
-
-    this.router.on('routeDidChange', (transition) => {
-      const currentRoute = transition.to.name;
-      const routeData = this.router.currentURL;
-      
-      this.routeHistory.push(routeData);
-    });
-  }
 
   back() {
     if (this.routeHistory.length > 2) {
+      this.routeHistory.pop();
       this.router.transitionTo(
-        this.routeHistory[this.routeHistory.length - 2]!
+        this.routeHistory[this.routeHistory.length - 1]!
       );
     } else {
       if (this.router.currentRoute.parent) {
+        this.routeHistory.pop();
         // if there is no previous, go to the parent route
         this.router.transitionTo(this.router.currentRoute.parent.name);
       }
     }
-    this.routeHistory.pop();
+    
   }
 
   get previousRoute() {

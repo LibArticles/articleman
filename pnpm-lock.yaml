@@ -118,6 +118,9 @@ importers:
       '@embroider/webpack':
         specifier: ^3.0.0
         version: 3.0.0(@embroider/core@3.0.2)(webpack@5.88.1)
+      '@gavant/glint-template-types':
+        specifier: ^0.3.4
+        version: 0.3.4
       '@glimmer/component':
         specifier: ^1.1.2
         version: 1.1.2(@babel/core@7.22.5)
@@ -2704,6 +2707,10 @@ packages:
       intl-messageformat: 10.5.0
       tslib: 2.6.0
       typescript: 5.1.6
+    dev: true
+
+  /@gavant/glint-template-types@0.3.4:
+    resolution: {integrity: sha512-PlHcqp9QbFa8/fszVHeSssS6W4VgYZmynjdLGoNy5pjw/COLSOVhGQJu4YuEcY7bGfJrPactzk3JMAuEcVd90g==}
     dev: true
 
   /@glimmer/component@1.1.2(@babel/core@7.22.5):

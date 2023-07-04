@@ -1,6 +1,7 @@
-<LinkTo @route="{{@route}}" class="button">
+<LinkTo @route="{{@route}}" class="button nav-button">
   {{svg-jar @icon class='icon'}}
-  <button type="button">
-    {{@label}}
-  </button>
+  <div class="label">{{@label}}</div>
+  <div class="arrow">
+    {{svg-jar "arrow"}}
+  </div>
 </LinkTo>
