@@ -7,9 +7,9 @@ import AMObject from "./object";
   # ArticleManContainer
   The AMContainer class is the container for every bit of data contained within Articleman's DataSet managemenet system.
 
-  Links are stored in the AMGroup class, as that makes them nice and global and avoids the need to store them in the AMObject class. The object knows the ID of the link, and that's it.
+  Links are stored in the AMGroup class, as that makes them nice and global and avoids the need to store them in the AMObject class. The object knows the ID of the link, and that's it. THe object can just get 
 
-  Caches are just cached lookups 
+  
 */
 
 export default class AMContainer {
@@ -19,8 +19,6 @@ export default class AMContainer {
 
   links: Record<string, Array<string>>;
 
-  caches: Record<string, Record<string, {group: string, index: number}>> = {};
-
   async getByID(id: string) {
     for (const group of Object.values(this.groups)) {
       const object = group.getByID(id);
@@ -28,7 +26,8 @@ export default class AMContainer {
         return object;
       }
     }
-  }
+  };
+
 
   // link two or more objects to each other
   async linkObjects(...objects: Array<AMObject>) {
@@ -51,6 +50,22 @@ export default class AMContainer {
     return linkID;
   }
 
+  async modifyLink(linkID: string, objects: AMObject[]) {
+    
+  }
+
+  async deleteLink(linkID: string) {
+    for (const objectID of this.links[linkID]) {
+      this.getByID(objectID).then(
+        (object: AMObject) => {
+          delete object.links[linkID];
+        }
+      )
+    }
+    delete this.links[linkID];
+  }
+
+
   // turn all stored data into a JSON object
   crystallize() {
     const groups: Record<string, any> = {};
@@ -58,23 +73,33 @@ export default class AMContainer {
       groups[groupID] = this.groups[groupID].crystallize();
     }
     return groups;
-  }
+  };
   
   // take a container constructor and return a new container
   constructor(input: containerConstructor) {
-    this.caches = input.caches;
     this.spreadsheetID = input.spreadsheetID;
     for (const groupID of Object.keys(input.data)) {
       const groupData = input.data[groupID];
 
       this.groups[groupID] = new AMGroup({ container: this, id: groupID, mappings: input.mappings[groupID], objects: groupData });
     }
+    for (const linkID of Object.keys(input.links)) {
+      const objects: AMObject[] = [];
+      // get the objects by ID and link them
+      for (const objectID of input.links[linkID]) {
+        this.getByID(objectID).then(
+          (object: AMObject) => {
+            objects.push(object);
+          }
+        )
+      }
+      this.linkObjects(...objects);
+    }
   }
   
 }
 
 interface containerConstructor {
-  caches: Record<string, Record<string, {group: string, index: number}>>,
   mappings: Record<string, Record<string, string>>, 
   links: Record<string, Array<string>>,
   spreadsheetID: string, 

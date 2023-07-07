@@ -24,11 +24,15 @@ export default class AMObject {
     this.attributes = attributes;
   }
 
+
   linkObjects(...objects: Array<AMObject>) {
-    const linkID = uuidv4();
-    this.links[linkID] = [];
     this.group.container.linkObjects(this, ...objects);
   }
+
+  deleteLink(linkID: string) {
+    this.group.container.deleteLink(linkID);
+  }
+
 
   // turn all stored data into a JSON object
   crystallize() {
