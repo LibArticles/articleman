@@ -1,10 +1,12 @@
+// Surgical Engine: NamedRange backend
+
 type ColumnDefinition = {
   identifier: string;
   range: GoogleAppsScript.Spreadsheet.Range;
   dataType: 'id' | 'any';
 };
 
-export default class ObjectManager {
+export default class ColumnBackend {
   spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
   data: Record<number, 
     Record<string, {
