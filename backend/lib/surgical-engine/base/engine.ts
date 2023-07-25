@@ -51,15 +51,15 @@ export interface SurgicalChangeset {
         attributes?: Record<string, any>;
         isDefinitive?: boolean;
         type: 'append' | 'ingest';
-        position?: {offset: number} | {range: string};
-        sheetName?: number;
+        position?: PositionTypeRangeOrOffset;
+        sheetName?: string;
       }
     },
 
     attributes?: {
       [id: string]: {
         type: 'append' | 'ingest' | 'hidden';
-        position?: {offset: number} | {range: string};
+        position?: PositionTypeRangeOrOffset;
         sheetName?: string;
       }
     },
@@ -69,14 +69,13 @@ export interface SurgicalChangeset {
       [id: string]: {
         attributes?: Record<string, any>;
         isDefinitive?: boolean;
-        position?: {offset?: number,
-                    range?: string};
+        position?: {offset: number};
       }; 
     },
 
     attributes?: {
       [id: string]: {
-        position?: Record<'offset' | 'position', number | string>;
+        position?: {offset: number};
       };
       
     }
@@ -93,6 +92,11 @@ export interface SurgicalChangeset {
     }>;
   }
 }
+
+interface PositionTypeRangeOrOffset {
+  range?: string;
+  offset?: number;
+};
 
 
 // used to check for compatibility when switching backends
@@ -119,16 +123,12 @@ export enum SupportedLayout {
 export interface SurgicalObject {
   attributes: Record<string, any>;
   id: string;
-  modify: (attributes: Record<string, any>) => SurgicalObject;
-  remove: () => void;
 }
 
 export interface SurgicalAttribute {
   data: Record<string, any>;
   ordered: string[];
   id: string;
-  modify: (attributes: Record<string, any>) => SurgicalAttribute;
-  remove: () => void;
 }
 
 export type SurgicalQuery = 
@@ -142,3 +142,12 @@ export type SurgicalQuery =
       }
     }>;
   }>;
+
+// export const EngineError = {
+//   SurgicalEngine: {
+//     Generic: 'ErrorNotImplementedYet',
+//     ModuleLoading: {
+//       CouldNotEval: ''
+//     }
+//   }
+// }

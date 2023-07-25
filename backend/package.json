@@ -28,7 +28,7 @@
     "@typescript-eslint/parser": "^5.59.0",
     "banner-plugin": "^1.0.10",
     "buffer": "^6.0.3",
-    "eslint": "^8.37.0",
+    "eslint": "^8.41.0",
     "eslint-plugin-googleappsscript": "^1.0.4",
     "gas-webpack-plugin": "^2.4.0",
     "prettier": "^2.8.7",
@@ -42,6 +42,7 @@
     "@types/google-apps-script": "^1.0.64",
     "@types/uuid": "^9.0.2",
     "@valentech/sializer": "^0.3.7",
+    "eslint-plugin-jsdoc": "^46.4.4",
     "fs": "^0.0.1-security",
     "uuid": "^9.0.0",
     "worktapper": "^1.1.1"
