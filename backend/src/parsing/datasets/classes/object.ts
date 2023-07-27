@@ -1,5 +1,5 @@
-import AMGroup from "./group";
-import { v4 as uuidv4 } from "uuid";
+import AMGroup from './group';
+import { v4 as uuidv4 } from 'uuid';
 
 /*
   # ArticleManObject
@@ -13,39 +13,45 @@ import { v4 as uuidv4 } from "uuid";
 */
 
 export default class AMObject {
-  attributes: Record<string, any>;
-  links: Record<string, Array<string>> = {};
-  group: AMGroup;
-  id: string;
+	attributes: Record<string, any>;
+	links: Record<string, Array<string>> = {};
+	group: AMGroup;
+	id: string;
 
-  constructor({ group, id, attributes }: { group: AMGroup; id: string; attributes: Record<string, any>; }) {
-    this.group = group;
-    this.id = id;
-    this.attributes = attributes;
-  }
+	constructor({
+		group,
+		id,
+		attributes,
+	}: {
+		group: AMGroup;
+		id: string;
+		attributes: Record<string, any>;
+	}) {
+		this.group = group;
+		this.id = id;
+		this.attributes = attributes;
+	}
 
+	linkObjects(...objects: Array<AMObject>) {
+		this.group.container.linkObjects(this, ...objects);
+	}
 
-  linkObjects(...objects: Array<AMObject>) {
-    this.group.container.linkObjects(this, ...objects);
-  }
+	deleteLink(linkID: string) {
+		this.group.container.deleteLink(linkID);
+	}
 
-  deleteLink(linkID: string) {
-    this.group.container.deleteLink(linkID);
-  }
+	// turn all stored data into a JSON object
+	crystallize() {
+		const data: Record<string, any> = {};
+		for (const attribute of Object.keys(this.attributes)) {
+			// the links are already stored in the container, it's just extra bloat to have them here. therefore we toss 'em when we crystallize. YOLO.
+			data[attribute] = this.attributes[attribute];
+			data.id = this.id;
+		}
+		return data;
+	}
 
-
-  // turn all stored data into a JSON object
-  crystallize() {
-    const data: Record<string, any> = {};
-    for (const attribute of Object.keys(this.attributes)) {
-      // the links are already stored in the container, it's just extra bloat to have them here. therefore we toss 'em when we crystallize. YOLO.
-      data[attribute] = this.attributes[attribute];
-      data.id = this.id;
-    }
-    return data;
-  }
-
-  getAttribute(attribute: string) {
-    return this.attributes[this.group.mappings[attribute]];
-  }
+	getAttribute(attribute: string) {
+		return this.attributes[this.group.mappings[attribute]];
+	}
 }

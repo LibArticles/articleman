@@ -8,140 +8,138 @@
 */
 
 export interface SurgicalBackend<ExtenderClass> {
-  // setting up the engine for first time use
-  initializeEngine: (sheet: GoogleAppsScript.Spreadsheet.Spreadsheet) => ExtenderClass;
+	// setting up the engine for first time use
+	initializeEngine: (
+		sheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
+	) => ExtenderClass;
 
-  // letting the engine set up an individual sheet, like modifying ranges or rows and columns
-  initializeSheet: (sheet: GoogleAppsScript.Spreadsheet.Sheet) => ExtenderClass;
+	// letting the engine set up an individual sheet, like modifying ranges or rows and columns
+	initializeSheet: (sheet: GoogleAppsScript.Spreadsheet.Sheet) => ExtenderClass;
 
-  // put data into the engine, in the form of descriptions of what IDs go where.
-  loadTemplate: (template: SurgicalTemplate) => ExtenderClass;
+	// put data into the engine, in the form of descriptions of what IDs go where.
+	loadTemplate: (template: SurgicalTemplate) => ExtenderClass;
 
-  // get all data by an object id
-  getObject: (id: string) => SurgicalObject;
+	// get all data by an object id
+	getObject: (id: string) => SurgicalObject;
 
-  runQuery: (query: SurgicalQuery | SurgicalObject[]) => SurgicalObject[];
+	runQuery: (query: SurgicalQuery | SurgicalObject[]) => SurgicalObject[];
 
-  applyChangeset: (changes: SurgicalChangeset) => ExtenderClass;
+	applyChangeset: (changes: SurgicalChangeset) => ExtenderClass;
 
-  supportedLayouts: (SupportedLayout)[];
+	supportedLayouts: SupportedLayout[];
 }
 
 export interface SurgicalTemplate {
-  // the key is the ID and the value is the range.
-  objects: Record<string, string>;
-  attributes: Record<string, string>;
+	// the key is the ID and the value is the range.
+	objects: Record<string, string>;
+	attributes: Record<string, string>;
 
-  // is this template supposed to override all other data?
-  isDefinitive: boolean;
+	// is this template supposed to override all other data?
+	isDefinitive: boolean;
 
-  sheetLayouts: Record<string, 'vertical' | 'horizontal'>;
+	sheetLayouts: Record<string, 'vertical' | 'horizontal'>;
 
-  ignoredAreas: {
-    headers: string[];
-    generalAreas: string[];
-  }
+	ignoredAreas: {
+		headers: string[];
+		generalAreas: string[];
+	};
 }
 
 export interface SurgicalChangeset {
-  create?: {
-    objects?: {
+	create?: {
+		objects?: {
+			[id: string]: {
+				attributes?: Record<string, any>;
+				isDefinitive?: boolean;
+				type: 'append' | 'ingest';
+				position?: PositionTypeRangeOrOffset;
+				sheetName?: string;
+			};
+		};
 
-      [id: string]: {
-        attributes?: Record<string, any>;
-        isDefinitive?: boolean;
-        type: 'append' | 'ingest';
-        position?: PositionTypeRangeOrOffset;
-        sheetName?: string;
-      }
-    },
+		attributes?: {
+			[id: string]: {
+				type: 'append' | 'ingest' | 'hidden';
+				position?: PositionTypeRangeOrOffset;
+				sheetName?: string;
+			};
+		};
+	};
+	update?: {
+		objects?: {
+			[id: string]: {
+				attributes?: Record<string, any>;
+				isDefinitive?: boolean;
+				position?: { offset: number };
+			};
+		};
 
-    attributes?: {
-      [id: string]: {
-        type: 'append' | 'ingest' | 'hidden';
-        position?: PositionTypeRangeOrOffset;
-        sheetName?: string;
-      }
-    },
-  }
-  update?: {
-    objects?: {
-      [id: string]: {
-        attributes?: Record<string, any>;
-        isDefinitive?: boolean;
-        position?: {offset: number};
-      }; 
-    },
+		attributes?: {
+			[id: string]: {
+				position?: { offset: number };
+			};
+		};
+	};
 
-    attributes?: {
-      [id: string]: {
-        position?: {offset: number};
-      };
-      
-    }
-  }
-
-  delete?: {
-    objects?: Array<{
-      id: string;
-      type: 'splice' | 'ignore' | 'hide' | 'mask';
-    }>;
-    attributes?: Array<{
-      id: string;
-      type: 'splice' | 'ignore' | 'hide' | 'mask';
-    }>;
-  }
+	delete?: {
+		objects?: Array<{
+			id: string;
+			type: 'splice' | 'ignore' | 'hide' | 'mask';
+		}>;
+		attributes?: Array<{
+			id: string;
+			type: 'splice' | 'ignore' | 'hide' | 'mask';
+		}>;
+	};
 }
 
 interface PositionTypeRangeOrOffset {
-  range?: string;
-  offset?: number;
-};
-
+	range?: string;
+	offset?: number;
+}
 
 // used to check for compatibility when switching backends
 export enum SupportedLayout {
-  // can objects be stored as rows?
-  horizontalObjects = 'horizontal-objects',
+	// can objects be stored as rows?
+	horizontalObjects = 'horizontal-objects',
 
-  // can objects be stored as columns?
-  verticalObjects = 'vertical-objects',
+	// can objects be stored as columns?
+	verticalObjects = 'vertical-objects',
 
-  // can rows be marked as headers and be permanently ignored?
-  headerRows = 'header-rows',
+	// can rows be marked as headers and be permanently ignored?
+	headerRows = 'header-rows',
 
-  // can columns be marked as headers and be permanently ignored?
-  headerColumns = 'header-columns',
+	// can columns be marked as headers and be permanently ignored?
+	headerColumns = 'header-columns',
 
-  // multisheet support
-  multisheet = 'multisheet',
+	// multisheet support
+	multisheet = 'multisheet',
 
-  // side-by-side object support (can multiple object groups be stored in a single sheet?)
-  sideBySide = 'side-by-side',
+	// side-by-side object support (can multiple object groups be stored in a single sheet?)
+	sideBySide = 'side-by-side',
 }
 
 export interface SurgicalObject {
-  attributes: Record<string, any>;
-  id: string;
+	attributes: Record<string, any>;
+	id: string;
 }
 
 export interface SurgicalAttribute {
-  data: Record<string, any>;
-  ordered: string[];
-  id: string;
+	data: Record<string, any>;
+	ordered: string[];
+	id: string;
 }
 
-export type SurgicalQuery = 
-  Array<{
-    filters: Array<{
-      searchType: 'contains' | 'equals',
-      mandatory: boolean,
-      polarity: boolean,
-      query: {
-        [attributeId: string]: string | number | boolean;
-      }
-    }>;
-  }>;
+export type SurgicalQuery = Array<{
+	filters: Array<{
+		searchType: 'contains' | 'equals';
+		mandatory: boolean;
+		polarity: boolean;
+		query: {
+			[attributeId: string]: string | number | boolean;
+		};
+	}>;
+}>;
 
 // export const EngineError = {
 //   SurgicalEngine: {

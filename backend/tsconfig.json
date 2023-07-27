@@ -1,15 +1,21 @@
 {
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "moduleResolution": "nodenext",
-    "noImplicitAny": true,
-    "module": "es2022",
-    "target": "es2018",
-    "allowJs": false,
-    "allowArbitraryExtensions": true,
-    "resolveJsonModule": true,
-  },
-  "include": ["src/**/*", "lib/**/*", "node_modules/@types", "types", "eslint.config.js"],
-  "exclude": ["node_modules", "dist"],
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"moduleResolution": "nodenext",
+		"noImplicitAny": true,
+		"module": "es2022",
+		"target": "es2018",
+		"allowJs": false,
+		"allowArbitraryExtensions": true,
+		"resolveJsonModule": true
+	},
+	"include": [
+		"src/**/*",
+		"lib/**/*",
+		"node_modules/@types",
+		"types",
+		"eslint.config.js"
+	],
+	"exclude": ["node_modules", "dist"]
 }

@@ -9,9 +9,9 @@ import {
 	SurgicalChangeset,
 	SurgicalObject,
 	SurgicalTemplate,
-} from "../base/engine.js";
+} from '../base/engine.js';
 
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
@@ -32,21 +32,21 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			const range = this.spreadsheet.getRange(template.objects[id]);
 			this.spreadsheet.setNamedRange(
 				`SURGICAL_ENGINE_MATRIX_OBJECT_${id}`,
-				range
+				range,
 			);
 		}
 		for (const attr in template.attributes) {
 			const range = this.spreadsheet.getRange(template.objects[attr]);
 			this.spreadsheet.setNamedRange(
 				`SURGICAL_ENGINE_MATRIX_ATTRIBUTE_${attr}`,
-				range
+				range,
 			);
 		}
 		for (const sheetName in Object.keys(template.sheetLayouts)) {
 			const sheet = this.spreadsheet.getSheetByName(sheetName);
 			sheet.addDeveloperMetadata(
-				"SURGICAL_ENGINE_MATRIX_LAYOUT",
-				template.sheetLayouts[sheetName]
+				'SURGICAL_ENGINE_MATRIX_LAYOUT',
+				template.sheetLayouts[sheetName],
 			);
 		}
 
@@ -54,19 +54,13 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			const id = uuidv4();
 			const range = this.spreadsheet.getRange(header);
 			const sheet = this.spreadsheet;
-			sheet.setNamedRange(
-				`SURGICAL_ENGINE_MATRIX_IGNORE_HEADER_${id}`,
-				range
-			);
+			sheet.setNamedRange(`SURGICAL_ENGINE_MATRIX_IGNORE_HEADER_${id}`, range);
 		}
 		for (const general in template.ignoredAreas.generalAreas) {
 			const id = uuidv4();
 			const range = this.spreadsheet.getRange(general);
 			const sheet = this.spreadsheet;
-			sheet.setNamedRange(
-				`SURGICAL_ENGINE_MATRIX_IGNORE_GENERAL_${id}`,
-				range
-			);
+			sheet.setNamedRange(`SURGICAL_ENGINE_MATRIX_IGNORE_GENERAL_${id}`, range);
 		}
 
 		return this;
@@ -74,7 +68,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
 	getObject(id: string) {
 		const objectNamedRange = this.spreadsheet.getRangeByName(
-			`SURGICAL_ENGINE_MATRIX_OBJECT_${id}`
+			`SURGICAL_ENGINE_MATRIX_OBJECT_${id}`,
 		);
 		const sheet = objectNamedRange.getSheet();
 
@@ -89,9 +83,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		const object: Record<string, any> = {};
 
 		for (const attribute in attributes) {
-			const attrRange = this.spreadsheet.getRangeByName(
-				attributes[attribute]
-			);
+			const attrRange = this.spreadsheet.getRangeByName(attributes[attribute]);
 
 			// intersect the objevtNamedRange with each attribute range and get the value, then put it into the object
 
@@ -114,38 +106,38 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			if (currentChangeset.position.range) {
 				this.ingestNewRangeByNotation(
 					currentChangeset.position.range,
-					"ATTRIBUTE",
-					newAttribute
+					'ATTRIBUTE',
+					newAttribute,
 				);
 
 				// otherwise add it at the specified offset from the end.
 			} else if (currentChangeset.sheetName !== undefined) {
 				const currentSheet = this.spreadsheet.getSheetByName(
-					currentChangeset.sheetName
+					currentChangeset.sheetName,
 				);
 
 				const developerMetadata = currentSheet.getDeveloperMetadata();
 
 				// get the layout of the sheet
 				const layout = developerMetadata
-					.find((m) => m.getKey() === "SURGICAL_ENGINE_MATRIX_LAYOUT")
+					.find((m) => m.getKey() === 'SURGICAL_ENGINE_MATRIX_LAYOUT')
 					.getValue();
 
 				// TODO: throw errors if layout is not found or is incompatible
-				if (!(layout === "vertical" || layout === "horizontal")) return;
+				if (!(layout === 'vertical' || layout === 'horizontal')) return;
 
 				switch (currentChangeset.type) {
-					case "ingest":
+					case 'ingest':
 						this.ingestNewRangeByOffset(
 							currentSheet,
-							"ATTRIBUTE",
+							'ATTRIBUTE',
 							layout,
 							currentChangeset.position.offset,
-							newAttribute
+							newAttribute,
 						);
-					case "append":
+					case 'append':
 						switch (layout) {
-							case "vertical":
+							case 'vertical':
 						}
 				}
 			}
@@ -155,11 +147,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			const currentChangeset = changeset.create.objects[newObject];
 			if (currentChangeset.sheetName !== undefined) {
 				const currentSheet = this.spreadsheet.getSheetByName(
-					currentChangeset.sheetName
+					currentChangeset.sheetName,
 				);
 				const developerMetadata = currentSheet.getDeveloperMetadata();
 				const layout = developerMetadata
-					.find((m) => m.getKey() === "SURGICAL_ENGINE_MATRIX_LAYOUT")
+					.find((m) => m.getKey() === 'SURGICAL_ENGINE_MATRIX_LAYOUT')
 					.getValue();
 			}
 		}
@@ -169,76 +161,70 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
 	private ingestNewRangeByNotation(
 		rangeStr: string,
-		type: "ATTRIBUTE" | "OBJECT",
-		name: string
+		type: 'ATTRIBUTE' | 'OBJECT',
+		name: string,
 	) {
 		const range = this.spreadsheet.getRange(rangeStr);
 
 		this.spreadsheet.setNamedRange(
 			`SURGICAL_ENGINE_MATRIX_${type}_${name}`,
-			range
+			range,
 		);
 	}
 
 	private ingestNewRangeByOffset(
 		sheet: GoogleAppsScript.Spreadsheet.Sheet,
-		type: "ATTRIBUTE" | "OBJECT",
-		layout: "vertical" | "horizontal",
+		type: 'ATTRIBUTE' | 'OBJECT',
+		layout: 'vertical' | 'horizontal',
 		offset: number,
-		name: string
+		name: string,
 	) {
 		switch (layout) {
 			// if the layout of the sheet uses columns for objects and rows for attributes
-			case "vertical":
+			case 'vertical':
 				const vRange = this.spreadsheet.getLastColumn() + offset + 1;
 				this.spreadsheet.setNamedRange(
 					`SURGICAL_ENGINE_MATRIX_${type}_${name}`,
-					sheet.getRange(vRange, 1, 1, sheet.getLastColumn())
+					sheet.getRange(vRange, 1, 1, sheet.getLastColumn()),
 				);
 				break;
 
 			// if the layout of the sheet uses rows for objects and columns for attributes
-			case "horizontal":
+			case 'horizontal':
 				const hRange = this.spreadsheet.getLastRow() + offset + 1;
 				this.spreadsheet.setNamedRange(
 					`SURGICAL_ENGINE_MATRIX_${type}_${name}`,
-					sheet.getRange(1, hRange, sheet.getLastRow(), 1)
+					sheet.getRange(1, hRange, sheet.getLastRow(), 1),
 				);
 		}
 	}
 
 	getEmptySpace(
 		sheet: GoogleAppsScript.Spreadsheet.Sheet,
-		layout: "vertical" | "horizontal",
-		tactic: "first-available" | "after-content-end" | "last-available",
-		allowAppend: boolean
+		layout: 'vertical' | 'horizontal',
+		tactic: 'first-available' | 'after-content-end' | 'last-available',
+		allowAppend: boolean,
 	) {}
 
 	isRangeIgnored(
 		sheet: GoogleAppsScript.Spreadsheet.Sheet,
-		range: GoogleAppsScript.Spreadsheet.Range
+		range: GoogleAppsScript.Spreadsheet.Range,
 	) {
 		sheet
 			.getNamedRanges()
 			.filter(
 				// filter out any named ranges that don't start with SURGICAL_ENGINE_MATRIX_IGNORE
 				(namedRange: GoogleAppsScript.Spreadsheet.NamedRange) => {
-					namedRange
-						.getName()
-						.startsWith(`SURGICAL_ENGINE_MATRIX_IGNORE_`);
-				}
+					namedRange.getName().startsWith(`SURGICAL_ENGINE_MATRIX_IGNORE_`);
+				},
 			)
 
 			// if the named range and the range are identical
 			.forEach((ignoreZone: GoogleAppsScript.Spreadsheet.NamedRange) => {
-				if (
-					ignoreZone.getRange().getA1Notation() ===
-					range.getA1Notation()
-				)
+				if (ignoreZone.getRange().getA1Notation() === range.getA1Notation())
 					return true;
 
 				// check if the range is contained in an ignore zone.
-
 
 				// Get the bounds of each range
 				const rangeStartRow = range.getRow();
@@ -253,7 +239,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				const ignoreZoneEndCol =
 					ignoreZoneStartCol + ignoreZone.getRange().getWidth() - 1;
 
-				// Check if range is completely within ignore zone 
+				// Check if range is completely within ignore zone
 				if (
 					rangeStartRow >= ignoreZoneStartRow &&
 					rangeEndRow <= ignoreZoneEndRow &&
@@ -262,10 +248,9 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				) {
 					return true;
 				} else {
-				  return false;
-        }
+					return false;
+				}
 			});
-
 	}
 
 	supportedLayouts = [
