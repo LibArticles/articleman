@@ -6,10 +6,10 @@
     "noImplicitAny": true,
     "module": "es2022",
     "target": "es2018",
-    "allowJs": true,
+    "allowJs": false,
     "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
   },
-  "include": ["src/**/*", "lib/**/*", "node_modules/@types", "types"],
-  "exclude": ["node_modules", "dist", "src/frontend"],
+  "include": ["src/**/*", "lib/**/*", "node_modules/@types", "types", "eslint.config.js"],
+  "exclude": ["node_modules", "dist"],
 }

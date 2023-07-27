@@ -1,40 +1,31 @@
-module.exports = {
-  'env': {
-    'browser': true,
-    'es2021': true,
+import tsdoc from 'eslint-plugin-tsdoc';
+import ts from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+
+export default {
+  ignores: ['dist/', 'node_modules/'],
+  languageOptions: {
+    parser: tsParser,
+    parserOptions: {
+      ecmaFeatures: { modules: true },
+      ecmaVersion: 'latest',
+      project: './tsconfig.json',
+    },
   },
-  'extends': [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:eslint-plugin-jsdoc/recommended-typescript',
-  ],
-  'overrides': [
-  ],
-  'ignorePatterns': ['dist/', 'node_modules/', '.eslintrc.cjs'],
-  'parser': '@typescript-eslint/parser',
-  'parserOptions': {
-    'ecmaVersion': 'latest',
-    'sourceType': 'module',
-    'project': ['./tsconfig.json'],
-  },
-  'plugins': [
-    '@typescript-eslint',
-    'jsdoc',
-    'googleappsscript'
-    ],
-  'env': {
-    "googleappsscript/googleappsscript": true
-  },
-  'rules': {
+
+  plugins: { tsdoc, '@typescript-eslint': ts, tsParser },
+  rules: {
+    ...ts.configs['eslint-recommended'].rules,
+    ...ts.configs.recommended.rules,
     'no-await-in-loop': 'error',
     'no-unreachable-loop': 'error',
     'no-use-before-define': 'error',
     'arrow-body-style': 'error',
     'class-methods-use-this': 'error',
-    'curly': 'error',
+    curly: 'error',
     'default-case': 'error',
     '@typescript-eslint/dot-notation': 'error',
-    'eqeqeq': 'error',
+    eqeqeq: 'error',
     'new-cap': 'error',
     'no-empty-function': 'error',
     'no-eval': 'error',
@@ -54,7 +45,7 @@ module.exports = {
     'prefer-const': 'warn',
     'prefer-promise-reject-errors': 'error',
     'spaced-comment': 'error',
-    'yoda': 'error',
+    yoda: 'error',
     // ts
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-unused-vars': 'error',
@@ -72,18 +63,19 @@ module.exports = {
     '@typescript-eslint/comma-spacing': 'warn',
     'comma-style': 'warn',
     'eol-last': ['warn', 'always'],
-    '@typescript-eslint/indent': ['warn', 2, { 'SwitchCase': 1 }],
+    '@typescript-eslint/indent': ['warn', 2, { SwitchCase: 1 }],
     '@typescript-eslint/key-spacing': 'warn',
     '@typescript-eslint/keyword-spacing': 'warn',
     'linebreak-style': ['warn', 'unix'],
     'multiline-ternary': ['warn', 'always-multiline'],
-    'no-multiple-empty-lines': ['warn', { 'max': 2, 'maxEOF': 1 }],
+    'no-multiple-empty-lines': ['warn', { max: 2, maxEOF: 1 }],
     'no-trailing-spaces': 'warn',
     'new-parens': 'warn',
-    '@typescript-eslint/quotes': ['warn', 'single', { 'avoidEscape': true }],
+    '@typescript-eslint/quotes': ['warn', 'single', { avoidEscape: true }],
     '@typescript-eslint/semi': ['warn', 'always'],
     'space-before-function-paren': ['warn', 'never'],
     'semi-style': ['warn', 'last'],
-
+    // tsdoc
+    'tsdoc/syntax': 'warn',
   },
 };

@@ -9,7 +9,7 @@ import {
 	SurgicalChangeset,
 	SurgicalObject,
 	SurgicalTemplate,
-} from "../base/engine";
+} from "../base/engine.js";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -253,7 +253,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				const ignoreZoneEndCol =
 					ignoreZoneStartCol + ignoreZone.getRange().getWidth() - 1;
 
-				// Check if range is completely within ignore zone
+				// Check if range is completely within ignore zone 
 				if (
 					rangeStartRow >= ignoreZoneStartRow &&
 					rangeEndRow <= ignoreZoneEndRow &&
@@ -261,10 +261,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 					rangeEndCol <= ignoreZoneEndCol
 				) {
 					return true;
-				}
-
-				return false;
+				} else {
+				  return false;
+        }
 			});
+
 	}
 
 	supportedLayouts = [

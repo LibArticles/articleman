@@ -20,7 +20,7 @@
     "test:ember": "ember test"
   },
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.21.0",
     "@types/node": "^20.3.1",
@@ -30,8 +30,9 @@
     "buffer": "^6.0.3",
     "eslint": "^8.41.0",
     "eslint-plugin-googleappsscript": "^1.0.4",
+    "eslint-plugin-tsdoc": "^0.2.17",
     "gas-webpack-plugin": "^2.4.0",
-    "prettier": "^2.8.7",
+    "prettier": "^2.8.8",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
     "webpack": "^5.78.0",
@@ -42,7 +43,6 @@
     "@types/google-apps-script": "^1.0.64",
     "@types/uuid": "^9.0.2",
     "@valentech/sializer": "^0.3.7",
-    "eslint-plugin-jsdoc": "^46.4.4",
     "fs": "^0.0.1-security",
     "uuid": "^9.0.0",
     "worktapper": "^1.1.1"

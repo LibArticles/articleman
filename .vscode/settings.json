@@ -1,4 +1,5 @@
 {
   "github-actions.workflows.pinned.workflows": [],
-  "glint.libraryPath": "frontend"
+  "glint.libraryPath": "frontend",
+  "eslint.workingDirectories": ["frontend", "backend", "shared"],
 }
