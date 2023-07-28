@@ -13,9 +13,10 @@
 	"include": [
 		"src/**/*",
 		"lib/**/*",
+		"build/*"
 		"node_modules/@types",
 		"types",
-		"eslint.config.js"
+		"*",
 	],
 	"exclude": ["node_modules", "dist"]
 }
