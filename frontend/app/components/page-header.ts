@@ -24,8 +24,13 @@ export default class HeaderComponent extends Component {
   }
 
   @action checkForBackButton() {
-    const name = this.router.currentRoute.name
-    this.needsBackButton = !isTopLevelOrIndexRoute(name);
+    if (this.router.currentRoute) {
+      const name = this.router.currentRoute.name;
+      this.needsBackButton = !isTopLevelOrIndexRoute(name);
+
+    } else {
+      this.needsBackButton = false;
+    }
   }
   /**
    * Set the page based on the current route name.
@@ -55,7 +60,7 @@ function isTopLevelOrIndexRoute(routeName: string) {
   }
 
 
-  
-  
+
+
   return true;
 }

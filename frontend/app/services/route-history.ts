@@ -16,13 +16,13 @@ export default class RouteHistoryService extends Service {
         this.routeHistory[this.routeHistory.length - 1]!
       );
     } else {
-      if (this.router.currentRoute.parent) {
+      if (this.router.currentRoute && this.router.currentRoute.parent) {
         this.routeHistory.pop();
         // if there is no previous, go to the parent route
         this.router.transitionTo(this.router.currentRoute.parent.name);
       }
     }
-    
+
   }
 
   get previousRoute() {

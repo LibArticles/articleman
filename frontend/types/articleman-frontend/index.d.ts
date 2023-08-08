@@ -1,5 +1,5 @@
 import 'ember-source/types';
-import 'ember-source/types/preview';
+
 import Ember from 'ember';
 
 declare global {
