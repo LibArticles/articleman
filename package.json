@@ -1,7 +1,7 @@
 {
   "name": "articleman",
   "version": "0.0.3",
-  "description": "better student journalism management",
+  "description": "Insanely efficient student media management, for the masses.",
   "main": "backend/index.mts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
