@@ -225,9 +225,6 @@ importers:
       ember-cli-sass:
         specifier: ^11.0.1
         version: 11.0.1
-      ember-cli-typescript:
-        specifier: ^5.2.1
-        version: 5.2.1
       ember-cli-update:
         specifier: ^1.0.1
         version: 1.0.1

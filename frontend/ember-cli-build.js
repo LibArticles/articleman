@@ -10,8 +10,11 @@ module.exports = function (defaults) {
     babel: {
       plugins: [
         require.resolve('ember-auto-import/babel-plugin'),
-        // require.resolve('@babel/plugin-transform-typescript'),
+        require.resolve('@babel/plugin-transform-typescript'),
       ],
+    },
+    'ember-cli-babel': {
+      enableTypescriptTransform: true,
     },
     tests: false,
     svgJar: {
