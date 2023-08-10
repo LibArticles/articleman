@@ -199,14 +199,105 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 	}
 
-	getEmptySpace(
-		sheet: GoogleAppsScript.Spreadsheet.Sheet,
-		layout: 'vertical' | 'horizontal',
-		tactic: 'first-available' | 'after-content-end' | 'last-available',
-		allowAppend: boolean,
-	) {}
+  private getSheetLayout(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
+    return sheet.getDeveloperMetadata().find((m) => m.getKey() === 'SURGICAL_ENGINE_MATRIX_LAYOUT').getValue()
+  }
 
-	isRangeIgnored(
+	/**
+	 * Finds empty space in a sheet. If there is none, it will create a new row or column.
+	*/
+	private findEmptySpace(
+		sheet: GoogleAppsScript.Spreadsheet.Sheet,
+		tactic: 'first-available' | 'after-content-end',
+	) {
+    const layout = this.getSheetLayout(sheet);
+		switch (layout) {
+			case 'vertical':
+				switch (tactic) {
+					case 'first-available':
+            // find the first empty column that isn't ignored
+            for (let i = 1; i < sheet.getLastColumn(); i++) {
+              const range = sheet.getRange(1, i, sheet.getLastRow(), 1);
+              if (this.isRangeEmpty(range)) {
+                return range;
+              } else {
+                continue;
+              };
+            }
+
+          case 'after-content-end':
+            // the fallthrough here is intentional, we want to find the first empty row that isn't ignored
+            if (sheet.getRange(
+              1,
+              sheet.getLastColumn() + 1,
+              sheet.getLastRow(),
+              1
+            )) {
+              return sheet.getRange(
+                1,
+                sheet.getLastColumn() + 1,
+                sheet.getLastRow(),
+                1,
+              );
+            } else {
+              sheet.insertColumnAfter(sheet.getLastColumn());
+              return sheet.getRange(
+                1,
+                sheet.getLastColumn() + 1,
+                sheet.getLastRow(),
+                1,
+              )
+            }
+				}
+		}
+	}
+
+  private isRangeEmpty(range: GoogleAppsScript.Spreadsheet.Range) {
+    const sheet = range.getSheet();
+    if (!this.isRangeIgnored(sheet, range)) {
+
+      const cells = this.create1dIterableRange(range);
+      for (const cell of cells) {
+        // if the value is not null, continue, else return true (unless it's ignored).
+        if (!cell.getValue()) {
+          continue;
+        } else if (!this.isRangeIgnored(sheet, cell)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
+  /**
+   * Creates a one-dimensional set of cell ranges from a full 1D range.
+   */
+  private *create1dIterableRange(range: GoogleAppsScript.Spreadsheet.Range) {
+    switch (true) {
+      // split a one dimensional range into multiple ranges, one per cell
+      case (range.getHeight() === 1 && range.getWidth() > 1):
+        for (let i = 1; i < range.getWidth(); i++) {
+          yield range.getCell(1, i);
+        }
+        break;
+      case (range.getHeight() > 1 && range.getWidth() === 1):
+        for (let i = 1; i < range.getHeight(); i++) {
+          yield range.getCell(i, 1);
+        }
+        break;
+      case (range.getHeight() === 1 && range.getWidth() === 1):
+        yield range.getCell(1, 1);
+				break;
+			case (range.getHeight() > 1 && range.getWidth() > 1):
+				// TODO: standardize these error codes in the app error format
+				throw new Error('The input range used for iteration appears to be 2D. Please only use a one-dimensional range.');
+			default:
+				throw new Error('The input range used for iteration is an in incorrect format. Please use a one-dimensional range, conforming to the TypeScript type GoogleAppsScript.Spreadsheet.Range.');
+    }
+
+  }
+
+	private isRangeIgnored(
 		sheet: GoogleAppsScript.Spreadsheet.Sheet,
 		range: GoogleAppsScript.Spreadsheet.Range,
 	) {
@@ -219,8 +310,10 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				},
 			)
 
-			// if the named range and the range are identical
+			// for every named range that starts with SURGICAL_ENGINE_MATRIX_IGNORE_
 			.forEach((ignoreZone: GoogleAppsScript.Spreadsheet.NamedRange) => {
+
+				// if the range is the ignore zone
 				if (ignoreZone.getRange().getA1Notation() === range.getA1Notation())
 					return true;
 
@@ -245,12 +338,10 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 					rangeEndRow <= ignoreZoneEndRow &&
 					rangeStartCol >= ignoreZoneStartCol &&
 					rangeEndCol <= ignoreZoneEndCol
-				) {
-					return true;
-				} else {
-					return false;
-				}
+				) return true;
 			});
+		return false;
+
 	}
 
 	supportedLayouts = [
