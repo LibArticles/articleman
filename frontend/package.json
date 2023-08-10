@@ -36,6 +36,7 @@
     "@ember/test-helpers": "^3.1.0",
     "@embroider/compat": "^3.2.1",
     "@embroider/core": "^3.2.1",
+    "@embroider/vite": "^0.1.2",
     "@embroider/webpack": "^3.1.5",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
@@ -109,6 +110,7 @@
     "edition": "octane"
   },
   "dependencies": {
+    "ember-animated": "^1.0.4",
     "ember-primitives": "^0.1.0"
   }
 }
