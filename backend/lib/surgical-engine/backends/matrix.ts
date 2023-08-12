@@ -226,12 +226,14 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
             }
 
           case 'after-content-end':
-            // the fallthrough here is intentional, we want to find the first empty row that isn't ignored
+            // the fallthrough here is intentional, we want to find the first empty row that isn't ignored.
+
+						// if there's an empty column after the last column, return that.
             if (sheet.getRange(
-              1,
-              sheet.getLastColumn() + 1,
-              sheet.getLastRow(),
-              1
+              1, // row
+              sheet.getLastColumn() + 1, // column
+              sheet.getLastRow(), // number of rows
+              1 // number of columns
             )) {
               return sheet.getRange(
                 1,
@@ -239,6 +241,8 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
                 sheet.getLastRow(),
                 1,
               );
+
+							// otherwise, insert a new column and return that.
             } else {
               sheet.insertColumnAfter(sheet.getLastColumn());
               return sheet.getRange(
@@ -249,6 +253,47 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
               )
             }
 				}
+			case 'horizontal':
+				switch (tactic) {
+					case 'first-available':
+						// find the first empty column that isn't ignored. if it's not found, fall through and insert a new row.
+            for (let i = 1; i < sheet.getLastRow(); i++) {
+              const range = sheet.getRange(i, 1, 1, sheet.getLastColumn());
+              if (this.isRangeEmpty(range)) {
+                return range;
+              } else {
+                continue;
+              };
+            }
+					case 'after-content-end':
+						 // the fallthrough here is intentional, we want to find the first empty row that isn't ignored.
+
+						// if there's an empty column after the last column, return that.
+            if (sheet.getRange(
+              sheet.getLastRow() + 1,
+              1,
+              1,
+							sheet.getLastColumn()
+            )) {
+              return sheet.getRange(
+                sheet.getLastRow() + 1,
+              1,
+              1,
+							sheet.getLastColumn()
+              );
+
+							// otherwise, insert a new column and return that.
+            } else {
+              sheet.insertRowAfter(sheet.getLastColumn());
+              return sheet.getRange(
+                sheet.getLastRow() + 1,
+								1,
+								1,
+								sheet.getLastColumn()
+              )
+            }
+
+				}
 		}
 	}
 
@@ -258,14 +303,14 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
       const cells = this.create1dIterableRange(range);
       for (const cell of cells) {
-        // if the value is not null, continue, else return true (unless it's ignored).
-        if (!cell.getValue()) {
+        // if the value is ignored, no matter what the content is it should continue. otherwise, if the value is there, immediately return false, and at the end if all values are ignored or empty, return true
+        if (this.isRangeIgnored(sheet, cell)) {
           continue;
-        } else if (!this.isRangeIgnored(sheet, cell)) {
-          return true;
+        } else if (cell.getValue()){
+          return false;
         }
       }
-      return false;
+      return true;
     }
   }
 
@@ -275,22 +320,32 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
   private *create1dIterableRange(range: GoogleAppsScript.Spreadsheet.Range) {
     switch (true) {
       // split a one dimensional range into multiple ranges, one per cell
+
+			// HORIZONTAL
       case (range.getHeight() === 1 && range.getWidth() > 1):
         for (let i = 1; i < range.getWidth(); i++) {
           yield range.getCell(1, i);
         }
         break;
+
+			// VERTICAL
       case (range.getHeight() > 1 && range.getWidth() === 1):
         for (let i = 1; i < range.getHeight(); i++) {
           yield range.getCell(i, 1);
         }
         break;
+
+			// SQUARE LIL' BUD :)
       case (range.getHeight() === 1 && range.getWidth() === 1):
         yield range.getCell(1, 1);
 				break;
+
+			// too big
 			case (range.getHeight() > 1 && range.getWidth() > 1):
 				// TODO: standardize these error codes in the app error format
 				throw new Error('The input range used for iteration appears to be 2D. Please only use a one-dimensional range.');
+
+			// idek what happens to get you here... you clearly didn't follow the typescript types, idk how to help you.
 			default:
 				throw new Error('The input range used for iteration is an in incorrect format. Please use a one-dimensional range, conforming to the TypeScript type GoogleAppsScript.Spreadsheet.Range.');
     }
