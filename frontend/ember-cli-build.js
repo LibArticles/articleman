@@ -36,15 +36,19 @@ module.exports = function (defaults) {
     },
   });
 
-  const Vite = require('@embroider/vite')
-  return require('@embroider/compat').compatBuild(app, Vite, {
+  return require('@embroider/compat').compatBuild(app, Webpack, {
     packagerOptions: {
       // if in production mode, use the production API URL, else use the current domain
       publicAssetURL:
         EmberApp.env() === 'production' || process.env.CF_PAGES === 1
           ? config.frontendUrl
           : '/',
+
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
     },
+
     extraPublicTrees: [],
     staticAddonTrees: true,
     staticAddonTestSupportTrees: true,
