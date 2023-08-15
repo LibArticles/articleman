@@ -49,7 +49,6 @@ export interface SurgicalChangeset {
 	create?: {
 		objects?: {
 			[id: string]: {
-				attributes?: Record<string, any>;
 				isDefinitive?: boolean;
 				type: 'append' | 'ingest';
 				position?: PositionTypeRangeOrOffset;
@@ -122,6 +121,7 @@ export enum SupportedLayout {
 export interface SurgicalObject {
 	attributes: Record<string, any>;
 	id: string;
+	lastModified: Date;
 }
 
 export interface SurgicalAttribute {
