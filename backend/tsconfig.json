@@ -13,7 +13,7 @@
 	"include": [
 		"src/**/*",
 		"lib/**/*",
-		"build/*"
+		"build/*",
 		"node_modules/@types",
 		"types",
 		"*",
