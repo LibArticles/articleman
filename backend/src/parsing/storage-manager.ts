@@ -68,7 +68,7 @@ export default class StorageManager {
 		}
 	}
 
-	static save(key: string, value: StorableValue) {
+	static set(key: string, value: StorableValue) {
 		const turnstile = new Turnstile('storage_manager', 'document');
 		console.time('StorageManagerTurnstile');
 		if (turnstile.enter(20000)) {
