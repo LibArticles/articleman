@@ -1,7 +1,13 @@
 /*
-  Surgical Engine: Matrix Named Range Search implementation.
-  This implementation uses Google Sheets Named Ranges to search for data in a matrix.
+	Surgical Engine: Matrix Named Range Search implementation.
+	This implementation uses Google Sheets Named Ranges to search for data in a matrix.
 */
+
+// ███████ ██    ██ ██████   ██████  ██  ██████  █████  ██
+// ██      ██    ██ ██   ██ ██       ██ ██      ██   ██ ██
+// ███████ ██    ██ ██████  ██   ███ ██ ██      ███████ ██
+//      ██ ██    ██ ██   ██ ██    ██ ██ ██      ██   ██ ██
+// ███████  ██████  ██   ██  ██████  ██  ██████ ██   ██ ███████
 
 import {
 	SupportedLayout,
@@ -9,13 +15,15 @@ import {
 	SurgicalChangeset,
 	SurgicalObject,
 	SurgicalTemplate,
-} from '../base/engine.js';
+} from '../base/engine';
 
-import StorageManager from '../../../src/parsing/storage-manager.js';
+import { Turnstile } from 'lib/concurrency';
+
+import StorageManager from '../../../src/parsing/storage-manager';
 
 import { v4 as uuidv4 } from 'uuid';
 
-class Prefixes {
+class Names {
 	static universal = 'SURGICAL_ENGINE_MATRIX_';
 	static object = this.universal + 'OBJECT_';
 	static attribute = this.universal + 'ATTRIBUTE_';
@@ -23,12 +31,14 @@ class Prefixes {
 	static ignore = this.universal + 'IGNORE_';
 	static header = this.ignore + 'HEADER_';
 	static generalIgnore = this.ignore + 'GENERAL_';
+	static changeTracking = 'change-tracking';
 }
 
 export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
 
 	initializeEngine(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
+		StorageManager.set(Names.changeTracking, { 0: { 0: 0 } });
 		return this;
 	}
 	initializeSheet(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
@@ -37,16 +47,16 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	loadTemplate(template: SurgicalTemplate) {
 		for (const id in template.objects) {
 			const range = this.spreadsheet.getRange(template.objects[id]);
-			this.spreadsheet.setNamedRange(Prefixes.object + id, range);
+			this.spreadsheet.setNamedRange(Names.object + id, range);
 		}
 		for (const attr in template.attributes) {
 			const range = this.spreadsheet.getRange(template.objects[attr]);
-			this.spreadsheet.setNamedRange(Prefixes.attribute + attr, range);
+			this.spreadsheet.setNamedRange(Names.attribute + attr, range);
 		}
 		for (const sheetName in Object.keys(template.sheetLayouts)) {
 			const sheet = this.spreadsheet.getSheetByName(sheetName);
 			sheet.addDeveloperMetadata(
-				Prefixes.layout,
+				Names.layout,
 				template.sheetLayouts[sheetName],
 			);
 		}
@@ -55,13 +65,13 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			const id = uuidv4();
 			const range = this.spreadsheet.getRange(header);
 			const sheet = this.spreadsheet;
-			sheet.setNamedRange(Prefixes.header + id, range);
+			sheet.setNamedRange(Names.header + id, range);
 		}
 		for (const general in template.ignoredAreas.generalAreas) {
 			const id = uuidv4();
 			const range = this.spreadsheet.getRange(general);
 			const sheet = this.spreadsheet;
-			sheet.setNamedRange(Prefixes.generalIgnore + id, range);
+			sheet.setNamedRange(Names.generalIgnore + id, range);
 		}
 
 		return this;
@@ -69,24 +79,44 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
 	getObject(id: string) {
 		const objectNamedRange = this.spreadsheet.getRangeByName(
-			Prefixes.object + id,
+			Names.object + id,
 		);
 		const sheet = objectNamedRange.getSheet();
 
 		// get all attributes for that sheet
 		const attributes = [];
 		for (const range in sheet.getNamedRanges()) {
-			if (range.startsWith(Prefixes.attribute)) {
+			if (range.startsWith(Names.attribute)) {
 				attributes.push(range);
 			}
 		}
 
+		const layout = this.getSheetLayout(sheet);
+
 		const object: Record<string, any> = {};
 
-		for (const attribute in attributes) {
-			const attrRange = this.spreadsheet.getRangeByName(attributes[attribute]);
+		const lastModified = this.getLastModified(id) as Record<string, number>;
 
-			// intersect the objevtNamedRange with each attribute range and get the value, then put it into the object
+		for (const attribute in attributes) {
+			const attrRange = this.spreadsheet.getRangeByName(
+				attributes[attribute],
+			);
+
+			// intersect the objectNamedRange with each attribute range and get the value, then put it into the object
+
+			switch (layout) {
+				case 'horizontal':
+					const attrColumn = attrRange.getColumn();
+					const objRow = objectNamedRange.getRow();
+					object[attribute] = sheet.getRange(objRow, attrColumn);
+					break;
+
+				case 'vertical':
+					const attrRow = attrRange.getRow();
+					const objColumn = objectNamedRange.getColumn();
+					object[attribute] = sheet.getRange(attrRow, objColumn);
+					break;
+			}
 
 			const attrColumn = attrRange.getColumn();
 			const objRow = objectNamedRange.getRow();
@@ -95,78 +125,98 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
 		return {
 			attributes: object,
+			lastModified,
 			id,
 		};
 	}
 
 	applyChangeset(changeset: SurgicalChangeset) {
 		// for each new attribute add a named range at the specified position
-		for (const newAttribute in changeset.create.attributes) {
-			const currentChange = changeset.create.attributes[newAttribute];
+		for (const newAttributeId in changeset.create.attributes) {
+			const currentAttrCreation = changeset.create.attributes[newAttributeId];
 
-			if (currentChange.position.range) {
+			if (currentAttrCreation.position.range) {
 				this.ingestNewRangeByNotation(
-					currentChange.position.range,
+					currentAttrCreation.position.range,
 					'ATTRIBUTE',
-					newAttribute,
+					newAttributeId,
 				);
 
 				// otherwise add it at the specified offset from the end.
-			} else if (currentChange.sheetName !== undefined) {
+			} else if (currentAttrCreation.sheetName !== undefined) {
 				const currentSheet = this.spreadsheet.getSheetByName(
-					currentChange.sheetName,
+					currentAttrCreation.sheetName,
 				);
 
-				const developerMetadata = currentSheet.getDeveloperMetadata();
-
-				// get the layout of the sheet
-				const layout = this.getSheetLayout(currentSheet);
-
-				switch (currentChange.type) {
+				switch (currentAttrCreation.type) {
 					case 'ingest':
 						this.ingestNewRangeByOffset(
 							currentSheet,
 							'ATTRIBUTE',
-							layout,
-							currentChange.position.offset,
-							newAttribute,
+							currentAttrCreation.position.offset,
+							newAttributeId,
 						);
+						break;
 					case 'append':
-						switch (layout) {
-							case 'vertical':
+						this.appendAttribute(currentSheet, newAttributeId);
+					case 'hidden':
+						const range = this.appendAttribute(
+							currentSheet,
+							newAttributeId,
+						);
+            this.hideData(newAttributeId, 'attribute');
+				}
+			}
+		}
+
+		for (const newObjectId in changeset.create.objects) {
+			const currentObjCreation = changeset.create.objects[newObjectId];
+			if (currentObjCreation.sheetName !== undefined) {
+				const currentSheet = this.spreadsheet.getSheetByName(
+					currentObjCreation.sheetName,
+				);
+				switch (currentObjCreation.type) {
+					case 'append':
+						this.appendObject(currentSheet, newObjectId);
+						break;
+					case 'ingest':
+						if (currentObjCreation.position.range) {
+							this.ingestNewRangeByNotation(currentObjCreation.position.range, 'OBJECT', newObjectId)
+						} else if (currentObjCreation.position.offset) {
+							this.ingestNewRangeByOffset(currentSheet, 'OBJECT', currentObjCreation.position.offset, newObjectId)
 						}
 				}
 			}
 		}
 
-		for (const newObject in changeset.create.objects) {
-			const currentChange = changeset.create.objects[newObject];
-			if (currentChange.sheetName !== undefined) {
-				const currentSheet = this.spreadsheet.getSheetByName(
-					currentChange.sheetName,
-				);
-
-				// TODO: SPLIT THIS OUT INTO ITS OWN FUNCTION AND/OR METHOD
-			}
+		for (const attributeUpdateId in changeset.update.attributes) {
+			const current
 		}
 	}
 
-	private appendObject(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
-		const range = this.findEmptySpace(sheet, 'after-content-end');
-		const id = uuidv4();
-		this.spreadsheet.setNamedRange(Prefixes.object + id, range);
-		return sheet.getNamedRanges().find((r) => r.getName() === Prefixes.object + uuidv4());
+	private appendAttribute(
+		sheet: GoogleAppsScript.Spreadsheet.Sheet,
+		id: string,
+	) {
+		const range = this.findEmptySpace(
+			sheet,
+			'after-content-end',
+			'attribute',
+		);
+		this.spreadsheet.setNamedRange(Names.attribute + id, range);
+		return sheet
+			.getNamedRanges()
+			.find((r) => r.getName() === Names.attribute + id);
 	}
 
-	private intersectObjectWithAttributes(object: string) {
-		let range: GoogleAppsScript.Spreadsheet.Range;
-		switch (typeof object) {
-			case 'string':
-				range = this.spreadsheet.getRangeByName(Prefixes.object + object);
-		}
+	// append a new named range and return it
+	private appendObject(sheet: GoogleAppsScript.Spreadsheet.Sheet, id: string) {
+		const range = this.findEmptySpace(sheet, 'after-content-end', 'object');
+		this.spreadsheet.setNamedRange(Names.object + id, range);
+		return sheet
+			.getNamedRanges()
+			.find((r) => r.getName() === Names.object + id);
 	}
-
-	// UTILITY FUNCTIONS
 
 	private ingestNewRangeByNotation(
 		rangeStr: string,
@@ -176,7 +226,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		const range = this.spreadsheet.getRange(rangeStr);
 
 		this.spreadsheet.setNamedRange(
-			(type === 'ATTRIBUTE' ? Prefixes.attribute : Prefixes.object) + id,
+			(type === 'ATTRIBUTE' ? Names.attribute : Names.object) + id,
 			range,
 		);
 	}
@@ -184,16 +234,16 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	private ingestNewRangeByOffset(
 		sheet: GoogleAppsScript.Spreadsheet.Sheet,
 		type: 'ATTRIBUTE' | 'OBJECT',
-		layout: 'vertical' | 'horizontal',
 		offset: number,
 		id: string,
 	) {
+		const layout = this.getSheetLayout(sheet);
 		switch (layout) {
 			// if the layout of the sheet uses columns for objects and rows for attributes
 			case 'vertical':
 				const vRange = this.spreadsheet.getLastColumn() + offset + 1;
 				this.spreadsheet.setNamedRange(
-					(type === 'ATTRIBUTE' ? Prefixes.attribute : Prefixes.object) + id,
+					(type === 'ATTRIBUTE' ? Names.attribute : Names.object) + id,
 					sheet.getRange(vRange, 1, 1, sheet.getLastColumn()),
 				);
 				break;
@@ -202,16 +252,39 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			case 'horizontal':
 				const hRange = this.spreadsheet.getLastRow() + offset + 1;
 				this.spreadsheet.setNamedRange(
-					(type === 'ATTRIBUTE' ? Prefixes.attribute : Prefixes.object) + id,
+					(type === 'ATTRIBUTE' ? Names.attribute : Names.object) + id,
 					sheet.getRange(1, hRange, sheet.getLastRow(), 1),
 				);
+		}
+	}
+
+	// ██    ██ ████████ ██ ██      ██ ████████ ██ ███████ ███████
+	// ██    ██    ██    ██ ██      ██    ██    ██ ██      ██
+	// ██    ██    ██    ██ ██      ██    ██    ██ █████   ███████
+	// ██    ██    ██    ██ ██      ██    ██    ██ ██           ██
+	//  ██████     ██    ██ ███████ ██    ██    ██ ███████ ███████
+
+	private hideData(id: string, type: 'attribute' | 'object') {
+		const namedRange = this.spreadsheet.getRangeByName(
+			(type === 'attribute' ? Names.attribute : Names.object) + id,
+		);
+		const layout = this.getSheetLayout(namedRange.getSheet());
+
+		switch (true) {
+			case (layout === 'vertical' && type === 'object') ||
+				(layout === 'horizontal' && type === 'attribute'):
+				this.spreadsheet.hideColumn(namedRange);
+				break;
+			case (layout === 'vertical' && type === 'attribute') ||
+				(layout === 'horizontal' && type === 'object'):
+				this.spreadsheet.hideRow(namedRange);
 		}
 	}
 
 	private getSheetLayout(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
 		const layout = sheet
 			.getDeveloperMetadata()
-			.find((m) => m.getKey() === Prefixes.layout)
+			.find((m) => m.getKey() === Names.layout)
 			.getValue();
 
 		if (layout !== 'vertical' && layout !== 'horizontal') {
@@ -227,10 +300,12 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	private findEmptySpace(
 		sheet: GoogleAppsScript.Spreadsheet.Sheet,
 		tactic: 'first-available' | 'after-content-end',
+		type: 'object' | 'attribute',
 	) {
 		const layout = this.getSheetLayout(sheet);
-		switch (layout) {
-			case 'vertical':
+		switch (true) {
+			case (layout === 'vertical' && type === 'object') ||
+				(layout === 'horizontal' && type === 'attribute'):
 				switch (tactic) {
 					case 'first-available':
 						// find the first empty column that isn't ignored
@@ -273,12 +348,18 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 							);
 						}
 				}
-			case 'horizontal':
+			case (layout === 'vertical' && type === 'attribute') ||
+				(layout === 'horizontal' && type === 'object'):
 				switch (tactic) {
 					case 'first-available':
 						// find the first empty column that isn't ignored. if it's not found, fall through and insert a new row.
 						for (let i = 1; i < sheet.getLastRow(); i++) {
-							const range = sheet.getRange(i, 1, 1, sheet.getLastColumn());
+							const range = sheet.getRange(
+								i,
+								1,
+								1,
+								sheet.getLastColumn(),
+							);
 							if (this.isRangeEmpty(range)) {
 								return range;
 							} else {
@@ -321,7 +402,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	private isRangeEmpty(range: GoogleAppsScript.Spreadsheet.Range) {
 		const sheet = range.getSheet();
 		if (!this.isRangeIgnored(sheet, range)) {
-			const cells = this.create1dIterableRange(range);
+			const cells = this.getIterableRange(range);
 			for (const cell of cells) {
 				// if the value is ignored, no matter what the content is it should continue. otherwise, if the value is there, immediately return false, and at the end if all values are ignored or empty, return true
 				if (this.isRangeIgnored(sheet, cell)) {
@@ -337,7 +418,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	/**
 	 * Creates a one-dimensional set of cell ranges from a full 1D range.
 	 */
-	private *create1dIterableRange(range: GoogleAppsScript.Spreadsheet.Range) {
+	private *getIterableRange(range: GoogleAppsScript.Spreadsheet.Range) {
 		switch (true) {
 			// split a one dimensional range into multiple ranges, one per cell
 
@@ -360,12 +441,13 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				yield range.getCell(1, 1);
 				break;
 
-			// too big
+			// 2D range
 			case range.getHeight() > 1 && range.getWidth() > 1:
-				// TODO: standardize these error codes in the app error format
-				throw new Error(
-					'The input range used for iteration appears to be 2D. Please only use a one-dimensional range.',
-				);
+				for (let i = 1; i < range.getHeight(); i++) {
+					for (let j = 1; j < range.getWidth(); j++) {
+						yield range.getCell(i, j);
+					}
+				}
 
 			// idek what happens to get you here... you clearly didn't follow the typescript types, idk how to help you.
 			default:
@@ -384,41 +466,79 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			.filter(
 				// filter out any named ranges that don't start with SURGICAL_ENGINE_MATRIX_IGNORE
 				(namedRange: GoogleAppsScript.Spreadsheet.NamedRange) => {
-					namedRange.getName().startsWith(Prefixes.ignore);
+					namedRange.getName().startsWith(Names.ignore);
 				},
 			)
 
 			// for every named range that starts with SURGICAL_ENGINE_MATRIX_IGNORE_
 			.forEach((ignoreZone: GoogleAppsScript.Spreadsheet.NamedRange) => {
-				// if the range is the ignore zone
-				if (ignoreZone.getRange().getA1Notation() === range.getA1Notation())
+				if (this.isRangeContainedIn(range, ignoreZone.getRange())) {
 					return true;
-
-				// check if the range is contained in an ignore zone.
-
-				// Get the bounds of each range
-				const rangeStartRow = range.getRow();
-				const rangeStartCol = range.getColumn();
-				const rangeEndRow = rangeStartRow + range.getHeight() - 1;
-				const rangeEndCol = rangeStartCol + range.getWidth() - 1;
-
-				const ignoreZoneStartRow = ignoreZone.getRange().getRow();
-				const ignoreZoneStartCol = ignoreZone.getRange().getColumn();
-				const ignoreZoneEndRow =
-					ignoreZoneStartRow + ignoreZone.getRange().getHeight() - 1;
-				const ignoreZoneEndCol =
-					ignoreZoneStartCol + ignoreZone.getRange().getWidth() - 1;
-
-				// Check if range is completely within ignore zone
-				if (
-					rangeStartRow >= ignoreZoneStartRow &&
-					rangeEndRow <= ignoreZoneEndRow &&
-					rangeStartCol >= ignoreZoneStartCol &&
-					rangeEndCol <= ignoreZoneEndCol
-				)
-					return true;
+				}
 			});
 		return false;
+	}
+
+	private isRangeContainedIn(
+		range1: GoogleAppsScript.Spreadsheet.Range,
+		range2: GoogleAppsScript.Spreadsheet.Range,
+	) {
+		if (
+			range1.getA1Notation() === range2.getA1Notation() &&
+			range1.getSheet().getName() === range2.getSheet().getName()
+		) {
+			return true;
+		}
+
+		// Get the bounds of each range
+		const range1StartRow = range1.getRow();
+		const range1StartCol = range1.getColumn();
+		const range1EndRow = range1StartRow + range1.getHeight() - 1;
+		const range1EndCol = range1StartCol + range1.getWidth() - 1;
+
+		const range2StartRow = range2.getRow();
+		const range2StartCol = range2.getColumn();
+		const range2EndRow = range2StartRow + range2.getHeight() - 1;
+		const range2EndCol = range2StartCol + range2.getWidth() - 1;
+
+		if (
+			range1StartRow >= range2StartRow &&
+			range1EndRow <= range2EndRow &&
+			range1StartCol >= range2StartCol &&
+			range1EndCol <= range2EndCol
+		)
+			return true;
+
+		// otherwise,
+		return false;
+	}
+
+	private doRangesIntersect(
+		range1: GoogleAppsScript.Spreadsheet.Range,
+		range2: GoogleAppsScript.Spreadsheet.Range,
+	) {
+		// Get the row and column bounds for each range
+		var r1Start = range1.getRow();
+		var r1End = r1Start + range1.getNumRows() - 1;
+		var c1Start = range1.getColumn();
+		var c1End = c1Start + range1.getNumColumns() - 1;
+
+		var r2Start = range2.getRow();
+		var r2End = r2Start + range2.getNumRows() - 1;
+		var c2Start = range2.getColumn();
+		var c2End = c2Start + range2.getNumColumns() - 1;
+
+		// Check if the ranges intersect
+		if (
+			r1Start <= r2End &&
+			r2Start <= r1End &&
+			c1Start <= c2End &&
+			c2Start <= c1End
+		) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	supportedLayouts = [
@@ -427,4 +547,109 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		SupportedLayout.horizontalObjects,
 		SupportedLayout.verticalObjects,
 	];
+
+	// ████████ ██████   █████   ██████ ██   ██ ██ ███    ██  ██████
+	//    ██    ██   ██ ██   ██ ██      ██  ██  ██ ████   ██ ██
+	//    ██    ██████  ███████ ██      █████   ██ ██ ██  ██ ██   ███
+	//    ██    ██   ██ ██   ██ ██      ██  ██  ██ ██  ██ ██ ██    ██
+	//    ██    ██   ██ ██   ██  ██████ ██   ██ ██ ██   ████  ██████
+
+	// Last Modified Date tracking system
+	// TODO: Implement
+
+	private commitLastModified(
+		sheet: GoogleAppsScript.Spreadsheet.Sheet,
+		objectAttributePairings: ObjectAttributePairingSet,
+	) {
+		// TODO
+		const turnstile = new Turnstile(Names.changeTracking, 'document');
+		if (turnstile.enter(1000, true)) {
+			const changes = StorageManager.get(
+				Names.changeTracking,
+			) as MatrixLastModified;
+
+			for (const pairing in objectAttributePairings) {
+				const object = objectAttributePairings[pairing].object;
+				const attribute = objectAttributePairings[pairing].attribute;
+				changes[object][attribute] = new Date().getTime();
+			}
+
+			StorageManager.set(Names.changeTracking, changes);
+
+			turnstile.exit();
+		}
+	}
+
+	private getLastModified(objectId?: string) {
+		const changes = StorageManager.get(
+			Names.changeTracking,
+		) as MatrixLastModified;
+		if (objectId) {
+			return changes[objectId];
+		} else {
+			return changes;
+		}
+	}
+
+	editCallBack(event: GoogleAppsScript.Events.SheetsOnEdit) {
+		const cells = [...this.getIterableRange(event.range)];
+		const sheet = event.range.getSheet();
+		const allObjects = sheet
+			.getNamedRanges()
+			.filter((namedRange: GoogleAppsScript.Spreadsheet.NamedRange) => {
+				if (namedRange.getName().startsWith(Names.ignore)) {
+					return false;
+				} else if (namedRange.getName().startsWith(Names.object)) {
+					return true;
+				} else {
+					return false;
+				}
+			});
+		const allAttributes = sheet
+			.getNamedRanges()
+			.filter((namedRange: GoogleAppsScript.Spreadsheet.NamedRange) => {
+				if (namedRange.getName().startsWith(Names.ignore)) {
+					return false;
+				} else if (namedRange.getName().startsWith(Names.attribute)) {
+					return true;
+				} else {
+					return false;
+				}
+			});
+
+		// check which cells intersect with which objects and attributes
+		const objAttrPairings: ObjectAttributePairingSet = cells.map(
+			(cell: GoogleAppsScript.Spreadsheet.Range) => {
+				const attribute = allAttributes.find(
+					(attribute: GoogleAppsScript.Spreadsheet.NamedRange) =>
+						this.isRangeContainedIn(cell, attribute.getRange()),
+				);
+				const object = allObjects.find(
+					(object: GoogleAppsScript.Spreadsheet.NamedRange) =>
+						this.isRangeContainedIn(cell, object.getRange()),
+				);
+				return {
+					attribute: attribute
+						.getName()
+						.match(new RegExp(Names.attribute + '(.*)'))[0],
+					object: object
+						.getName()
+						.match(new RegExp(Names.object + '(.*)'))[0],
+				};
+			},
+		);
+
+		this.commitLastModified(sheet, objAttrPairings);
+	}
+}
+
+type ObjectAttributePairingSet = Array<{
+	attribute: string;
+	object: string;
+}>;
+
+interface MatrixLastModified {
+	[object: string]: {
+		[attribute: string]: number;
+	};
 }

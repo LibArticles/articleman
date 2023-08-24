@@ -7,7 +7,7 @@
 
 */
 
-export interface SurgicalBackend<ExtenderClass> {
+export class SurgicalBackend<ExtenderClass> {
 	// setting up the engine for first time use
 	initializeEngine: (
 		sheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
@@ -26,8 +26,13 @@ export interface SurgicalBackend<ExtenderClass> {
 
 	applyChangeset: (changes: SurgicalChangeset) => ExtenderClass;
 
+	editCallBack?: (event: GoogleAppsScript.Events.SheetsOnEdit) => void;
+
+	changeCallback?: (event: GoogleAppsScript.Events.SheetsOnChange) => void;
+
 	supportedLayouts: SupportedLayout[];
 }
+
 
 export interface SurgicalTemplate {
 	// the key is the ID and the value is the range.
@@ -81,14 +86,16 @@ export interface SurgicalChangeset {
 	};
 
 	delete?: {
-		objects?: Array<{
-			id: string;
-			type: 'splice' | 'ignore' | 'hide' | 'mask';
-		}>;
-		attributes?: Array<{
-			id: string;
-			type: 'splice' | 'ignore' | 'hide' | 'mask';
-		}>;
+		objects?: {
+			[id: string]: {
+				type: 'splice' | 'ignore' | 'hide' | 'unlist';
+			}
+		};
+		attributes?: {
+			[id: string]: {
+				type: 'splice' | 'ignore' | 'hide' | 'unlist';
+			}
+		}
 	};
 }
 
@@ -119,9 +126,9 @@ export enum SupportedLayout {
 }
 
 export interface SurgicalObject {
-	attributes: Record<string, any>;
+	attributes: Record<string, { value: any, lastModified?: number }>;
 	id: string;
-	lastModified: Date;
+	lastModified?: Record<string, number>;
 }
 
 export interface SurgicalAttribute {
