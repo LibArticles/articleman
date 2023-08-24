@@ -1,8 +1,8 @@
 import './main-page';
 import './styles.scss';
-import renderHome from './main-page.js';
-import renderSettings from './settings.js';
-import renderSystem from './system.js';
+import renderHome from './main-page';
+import renderSettings from './settings';
+import renderSystem from './system';
 
 import Handlebars from "handlebars";
 

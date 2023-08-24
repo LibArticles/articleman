@@ -1,4 +1,4 @@
-import { setSettings, getSettings } from './comms/get-settings.js';
+import { setSettings, getSettings } from './comms/get-settings';
 
 import config from '../../shared/config.json';
 

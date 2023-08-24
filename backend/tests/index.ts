@@ -1,7 +1,7 @@
 import QUnit from "qunit";
 
 // TESTS
-import connectionChecks from "./base/conn-check.js";
+import connectionChecks from "./base/conn-check";
 
 export default function runTests() {
 
