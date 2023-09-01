@@ -23,13 +23,12 @@
 	"type": "module",
 	"devDependencies": {
 		"@babel/plugin-proposal-decorators": "^7.22.10",
-		"@types/node": "^20.3.1",
+		"@shelf/fast-chunk-string": "^3.0.0",
+		"@types/google-apps-script": "^1.0.64",
+		"@types/uuid": "^9.0.2",
 		"@typescript-eslint/eslint-plugin": "^5.59.0",
 		"@typescript-eslint/parser": "^5.59.0",
 		"banner-plugin": "^1.0.10",
-		"buffer": "^6.0.3",
-		"esbuild": "^0.18.17",
-		"esbuild-gas-plugin": "^0.6.0",
 		"eslint": "^8.41.0",
 		"eslint-config-prettier": "^8.8.0",
 		"eslint-plugin-googleappsscript": "^1.0.4",
@@ -37,17 +36,13 @@
 		"gas-webpack-plugin": "^2.4.0",
 		"prettier": "^2.8.8",
 		"qunit": "^2.19.4",
-		"threads": "^1.7.0",
 		"ts-loader": "^9.4.2",
-		"ts-node": "^10.9.1",
-		"typescript": "^5.0.4",
 		"webpack": "^5.88.2",
-		"webpack-cli": "^5.0.1",
-		"@shelf/fast-chunk-string": "^3.0.0",
-		"@types/google-apps-script": "^1.0.64",
-		"@types/uuid": "^9.0.2"
+		"webpack-cli": "^5.0.1"
 	},
 	"dependencies": {
+		"@types/underscore": "^1.11.9",
+		"underscore": "^1.13.6",
 		"uuid": "^9.0.0",
 		"worktapper": "^1.1.1"
 	},
