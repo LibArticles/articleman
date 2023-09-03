@@ -7,7 +7,7 @@
 
 */
 
-export class SurgicalBackend<ExtenderClass> {
+export interface SurgicalBackend<ExtenderClass> {
 	// setting up the engine for first time use
 	initializeEngine: (
 		sheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
@@ -22,13 +22,18 @@ export class SurgicalBackend<ExtenderClass> {
 	// get all data by an object id
 	getObject: (id: string) => SurgicalObject;
 
-	runQuery: (query: SurgicalQuery | SurgicalObject[]) => SurgicalObject[];
+	// get multiple objects
+	getObjects: (...ids: string[]) => SurgicalObject[];
+
+	runQuery: (query: SurgicalQuery, source?: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[]) => SurgicalObject[];
 
 	applyChangeset: (changes: SurgicalChangeset) => ExtenderClass;
 
 	editCallBack?: (event: GoogleAppsScript.Events.SheetsOnEdit) => void;
 
 	changeCallback?: (event: GoogleAppsScript.Events.SheetsOnChange) => void;
+
+	// for the constructor, make sure to set this.spreadsheet to the inputted GoogleAppsScript.Spreadsheet.Spreadsheet value!
 
 	supportedLayouts: SupportedLayout[];
 }
@@ -58,6 +63,7 @@ export interface SurgicalChangeset {
 				type: 'append' | 'ingest';
 				position?: PositionTypeRangeOrOffset;
 				sheetName?: string;
+				unIgnore?: boolean
 			};
 		};
 
@@ -66,6 +72,7 @@ export interface SurgicalChangeset {
 				type: 'append' | 'ingest' | 'hidden';
 				position?: PositionTypeRangeOrOffset;
 				sheetName?: string;
+				unIgnore?: boolean;
 			};
 		};
 	};
@@ -88,18 +95,18 @@ export interface SurgicalChangeset {
 	delete?: {
 		objects?: {
 			[id: string]: {
-				type: 'splice' | 'ignore' | 'hide' | 'unlist';
+				type: 'splice' | 'ignore' | 'hide';
 			}
 		};
 		attributes?: {
 			[id: string]: {
-				type: 'splice' | 'ignore' | 'hide' | 'unlist';
+				type: 'splice' | 'ignore' | 'hide';
 			}
 		}
 	};
 }
 
-interface PositionTypeRangeOrOffset {
+export interface PositionTypeRangeOrOffset {
 	range?: string;
 	offset?: number;
 }
@@ -126,7 +133,7 @@ export enum SupportedLayout {
 }
 
 export interface SurgicalObject {
-	attributes: Record<string, { value: any, lastModified?: number }>;
+	attributes: Record<string, string | number | boolean>;
 	id: string;
 	lastModified?: Record<string, number>;
 }
@@ -137,16 +144,65 @@ export interface SurgicalAttribute {
 	id: string;
 }
 
-export type SurgicalQuery = Array<{
-	filters: Array<{
-		searchType: 'contains' | 'equals';
-		mandatory: boolean;
-		polarity: boolean;
-		query: {
-			[attributeId: string]: string | number | boolean;
-		};
-	}>;
-}>;
+/**
+ * The query language Articleman uses
+ */
+export type SurgicalQuery =
+	/**
+	 * An array for groups of queries, these are essentially separate searches
+	 */
+	Array<
+		/**
+		 * A group of queries, each one has the ability to make or break an object's presence in the outputted group results.
+		 */
+		Array<
+			{
+				/**
+				 * Name of the attribute to look through
+				 */
+				attribute: string;
+				/**
+				 * Type of search to execute
+				 */
+				match: EqualsSearch | ContainsSearch | BetweenSearch | FilledSearch;
+			}
+		>
+	>;
+
+/**
+ * Does a value equal the search value exactly?
+ */
+export type EqualsSearch = {
+	type: "equals";
+	value: string | number | boolean;
+	polarity: boolean;
+}
+
+/**
+ * Does a value contain the search value?
+ */
+export type ContainsSearch = {
+	type: "contains";
+	value: string;
+	polarity: boolean;
+}
+
+/**
+ * Is a numeric value between the two numeric search values?
+ */
+export type BetweenSearch = {
+	type: "between";
+	values: [number, number];
+	polarity: boolean;
+}
+
+/**
+ * Is an attribute filled?
+ */
+export type FilledSearch = {
+	type: "filled";
+	value: boolean;
+}
 
 // export const EngineError = {
 //   SurgicalEngine: {

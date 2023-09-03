@@ -4,3 +4,282 @@
 
   A better, more reliable way to manipulate spreadsheet data logically, only updating and fetching data as needed.
 */
+
+import MatrixBackend from './backends/matrix';
+import {
+	SurgicalChangeset,
+	PositionTypeRangeOrOffset,
+	SurgicalQuery,
+	EqualsSearch,
+	ContainsSearch,
+	BetweenSearch,
+	FilledSearch,
+	SurgicalBackend,
+	SurgicalTemplate,
+} from './base/engine';
+
+export default class SurgicalEngine {
+	backend: MatrixBackend;
+	autoCommit: boolean;
+	changeset: SurgicalChangeset;
+
+	constructor(
+		spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
+		autoCommit?: boolean,
+	) {
+		this.backend = new MatrixBackend(spreadsheet);
+		this.autoCommit = autoCommit;
+	}
+
+	newQuery(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
+		return new QueryGenerator(sheet, this);
+	}
+
+	newObject(input: ObjectCreation) {
+		this.changeset.create.objects[input.id] = {
+			position: input.position,
+			type: input.type,
+			sheetName: input.sheetName ?? undefined,
+		};
+		this.changeset.update.objects[input.id] = {
+			attributes: input.attributes ?? {},
+			isDefinitive: input.isDefinitive ?? false,
+		};
+		if (this.autoCommit) {
+			this.commit();
+		}
+	}
+
+	newAttribute(input: AttributeCreation) {
+		this.changeset.create.attributes[input.id] = {
+			position: input.position,
+			type: input.type,
+			sheetName: input.sheetName,
+		};
+		if (this.autoCommit) {
+			this.commit();
+		}
+	}
+
+	updateObject(input: ObjectUpdate) {
+		this.changeset.update.objects[input.id] = {
+			position: input.position,
+			attributes: input.attributes ?? {},
+			isDefinitive: input.isDefinitive ?? false,
+		};
+		if (this.autoCommit) {
+			this.commit();
+		}
+	}
+
+	updateAttribute(input: AttributeUpdate) {
+		this.changeset.update.attributes[input.id] = {
+			position: input.position,
+		};
+		if (this.autoCommit) {
+			this.commit();
+		}
+	}
+
+	deleteObject(input: DataDelete) {
+		this.changeset.delete.objects[input.id] = {
+			type: input.type,
+		};
+		if (this.autoCommit) {
+			this.commit();
+		}
+	}
+
+	deleteAttribute(input: DataDelete) {
+		this.changeset.delete.attributes[input.id] = {
+			type: input.type,
+		};
+		if (this.autoCommit) {
+			this.commit();
+		}
+	}
+
+	commit() {
+		if (!this.autoCommit) {
+			this.backend.applyChangeset(this.changeset);
+		} else if (
+			!!Object.keys(this.changeset.create).length ||
+			!!Object.keys(this.changeset.update).length ||
+			!!Object.keys(this.changeset.delete).length
+		) {
+			this.backend.applyChangeset(this.changeset);
+			this.changeset = {
+				create: {},
+				update: {},
+				delete: {},
+			};
+		} else {
+			console.info('No changes to commit.');
+		}
+	}
+
+	getObject(id: string) {
+		return this.backend.getObject(id);
+	}
+
+	getObjects(...ids: string[]) {
+		return this.backend.getObjects(...ids);
+	}
+
+	firstRun() {
+		this.backend.initializeEngine(this.backend.spreadsheet);
+	}
+
+	initializeSheet(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
+		this.backend.initializeSheet(sheet);
+	}
+
+	loadTemplate(template: SurgicalTemplate) {
+		this.backend.loadTemplate(template);
+	}
+
+	editCallback(event: GoogleAppsScript.Events.SheetsOnEdit) {
+		if (this.backend.editCallBack) {
+			this.backend.editCallBack(event);
+		}
+	}
+
+	changeCallBack(event: GoogleAppsScript.Events.SheetsOnChange) {
+		// if (this.backend.changeCallBack) {
+		// 	this.backend.changeCallBack(event);
+		// }
+	}
+}
+
+class QueryGenerator {
+	groups: SearchGroup[];
+	engine: SurgicalEngine;
+	query: SurgicalQuery = [];
+	sheet: GoogleAppsScript.Spreadsheet.Sheet;
+
+	addGroup() {
+		const group = new SearchGroup();
+		this.groups.push(group);
+		return group;
+	}
+	run() {
+		for (const group of this.groups) {
+			this.query.push(group.searchGroup);
+		}
+		this.groups = [];
+		this.engine.backend.runQuery(this.query, this.sheet);
+	}
+
+	constructor(
+		sheet: GoogleAppsScript.Spreadsheet.Sheet,
+		engine: SurgicalEngine,
+	) {
+		this.sheet = sheet;
+		this.groups = [];
+		this.engine = engine;
+	}
+}
+
+class SearchGroup {
+	searchGroup: /**
+	 * A group of queries, each one has the ability to make or break an object's presence in the outputted group results.
+	 */
+	Array<{
+		/**
+		 * Name of the attribute to look through
+		 */
+		attribute: string;
+		/**
+		 * Type of search to execute
+		 */
+		match: EqualsSearch | ContainsSearch | BetweenSearch | FilledSearch;
+	}>;
+
+	addEqualsSearch(
+		attribute: string,
+		value: string | number | boolean,
+		polarity: boolean = true,
+	) {
+		this.searchGroup.push({
+			attribute,
+			match: {
+				type: 'equals',
+				value,
+				polarity,
+			},
+		});
+	}
+
+	addContainsSearch(
+		attribute: string,
+		value: string,
+		polarity: boolean = true,
+	) {
+		this.searchGroup.push({
+			attribute,
+			match: {
+				type: 'contains',
+				value,
+				polarity,
+			},
+		});
+	}
+
+	addBetweenSearch(
+		attribute: string,
+		values: [number, number],
+		polarity: boolean = true,
+	) {
+		this.searchGroup.push({
+			attribute,
+			match: {
+				type: 'between',
+				values,
+				polarity,
+			},
+		});
+	}
+
+	addFilledSearch(attribute: string, value: boolean) {
+		this.searchGroup.push({
+			attribute,
+			match: {
+				type: 'filled',
+				value,
+			},
+		});
+	}
+}
+
+interface ObjectCreation {
+	id: string;
+	position: PositionTypeRangeOrOffset;
+	attributes?: Record<string, any>;
+	isDefinitive?: boolean;
+	type: 'append' | 'ingest';
+	sheetName?: string;
+}
+
+interface AttributeCreation {
+	type: 'append' | 'ingest' | 'hidden';
+	position?: PositionTypeRangeOrOffset;
+	sheetName?: string;
+	id: string;
+}
+
+interface ObjectUpdate {
+	id: string;
+	attributes?: Record<string, any>;
+	isDefinitive?: boolean;
+	position?: { offset: number };
+}
+
+interface AttributeUpdate {
+	id: string;
+	position: { offset: number };
+}
+
+interface DataDelete {
+	id: string;
+	type: 'splice' | 'ignore' | 'hide';
+}
