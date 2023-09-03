@@ -28,7 +28,9 @@ interface StorableArray extends Array<StorableValue> {}
 export default class StorageManager {
 	static get(key: string, allowBadDigests?: 'UNSAFELY_ALLOW_BAD_DIGESTS' | undefined) {
 		const storage = PropertiesService.getDocumentProperties();
-		const legend: Legend = JSON.parse(storage.getProperty(Names.universal + key + Names.legend));
+		const legendUnparsed = storage.getProperty(Names.universal + key + Names.legend);
+		if (!legendUnparsed) throw new Error('Legend not found for specified key')
+		const legend: Legend = JSON.parse(legendUnparsed);
 		const airlock: Record<string, string> = storage.getProperties();
 		// storage.getKeys().filter((k) => k.startsWith(Names.universal + key)).forEach((k) => {
 		// 	airlock[k] = JSON.parse(storage.getProperty(k));
