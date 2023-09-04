@@ -24,7 +24,7 @@ import StorageManager from 'lib/storage-manager';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { unzip as _unzip } from 'underscore';
+import { unzip as _unzip } from 'lodash';
 
 class Names {
 	static universal = 'SURGICAL_ENGINE_MATRIX_';
@@ -345,11 +345,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 						case 'contains':
 							// throw if the value is not a string
 							if (typeof value !== 'string')
-								throw new Error(
+								throw new MatrixError(
 									'Attempted to use a contain search on an attribute that is not a string',
 								);
 							if (typeof value !== 'string')
-								throw new Error(
+								throw new MatrixError(
 									'Attempted to search a value using a contain search that is not a string',
 								);
 
@@ -363,7 +363,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 						case 'between':
 							// throw if the value is not a number
 							if (typeof value !== 'number')
-								throw new Error(
+								throw new MatrixError(
 									'Attempted to use a between search on an attribute that is not a number',
 								);
 
@@ -542,7 +542,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			.getValue();
 
 		if (layout !== 'vertical' && layout !== 'horizontal') {
-			throw new Error('Invalid layout');
+			throw new MatrixError('Invalid layout');
 		} else {
 			return layout;
 		}
@@ -786,7 +786,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
 			// idek what happens to get you here... you clearly didn't follow the typescript types, idk how to help you.
 			default:
-				throw new Error(
+				throw new MatrixError(
 					'The input range used for iteration is an in incorrect format. Please use a one-dimensional range, conforming to the TypeScript type GoogleAppsScript.Spreadsheet.Range.',
 				);
 		}
@@ -989,4 +989,12 @@ interface MatrixLastModified {
 	[object: string]: {
 		[attribute: string]: number;
 	};
+}
+
+export class MatrixError extends Error {
+	retry: boolean;
+	constructor(message: string) {
+		super(message);
+		this.name = 'MatrixError';
+	}
 }
