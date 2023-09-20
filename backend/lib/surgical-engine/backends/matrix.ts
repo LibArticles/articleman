@@ -12,6 +12,7 @@
 import {
 	SupportedLayout,
 	SurgicalBackend,
+	SurgicalChangeQueue,
 	SurgicalChangeset,
 	SurgicalObject,
 	SurgicalQuery,
@@ -24,7 +25,7 @@ import StorageManager from 'lib/storage-manager';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { unzip as _unzip } from 'lodash';
+import { unzip as _unzip, set as _set, get as _get } from 'lodash';
 
 class Names {
 	static universal = 'SURGICAL_ENGINE_MATRIX_';
@@ -34,7 +35,9 @@ class Names {
 	static ignore = this.universal + 'IGNORE_';
 	static header = this.ignore + 'HEADER_';
 	static generalIgnore = this.ignore + 'GENERAL_';
-	static changeTracking = 'change-tracking';
+	static changeTracking = 'change-tracking'
+	static changeTrackingLookup = this.changeTracking + '-lookup';
+	static changeTrackingQueue = this.changeTracking + '-queue';
 }
 
 export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
@@ -46,7 +49,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	}
 
 	initializeEngine(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-		StorageManager.set(Names.changeTracking, { 0: { 0: 0 } });
+		StorageManager.set(Names.changeTrackingLookup, { 0: { 0: 0 } });
 		return this;
 	}
 	initializeSheet(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
@@ -548,7 +551,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 	}
 
-	private getObjectsFromSheet(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
+	getObjectsFromSheet(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
 		const attributeRanges = sheet
 			.getNamedRanges()
 			.filter((r) => r.getName().startsWith(Names.attribute));
@@ -734,6 +737,24 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 	}
 
+	getSheetForAttribute(
+		attributeId: string,
+	) {
+		const range = this.spreadsheet.getRangeByName(
+			Names.attribute + attributeId,
+		);
+		return range.getSheet();
+	}
+
+	getSheetForObject(
+		objectId: string,
+	) {
+		const range = this.spreadsheet.getRangeByName(
+			Names.object + objectId,
+		);
+		return range.getSheet();
+	}
+
 	private isRangeEmpty(range: GoogleAppsScript.Spreadsheet.Range) {
 		const sheet = range.getSheet();
 		if (!this.isRangeIgnored(sheet, range)) {
@@ -897,35 +918,51 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		objectAttributePairings: ObjectAttributePairingSet,
 	) {
 		// TODO
-		const turnstile = new Turnstile(Names.changeTracking, 'document');
+		const turnstile = new Turnstile(Names.changeTrackingLookup, 'document');
 		if (turnstile.enter(1000, true)) {
-			const changes = StorageManager.get(
+			const changesLookup = StorageManager.get(
 				Names.changeTracking,
 			) as MatrixLastModified;
+
+			const changesQueue = StorageManager.get(
+				Names.changeTrackingQueue
+			) as SurgicalChangeQueue;
+
+
+			const date = new Date().getTime();
 
 			for (const pairing in objectAttributePairings) {
 				const object = objectAttributePairings[pairing].object;
 				const attribute = objectAttributePairings[pairing].attribute;
-				changes[object][attribute] = new Date().getTime();
+				_set(changesLookup, [object, attribute], date);
+				changesQueue.push({object, attribute, date})
 			}
 
-			StorageManager.set(Names.changeTracking, changes);
+
+			StorageManager.set(Names.changeTrackingLookup, changesLookup);
+			StorageManager.set(Names.changeTrackingQueue, changesQueue);
 
 			turnstile.exit();
 		}
 	}
 
-	private getLastModified(
-		objectId?: string,
-	): MatrixLastModified | Record<string, number> | undefined {
+	getLastModified(
+		objectId: string,
+	): Record<string, number> | undefined {
 		const changes = StorageManager.get(
-			Names.changeTracking,
+			Names.changeTrackingLookup,
 		) as MatrixLastModified;
 		if (objectId) {
 			return changes[objectId] ?? undefined;
-		} else {
-			return changes;
 		}
+	}
+
+	getChangeQueue() {
+		return StorageManager.get(Names.changeTrackingQueue) as SurgicalChangeQueue
+	}
+
+	setChangeQueue(queue: SurgicalChangeQueue | {}) {
+		StorageManager.set(Names.changeTrackingQueue, queue);
 	}
 
 	editCallBack(event: GoogleAppsScript.Events.SheetsOnEdit) {
@@ -968,10 +1005,10 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				return {
 					attribute: attribute
 						.getName()
-						.match(new RegExp(Names.attribute + '(.*)'))[0],
+						.split(Names.attribute)[0],
 					object: object
 						.getName()
-						.match(new RegExp(Names.object + '(.*)'))[0],
+						.split(Names.object)[0],
 				};
 			},
 		);
@@ -990,6 +1027,8 @@ interface MatrixLastModified {
 		[attribute: string]: number;
 	};
 }
+
+
 
 export class MatrixError extends Error {
 	retry: boolean;

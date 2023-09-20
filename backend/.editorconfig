@@ -1,4 +1,4 @@
-[**/*.{ts,js,json}]
+[**/*.{ts,js,json,css,scss}]
 end_of_line = lf
 indent_style = tab
 indent_size = tab

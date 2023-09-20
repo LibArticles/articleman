@@ -4,7 +4,7 @@
 		"esModuleInterop": true,
 		"moduleResolution": "bundler",
 		"noImplicitAny": true,
-		"module": "es2022",
+		"module": "ESNext",
 		"target": "es2018",
 		"allowJs": false,
 		"allowArbitraryExtensions": true,
@@ -12,6 +12,7 @@
 		"paths": {
 			"lib/*": ["lib/*"],
 			"src/*": ["src/*"],
+			"locale/*": ["locale/*"]
 		},
 		"baseUrl": "."
 	},

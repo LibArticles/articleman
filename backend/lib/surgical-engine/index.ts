@@ -8,6 +8,7 @@
 import MatrixBackend from './backends/matrix';
 import {
 	SurgicalChangeset,
+	SurgicalChangeQueue,
 	PositionTypeRangeOrOffset,
 	SurgicalQuery,
 	EqualsSearch,
@@ -118,6 +119,10 @@ export default class SurgicalEngine {
 		}
 	}
 
+	getAllObjectsForSheet(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
+		return this.backend.getObjectsFromSheet(sheet);
+	}
+
 	getObject(id: string) {
 		return this.backend.getObject(id);
 	}
@@ -149,6 +154,30 @@ export default class SurgicalEngine {
 		// 	this.backend.changeCallBack(event);
 		// }
 	}
+
+	getLastModifiedForObject(object: string) {
+		return this.backend.getLastModified(object);
+	}
+
+	getChangeQueue() {
+		return this.backend.getChangeQueue();
+	}
+
+	setChangeQueue(queue: SurgicalChangeQueue) {
+		this.backend.setChangeQueue(queue);
+	}
+
+	getSheetForObject(object: string) {
+		return this.backend.getSheetForObject(object);
+	}
+
+	getSheetForAttribute(attribute: string) {
+		return this.backend.getSheetForAttribute(attribute);
+	}
+
+
+
+
 }
 
 class QueryGenerator {

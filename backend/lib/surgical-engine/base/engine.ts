@@ -36,7 +36,22 @@ export interface SurgicalBackend<ExtenderClass> {
 	// for the constructor, make sure to set this.spreadsheet to the inputted GoogleAppsScript.Spreadsheet.Spreadsheet value!
 
 	supportedLayouts: SupportedLayout[];
+
+	getLastModified: (object: string) => Record<string, number>;
+	getChangeQueue: () => SurgicalChangeQueue;
+	setChangeQueue: (queue: SurgicalChangeQueue | []) => void;
+	getObjectsFromSheet: (sheet: GoogleAppsScript.Spreadsheet.Sheet) => SurgicalObject[];
+	getSheetForObject: (object: string) => GoogleAppsScript.Spreadsheet.Sheet;
+	getSheetForAttribute: (attribute: string) => GoogleAppsScript.Spreadsheet.Sheet;
+
+
 }
+
+export type SurgicalChangeQueue = {
+	object: string,
+	attribute: string,
+	date: number
+}[]
 
 
 export interface SurgicalTemplate {
