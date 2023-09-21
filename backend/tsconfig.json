@@ -4,6 +4,7 @@
 		"esModuleInterop": true,
 		"moduleResolution": "bundler",
 		"noImplicitAny": true,
+		"lib": ["ESNext"],
 		"module": "ESNext",
 		"target": "es2018",
 		"allowJs": false,

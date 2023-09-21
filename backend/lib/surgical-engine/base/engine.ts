@@ -179,7 +179,7 @@ export type SurgicalQuery =
 				/**
 				 * Type of search to execute
 				 */
-				match: EqualsSearch | ContainsSearch | BetweenSearch | FilledSearch;
+				match: EqualsSearch | ContainsSearch | BetweenSearch | FilledSearch | IsContainedSearch;
 			}
 		>
 	>;
@@ -198,6 +198,15 @@ export type EqualsSearch = {
  */
 export type ContainsSearch = {
 	type: "contains";
+	value: string;
+	polarity: boolean;
+}
+
+/**
+ * Is a value contained in the search value?
+ */
+export type IsContainedSearch = {
+	type: "iscontained";
 	value: string;
 	polarity: boolean;
 }

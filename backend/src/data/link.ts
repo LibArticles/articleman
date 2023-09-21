@@ -3,9 +3,19 @@ import StorageManager from 'lib/storage-manager';
 import AMObject from './object';
 import refTokenizerRules from 'locale/ref-link-tokenizer.json';
 import { v4 as uuidv4 } from 'uuid';
-import { set as _set, get as _get, has as _has } from 'lodash';
+import {
+	set as _set,
+	get as _get,
+	has as _has,
+	trim as _trim,
+	uniq as _uniq,
+} from 'lodash';
 
-export class LinkManager {
+class Names {
+	static links = 'links';
+}
+
+export default class LinkManager {
 	sharedLinks: Record<string, AMSharedLink>;
 	referenceLinks: Record<string, AMReferenceLink>;
 	sharedLookupTable: Record<string, string[]>;
@@ -16,17 +26,28 @@ export class LinkManager {
 	engine: SurgicalEngine;
 
 	constructor(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-		const sharedLinks = StorageManager.get('shared-links');
-		const referenceLinks = StorageManager.get('reference-links');
+		this.engine = new SurgicalEngine(spreadsheet);
 
-		this.sharedLinks = sharedLinks;
-		this.referenceLinks = referenceLinks;
+		const links = StorageManager.get(Names.links);
+		this.sharedLinks = links.sharedLinks;
+		this.referenceLinks = links.referenceLinks;
+		this.sharedLookupTable = links.sharedLookupTable;
+		this.referenceLookupTable = links.referenceLookupTable;
 
 		if (!this.sharedLinks) {
 			this.sharedLinks = {};
 		}
 		if (!this.referenceLinks) {
 			this.referenceLinks = {};
+		}
+		if (!this.sharedLookupTable) {
+			this.sharedLookupTable = {};
+		}
+		if (!this.referenceLookupTable) {
+			this.referenceLookupTable = {
+				initiators: {},
+				targets: {},
+			};
 		}
 	}
 
@@ -212,7 +233,78 @@ export class LinkManager {
 		return this.referenceLinks[id];
 	}
 
-	resolveReferenceLink(attribute: string, value: string) {}
+	resolveReferenceLink(attribute: string, value: string) {
+		const tokenized = this.tokenizeInitiatorString(value);
+
+		const links = this.referenceLookupTable.initiators[attribute].map(
+			(id) => this.referenceLinks[id],
+		);
+
+		const sheetLUT = _uniq(
+			links.map((link) => {
+				return {
+					target: link.target,
+					targetSheet: this.engine.getSheetForAttribute(link.target),
+				};
+			}),
+		);
+
+		// for each sheet create a query
+
+		const queries = sheetLUT.map((item) => {
+			const query = this.engine.newQuery(item.targetSheet);
+			for (const token of tokenized) {
+				query.addGroup().addContainsSearch(item.target, token);
+			}
+			return query;
+		});
+
+		const results = queries.flatMap((query) => {
+			return query.run();
+		});
+
+		return results;
+	}
+
+	resolveBackLink(attribute: string, value: string) {
+		const tokenized = this.tokenizeInitiatorString(value);
+		const sheet = this.engine.getSheetForAttribute(attribute);
+
+		const links = this.referenceLookupTable.targets[attribute].map(
+			(id) => this.referenceLinks[id],
+		);
+
+		const sheetLUT = _uniq(
+			links.map((link) => {
+				return {
+					initiator: link.initiator,
+
+					initiatorSheet: this.engine.getSheetForAttribute(link.initiator),
+				};
+			}),
+		);
+
+		const objectGroups = sheetLUT.map((item) => {
+			return {
+				objects: this.engine.getAllObjectsForSheet(item.initiatorSheet),
+				initiator: item.initiator,
+			};
+		});
+
+		const queries = objectGroups.flatMap((group) => {
+			const query = this.engine.newQuery(group.objects);
+			for (const token of tokenized) {
+				query.addGroup().addIsContainedSearch(group.initiator, token);
+			}
+			return query;
+		});
+
+		const results = queries.flatMap((query) => {
+			return query.run();
+		});
+
+		return results;
+	}
 
 	private tokenizeInitiatorString(initiator: string) {
 		let locale: 'en' | 'es';
@@ -228,15 +320,67 @@ export class LinkManager {
 		}
 		const localizedRules = refTokenizerRules.langs[locale];
 
-		const terms = splitOnTerms(initiator, localizedRules.alwaysSeparateOn);
+		let numSeparators = 0;
 
-		// todo: figure out how to trim surrounding whitespace, and make sure that names like "Simon & Schuster" don't get split, or "Simon and Schuster". If it's something like "Yohannan, Tess, Marco and blue", do split on "and", but otherwise don't. Maybe if there's more than one "and", only split on the last one? Like "Simon and Schuster, Yohannan and blue" gets split into ["Simon and Schuster", "Yohannan", "blue"]? same with "&"
+		const terms = splitOnTerms(
+			initiator,
+			localizedRules.alwaysSeparateOn,
+		).map((item) => {
+			let separators: string[] = [];
+			return {
+				items: [item],
+				separators: localizedRules.separateIfNotName.filter((rule) => {
+					const match = item.includes(rule);
+					if (match) {
+						if (!separators.includes(item)) {
+							separators.push(item);
+							return rule;
+						}
+					}
+				}),
+			};
+		});
+
+		const newTermslist = terms.map((term, index, array) => {
+			switch (true) {
+				// if there are commas, only split on words like 'and' when they're the last appearance.
+				case array.length > 1:
+					if (index === array.length - 1) {
+						if (term.separators) {
+							term.items = splitOnTerms(term.items[0], term.separators);
+						}
+					}
+					break;
+				// if there aren't any commas, immediately switch to separating on every instance of a maybe separator like 'and'
+				case array.length === 1:
+					if (term.separators) {
+						term.items = splitOnTerms(term.items[0], term.separators);
+					}
+			}
+			return term;
+		});
+
+		const finalList = newTermslist.flatMap((group) => {
+			return group.items.map((item) => {
+				return _trim(item);
+			});
+		});
+
+		return finalList;
 	}
 
-	// todo: allow committing of links to storagemanager, finish both reference links and reference backlinks. almost done!!
+	commit() {
+		StorageManager.set(Names.links, {
+			shared: this.sharedLinks,
+			reference: this.referenceLinks,
+			sharedLookup: this.referenceLookupTable,
+			referenceLookup: this.referenceLookupTable,
+		});
+	}
+
 }
 
-interface AMSharedLink {
+export interface AMSharedLink {
 	// the objects that are linked
 	objects: string[];
 
@@ -245,7 +389,7 @@ interface AMSharedLink {
 	linkedAttributes?: string[][];
 }
 
-interface AMReferenceLink {
+export interface AMReferenceLink {
 	// the attribute that should link to one of the objects in the target attribute
 	initiator: string;
 

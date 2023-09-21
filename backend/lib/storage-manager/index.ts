@@ -1,5 +1,6 @@
 import fastChunkString from '@shelf/fast-chunk-string';
 import { Turnstile } from 'lib/concurrency';
+import { AMSharedLink, AMReferenceLink } from 'src/data/link';
 
 class Names {
 	static universal = 'ARTICLEMAN_STORAGE_';
@@ -16,6 +17,8 @@ interface Legend {
 type StorableValue =
 	| string
 	| number
+	| AMReferenceLink
+	| AMSharedLink
 	| boolean
 	| StorableObject
 	| StorableArray

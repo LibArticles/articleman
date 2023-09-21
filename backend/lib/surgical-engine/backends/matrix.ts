@@ -35,7 +35,7 @@ class Names {
 	static ignore = this.universal + 'IGNORE_';
 	static header = this.ignore + 'HEADER_';
 	static generalIgnore = this.ignore + 'GENERAL_';
-	static changeTracking = 'change-tracking'
+	static changeTracking = 'change-tracking';
 	static changeTrackingLookup = this.changeTracking + '-lookup';
 	static changeTrackingQueue = this.changeTracking + '-queue';
 }
@@ -44,7 +44,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
 
 	constructor(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-		this.spreadsheet = spreadsheet
+		this.spreadsheet = spreadsheet;
 		return this;
 	}
 
@@ -158,10 +158,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 					case 'append':
 						this.appendAttribute(currentSheet, newAttributeId);
 					case 'hidden':
-						this.appendAttribute(
-							currentSheet,
-							newAttributeId,
-						);
+						this.appendAttribute(currentSheet, newAttributeId);
 						this.hideData(newAttributeId, 'attribute');
 				}
 			}
@@ -339,7 +336,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 					switch (search.match.type) {
 						case 'equals':
 							// if the polarity is true, then check if the value matches. if not, check if it doesn't.
-								searchResults.push(
+							searchResults.push(
 								search.match.polarity
 									? value === search.match.value
 									: value !== search.match.value,
@@ -351,7 +348,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 								throw new MatrixError(
 									'Attempted to use a contain search on an attribute that is not a string',
 								);
-							if (typeof value !== 'string')
+							if (typeof search.match.value !== 'string')
 								throw new MatrixError(
 									'Attempted to search a value using a contain search that is not a string',
 								);
@@ -363,6 +360,23 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 									: !value.toString().includes(search.match.value),
 							);
 							break;
+						case 'iscontained':
+							// throw if the value is not a string
+							if (typeof value !== 'string')
+								throw new MatrixError(
+									'Attempted to use an iscontained search on an attribute that is not a string',
+								);
+							if (typeof search.match.value !== 'string')
+								throw new MatrixError(
+									'Attempted to search a value using an iscontained search that is not a string',
+								);
+							searchResults.push(
+								search.match.polarity
+									? search.match.value.toString().includes(value)
+									: !search.match.value.toString().includes(value),
+							);
+							break;
+
 						case 'between':
 							// throw if the value is not a number
 							if (typeof value !== 'number')
@@ -386,16 +400,24 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 							// if the polarity is true, return the truthiness of the result. if not, return the opposite.
 							searchResults.push(
 								search.match.value ? value !== '' : value === '',
-							)
+							);
 					}
 				}
-				if (searchResults.every((result) => {return result === true})) {
+				if (
+					searchResults.every((result) => {
+						return result === true;
+					})
+				) {
 					groupResults.push(true);
 				} else {
 					groupResults.push(false);
 				}
 			}
-			if (groupResults.some((result) => {return result === true})) {
+			if (
+				groupResults.some((result) => {
+					return result === true;
+				})
+			) {
 				queryResults.push(object);
 			}
 		}
@@ -486,7 +508,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		return intersectingRange;
 	}
 
-	private moveDataByOffset(id: string, type: 'attribute' | 'object', offset: number) {
+	private moveDataByOffset(
+		id: string,
+		type: 'attribute' | 'object',
+		offset: number,
+	) {
 		const range = this.spreadsheet.getRangeByName(
 			(type === 'attribute' ? Names.attribute : Names.object) + id,
 		);
@@ -737,21 +763,15 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 	}
 
-	getSheetForAttribute(
-		attributeId: string,
-	) {
+	getSheetForAttribute(attributeId: string) {
 		const range = this.spreadsheet.getRangeByName(
 			Names.attribute + attributeId,
 		);
 		return range.getSheet();
 	}
 
-	getSheetForObject(
-		objectId: string,
-	) {
-		const range = this.spreadsheet.getRangeByName(
-			Names.object + objectId,
-		);
+	getSheetForObject(objectId: string) {
+		const range = this.spreadsheet.getRangeByName(Names.object + objectId);
 		return range.getSheet();
 	}
 
@@ -925,9 +945,8 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			) as MatrixLastModified;
 
 			const changesQueue = StorageManager.get(
-				Names.changeTrackingQueue
+				Names.changeTrackingQueue,
 			) as SurgicalChangeQueue;
-
 
 			const date = new Date().getTime();
 
@@ -935,9 +954,8 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				const object = objectAttributePairings[pairing].object;
 				const attribute = objectAttributePairings[pairing].attribute;
 				_set(changesLookup, [object, attribute], date);
-				changesQueue.push({object, attribute, date})
+				changesQueue.push({ object, attribute, date });
 			}
-
 
 			StorageManager.set(Names.changeTrackingLookup, changesLookup);
 			StorageManager.set(Names.changeTrackingQueue, changesQueue);
@@ -946,9 +964,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 	}
 
-	getLastModified(
-		objectId: string,
-	): Record<string, number> | undefined {
+	getLastModified(objectId: string): Record<string, number> | undefined {
 		const changes = StorageManager.get(
 			Names.changeTrackingLookup,
 		) as MatrixLastModified;
@@ -958,7 +974,9 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	}
 
 	getChangeQueue() {
-		return StorageManager.get(Names.changeTrackingQueue) as SurgicalChangeQueue
+		return StorageManager.get(
+			Names.changeTrackingQueue,
+		) as SurgicalChangeQueue;
 	}
 
 	setChangeQueue(queue: SurgicalChangeQueue | {}) {
@@ -1003,12 +1021,8 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 						this.isRangeContainedIn(cell, object.getRange()),
 				);
 				return {
-					attribute: attribute
-						.getName()
-						.split(Names.attribute)[0],
-					object: object
-						.getName()
-						.split(Names.object)[0],
+					attribute: attribute.getName().split(Names.attribute)[0],
+					object: object.getName().split(Names.object)[0],
 				};
 			},
 		);
@@ -1027,8 +1041,6 @@ interface MatrixLastModified {
 		[attribute: string]: number;
 	};
 }
-
-
 
 export class MatrixError extends Error {
 	retry: boolean;

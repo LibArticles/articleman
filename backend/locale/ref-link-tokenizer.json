@@ -1,11 +1,11 @@
 {
 	"langs": {
 		"en": {
-			"alwaysSeparateOn": [", "],
+			"alwaysSeparateOn": [",", "+", "/"],
 			"separateIfNotName": ["&", "and", ", and"]
 		},
 		"es": {
-			"alwaysSeparateOn": [", "],
+			"alwaysSeparateOn": [",", "+", "/"],
 			"separateIfNotName": ["&", "y", ", y", "e", ", e"]
 		}
 	}

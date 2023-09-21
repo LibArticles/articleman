@@ -17,6 +17,8 @@ import {
 	FilledSearch,
 	SurgicalBackend,
 	SurgicalTemplate,
+	SurgicalObject,
+	IsContainedSearch
 } from './base/engine';
 
 export default class SurgicalEngine {
@@ -32,8 +34,8 @@ export default class SurgicalEngine {
 		this.autoCommit = autoCommit;
 	}
 
-	newQuery(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
-		return new QueryGenerator(sheet, this);
+	newQuery(source: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[]) {
+		return new QueryGenerator(source, this);
 	}
 
 	newObject(input: ObjectCreation) {
@@ -184,7 +186,7 @@ class QueryGenerator {
 	groups: SearchGroup[];
 	engine: SurgicalEngine;
 	query: SurgicalQuery = [];
-	sheet: GoogleAppsScript.Spreadsheet.Sheet;
+	source: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[];
 
 	addGroup() {
 		const group = new SearchGroup();
@@ -196,14 +198,14 @@ class QueryGenerator {
 			this.query.push(group.searchGroup);
 		}
 		this.groups = [];
-		this.engine.backend.runQuery(this.query, this.sheet);
+		return this.engine.backend.runQuery(this.query, this.source);
 	}
 
 	constructor(
-		sheet: GoogleAppsScript.Spreadsheet.Sheet,
+		source: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[],
 		engine: SurgicalEngine,
 	) {
-		this.sheet = sheet;
+		this.source = source;
 		this.groups = [];
 		this.engine = engine;
 	}
@@ -221,7 +223,7 @@ class SearchGroup {
 		/**
 		 * Type of search to execute
 		 */
-		match: EqualsSearch | ContainsSearch | BetweenSearch | FilledSearch;
+		match: EqualsSearch | ContainsSearch | BetweenSearch | FilledSearch | IsContainedSearch;
 	}>;
 
 	addEqualsSearch(
@@ -248,6 +250,21 @@ class SearchGroup {
 			attribute,
 			match: {
 				type: 'contains',
+				value,
+				polarity,
+			},
+		});
+	}
+
+	addIsContainedSearch(
+		attribute: string,
+		value: string,
+		polarity: boolean = true,
+	){
+		this.searchGroup.push({
+			attribute,
+			match: {
+				type: 'iscontained',
 				value,
 				polarity,
 			},
