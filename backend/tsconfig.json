@@ -15,7 +15,8 @@
 			"src/*": ["src/*"],
 			"locale/*": ["locale/*"]
 		},
-		"baseUrl": "."
+		"baseUrl": ".",
+		"experimentalDecorators": true
 	},
 
 	"include": [
