@@ -1,0 +1,17 @@
+{
+	"en": {
+		"pronouns": {
+			"values": [
+				{
+					"subject": "they",
+					"object": "them",
+					"possessive": {
+						"determiner": "their",
+						"pronoun": "theirs"
+					},
+					"reflexive": "themself"
+				}
+			]
+		}
+	}
+}

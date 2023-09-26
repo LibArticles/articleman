@@ -42,7 +42,7 @@ export default class SurgicalEngine {
 		this.changeset.create.objects[input.id] = {
 			position: input.position,
 			type: input.type,
-			sheetName: input.sheetName ?? undefined,
+			sheetId: input.sheetId ?? undefined,
 		};
 		this.changeset.update.objects[input.id] = {
 			attributes: input.attributes ?? {},
@@ -57,7 +57,7 @@ export default class SurgicalEngine {
 		this.changeset.create.attributes[input.id] = {
 			position: input.position,
 			type: input.type,
-			sheetName: input.sheetName,
+			sheetId: input.sheetId,
 		};
 		if (this.autoCommit) {
 			this.commit();
@@ -177,7 +177,11 @@ export default class SurgicalEngine {
 		return this.backend.getSheetForAttribute(attribute);
 	}
 
-
+	getSheetById(id: string) {
+		const sheets = this.backend.spreadsheet.getSheets();
+		const sheet = sheets.find(s => s.getSheetId().toString() === id);
+		return sheet;
+	}
 
 
 }
@@ -213,7 +217,7 @@ class QueryGenerator {
 
 class SearchGroup {
 	searchGroup: /**
-	 * A group of queries, each one has the ability to make or break an object's presence in the outputted group results.
+	 * A group of queries, each query has the ability to make or break an object's presence in the outputted group results.
 	 */
 	Array<{
 		/**
@@ -303,13 +307,13 @@ interface ObjectCreation {
 	attributes?: Record<string, any>;
 	isDefinitive?: boolean;
 	type: 'append' | 'ingest';
-	sheetName?: string;
+	sheetId?: string;
 }
 
 interface AttributeCreation {
 	type: 'append' | 'ingest' | 'hidden';
 	position?: PositionTypeRangeOrOffset;
-	sheetName?: string;
+	sheetId?: string;
 	id: string;
 }
 
