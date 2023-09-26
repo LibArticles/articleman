@@ -64,11 +64,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			const range = this.spreadsheet.getRange(template.objects[attr]);
 			this.spreadsheet.setNamedRange(Names.attribute + attr, range);
 		}
-		for (const sheetName in Object.keys(template.sheetLayouts)) {
-			const sheet = this.spreadsheet.getSheetByName(sheetName);
+		for (const sheetId in Object.keys(template.sheetLayouts)) {
+			const sheet = this.getSheetById(sheetId);
 			sheet.addDeveloperMetadata(
 				Names.layout,
-				template.sheetLayouts[sheetName],
+				template.sheetLayouts[sheetId],
 			);
 		}
 
@@ -86,6 +86,12 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 
 		return this;
+	}
+
+	getSheetById(id: string) {
+		const sheets = this.spreadsheet.getSheets();
+		const sheet = sheets.find((s) => s.getSheetId().toString() === id);
+		return sheet;
 	}
 
 	getObject(id: string): SurgicalObject {
@@ -141,10 +147,8 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				);
 
 				// otherwise add it at the specified offset from the end.
-			} else if (currentAttrCreation.sheetName !== undefined) {
-				const currentSheet = this.spreadsheet.getSheetByName(
-					currentAttrCreation.sheetName,
-				);
+			} else if (currentAttrCreation.sheetId !== undefined) {
+				const currentSheet = this.getSheetById(currentAttrCreation.sheetId);
 
 				switch (currentAttrCreation.type) {
 					case 'ingest':
@@ -167,10 +171,8 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
 		for (const newObjectId in changeset.create.objects) {
 			const currentObjCreation = changeset.create.objects[newObjectId];
-			if (currentObjCreation.sheetName !== undefined) {
-				const currentSheet = this.spreadsheet.getSheetByName(
-					currentObjCreation.sheetName,
-				);
+			if (currentObjCreation.sheetId !== undefined) {
+				const currentSheet = this.getSheetById(currentObjCreation.sheetId);
 				switch (currentObjCreation.type) {
 					case 'append':
 						this.appendObject(currentSheet, newObjectId);

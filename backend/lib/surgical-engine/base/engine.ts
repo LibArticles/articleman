@@ -77,7 +77,7 @@ export interface SurgicalChangeset {
 				isDefinitive?: boolean;
 				type: 'append' | 'ingest';
 				position?: PositionTypeRangeOrOffset;
-				sheetName?: string;
+				sheetId?: string;
 				unIgnore?: boolean
 			};
 		};
@@ -86,7 +86,7 @@ export interface SurgicalChangeset {
 			[id: string]: {
 				type: 'append' | 'ingest' | 'hidden';
 				position?: PositionTypeRangeOrOffset;
-				sheetName?: string;
+				sheetId?: string;
 				unIgnore?: boolean;
 			};
 		};
