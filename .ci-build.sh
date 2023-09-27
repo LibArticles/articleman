@@ -1,2 +1,2 @@
-cd frontend
-pnpm ember build --environment=production
+cd app/frontend
+bun ember build --environment=production
