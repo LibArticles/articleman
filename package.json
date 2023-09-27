@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "ci-build": "cd frontend && ember build",
-    "preinstall": "npx only-allow pnpm"
+	 "preinstall": "npx only-allow bun"
   },
   "repository": {
     "type": "git",
@@ -25,17 +25,5 @@
     "url": "https://github.com/bluelinden/articleman/issues"
   },
   "homepage": "https://github.com/bluelinden/articleman#readme",
-  "dependencies": {
-    "pnpm": "^8.6.12"
-  },
-  "pnpm": {
-    "overrides": {
-      "@glimmer/compiler": "^0.84.3",
-      "@glimmer/syntax": "^0.84.3",
-      "@glimmer/validator": "^0.84.3",
-      "@glimmer/reference": "^0.84.3",
-      "@glimmer/manager": "^0.84.3",
-      "@glimmer/interfaces": "^0.84.3"
-    }
-  }
+  "workspaces": ["app/*"]
 }
