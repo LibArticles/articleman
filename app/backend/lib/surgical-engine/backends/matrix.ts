@@ -49,7 +49,9 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	}
 
 	initializeEngine(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-		StorageManager.set(Names.changeTrackingLookup, { 0: { 0: 0 } });
+		StorageManager.document.store(Names.changeTrackingLookup, {
+			0: { 0: 0 },
+		});
 		return this;
 	}
 	initializeSheet(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
@@ -933,7 +935,6 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	//    ██    ██   ██ ██   ██  ██████ ██   ██ ██ ██   ████  ██████
 
 	// Last Modified Date tracking system
-	// TODO: Implement
 
 	private commitLastModified(
 		sheet: GoogleAppsScript.Spreadsheet.Sheet,
@@ -942,11 +943,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		// TODO
 		const turnstile = new Turnstile(Names.changeTrackingLookup, 'document');
 		if (turnstile.enter(1000, true)) {
-			const changesLookup = StorageManager.get(
+			const changesLookup = StorageManager.document.getStored(
 				Names.changeTracking,
 			) as MatrixLastModified;
 
-			const changesQueue = StorageManager.get(
+			const changesQueue = StorageManager.document.getStored(
 				Names.changeTrackingQueue,
 			) as SurgicalChangeQueue;
 
@@ -959,15 +960,18 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				changesQueue.push({ object, attribute, date });
 			}
 
-			StorageManager.set(Names.changeTrackingLookup, changesLookup);
-			StorageManager.set(Names.changeTrackingQueue, changesQueue);
+			StorageManager.document.store(
+				Names.changeTrackingLookup,
+				changesLookup,
+			);
+			StorageManager.document.store(Names.changeTrackingQueue, changesQueue);
 
 			turnstile.exit();
 		}
 	}
 
 	getLastModified(objectId: string): Record<string, number> | undefined {
-		const changes = StorageManager.get(
+		const changes = StorageManager.document.getStored(
 			Names.changeTrackingLookup,
 		) as MatrixLastModified;
 		if (objectId) {
@@ -976,13 +980,13 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	}
 
 	getChangeQueue() {
-		return StorageManager.get(
+		return StorageManager.document.getStored(
 			Names.changeTrackingQueue,
 		) as SurgicalChangeQueue;
 	}
 
 	setChangeQueue(queue: SurgicalChangeQueue | {}) {
-		StorageManager.set(Names.changeTrackingQueue, queue);
+		StorageManager.document.store(Names.changeTrackingQueue, queue);
 	}
 
 	editCallBack(event: GoogleAppsScript.Events.SheetsOnEdit) {

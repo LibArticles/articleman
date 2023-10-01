@@ -22,7 +22,7 @@ class Names {
 //   ██  ██  ██ ██   ██ ██ ██  ██ ██
 //   ██      ██ ██   ██ ██ ██   ████
 
-export class UserManager {
+export default class UserManager {
 	private activeUser: User;
 	private allUsers: {
 		[id: string]: User;
@@ -45,7 +45,9 @@ export class UserManager {
 	) {
 		this.engine = new SurgicalEngine(spreadsheet);
 		const userEmail = Session.getActiveUser().getEmail();
-		const userStorage = StorageManager.get(Names.userStorage) as UserStorage;
+		const userStorage = StorageManager.document.getStored(
+			Names.userStorage,
+		) as UserStorage;
 		this.groups = userStorage.groups;
 		this.attributeMap = attributeMap;
 
@@ -299,6 +301,14 @@ export class UserManager {
 		}
 	}
 
+	@needs(Capabilities.UM.editOwnTOAs) setOwnTermsOfAddress(
+		termsOfAddress: TermsOfAddress,
+	) {
+		if (userBalance(this.activeUser, this.activeUser)) {
+			_merge(this.activeUser.termsOfAddress, termsOfAddress);
+		}
+	}
+
 	@needs(Capabilities.UM.editUserAttributes) setAttributes(
 		user: User,
 		attributes: { [key: string]: string },
@@ -306,6 +316,35 @@ export class UserManager {
 		if (userBalance(this.activeUser, user)) {
 			_merge(this.allUsers[user.id].attributes, attributes);
 		}
+	}
+
+	@needs(Capabilities.UM.editOwnAttributes) setOwnAttributes(attributes: {
+		[key: string]: string;
+	}) {
+		if (userBalance(this.activeUser, this.activeUser)) {
+			_merge(this.activeUser.attributes, attributes);
+		}
+	}
+
+	commit() {
+		const mainStorage: Record<string, object> = {};
+
+		for (const id in this.allUsers) {
+			const user = this.allUsers[id];
+			mainStorage[id] = {
+				termsOfAddress: user.termsOfAddress,
+				capabilities: user.capabilities,
+				attributes: user.attributes,
+				groups: user.groups,
+				onboarded: user.onboarded,
+				locale: user.locale,
+			};
+		}
+		StorageManager.document.store(Names.userStorage, {
+			main: mainStorage,
+			emailLUT: this.emailLUT,
+			groups: this.groups,
+		} as UserStorage);
 	}
 }
 
@@ -410,7 +449,7 @@ export function pronouns(user: User, locale: string) {
 
 class SentencePronounGenerator {
 	private toa: TermsOfAddress;
-	index: number;
+	private index: number;
 	private locale: string;
 
 	endSentence() {
@@ -512,7 +551,7 @@ export function userCan(capability: string) {
 //        ██       ██    ██      ██           ██
 //        ██       ██    ██      ███████ ███████
 
-interface UserAttributeSet {
+export interface UserAttributeSet {
 	[sheetId: string]: {
 		email: string;
 		fullName: string;
@@ -543,7 +582,7 @@ interface UserAddition {
 	sheetId: string;
 }
 
-interface UserStorage {
+export interface UserStorage {
 	main: {
 		[id: string]: {
 			termsOfAddress: TermsOfAddress;
@@ -613,6 +652,16 @@ namespace Capabilities {
 		 * Edit other users' terms of address
 		 */
 		editUserTOAs = 'cap:um:editUserTOAs',
+
+		/**
+		 * Edit own terms of address
+		 */
+		editOwnTOAs = 'cap:um:editOwnTOAs',
+
+		/**
+		 * Edit own attributes
+		 */
+		editOwnAttributes = 'cap:um:editOwnAttrs',
 	}
 }
 

@@ -28,7 +28,7 @@ export default class LinkManager {
 	constructor(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
 		this.engine = new SurgicalEngine(spreadsheet);
 
-		const links = StorageManager.get(Names.links);
+		const links = StorageManager.document.getStored(Names.links);
 		this.sharedLinks = links.sharedLinks;
 		this.referenceLinks = links.referenceLinks;
 		this.sharedLookupTable = links.sharedLookupTable;
@@ -370,14 +370,13 @@ export default class LinkManager {
 	}
 
 	commit() {
-		StorageManager.set(Names.links, {
+		StorageManager.document.store(Names.links, {
 			shared: this.sharedLinks,
 			reference: this.referenceLinks,
 			sharedLookup: this.referenceLookupTable,
 			referenceLookup: this.referenceLookupTable,
 		});
 	}
-
 }
 
 export interface AMSharedLink {
