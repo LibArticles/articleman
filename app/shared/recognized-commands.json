@@ -1,9 +1,0 @@
-{
-  "getEmail": "getEmail",
-  "getUserDetails": "getUserDetails",
-  "getMatchingItem": "getMatchingItem",
-  "getMatchingItems": "getMatchingItems",
-  "createItem": "createItem",
-  "updateItem": "updateItem",
-  "deleteItem": "deleteItem"
-}
