@@ -2,7 +2,7 @@ name: Cloudflare Pages Deployer
 
 on: push
 
-# Install and cache all pnpm dependencies
+# Install and cache all bun dependencies
 
 jobs:
   build:
