@@ -13,7 +13,8 @@
 		"paths": {
 			"lib/*": ["lib/*"],
 			"src/*": ["src/*"],
-			"locale/*": ["locale/*"]
+			"locale/*": ["locale/*"],
+			"shared/*": ["../shared/*"]
 		},
 		"baseUrl": ".",
 		"experimentalDecorators": true
