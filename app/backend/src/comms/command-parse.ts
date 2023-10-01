@@ -1,4 +1,4 @@
-import recognizedCommands from '../../../shared/recognized-commands.json';
+import recognizedCommands from '../../../shared/recognized-commands';
 import DataManager from './data-operator';
 
 export default class CommandParser {

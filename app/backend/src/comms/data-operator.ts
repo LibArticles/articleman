@@ -1,4 +1,4 @@
-import recognizedCommands from '../../../shared/recognized-commands.json';
+import recognizedCommands from '../../../shared/recognized-commands';
 import DataSetManager from '../parsing/datasets/dataset-manager';
 
 export default class DataManager {
