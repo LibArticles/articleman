@@ -9,8 +9,7 @@
 //      ██ ██    ██ ██   ██ ██    ██ ██ ██      ██   ██ ██
 // ███████  ██████  ██   ██  ██████  ██  ██████ ██   ██ ███████
 
-import {
-	SupportedLayout,
+import type {
 	SurgicalBackend,
 	SurgicalChangeQueue,
 	SurgicalChangeset,
@@ -19,13 +18,18 @@ import {
 	SurgicalTemplate,
 } from 'lib/surgical-engine/base/engine';
 
-import { Turnstile } from 'lib/concurrency';
+import { SupportedLayout } from 'lib/surgical-engine/base/engine';
+
+import type { Turnstile } from 'lib/concurrency';
 
 import StorageManager from 'lib/storage-manager';
 
 import { v4 as uuidv4 } from 'uuid';
 
 import { unzip as _unzip, set as _set, get as _get } from 'lodash';
+
+import { inject, injectable } from 'inversify';
+import Service from 'src/dependencies';
 
 class Names {
 	static universal = 'SURGICAL_ENGINE_MATRIX_';
@@ -40,16 +44,25 @@ class Names {
 	static changeTrackingQueue = this.changeTracking + '-queue';
 }
 
+@injectable()
 export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
 
-	constructor(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
+	@inject(Service.Storage)
+	private StorageManager: StorageManager;
+
+	@inject(Service.Turnstile)
+	private turnstile: new (
+		name: string,
+		scope: 'document' | 'script' | 'user',
+	) => Turnstile;
+
+	init(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
 		this.spreadsheet = spreadsheet;
-		return this;
 	}
 
 	initializeEngine(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-		StorageManager.document.store(Names.changeTrackingLookup, {
+		this.StorageManager.document.store(Names.changeTrackingLookup, {
 			0: { 0: 0 },
 		});
 		return this;
@@ -941,13 +954,16 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		objectAttributePairings: ObjectAttributePairingSet,
 	) {
 		// TODO
-		const turnstile = new Turnstile(Names.changeTrackingLookup, 'document');
+		const turnstile = new this.turnstile(
+			Names.changeTrackingLookup,
+			'document',
+		);
 		if (turnstile.enter(1000, true)) {
-			const changesLookup = StorageManager.document.getStored(
+			const changesLookup = this.StorageManager.document.getStored(
 				Names.changeTracking,
 			) as MatrixLastModified;
 
-			const changesQueue = StorageManager.document.getStored(
+			const changesQueue = this.StorageManager.document.getStored(
 				Names.changeTrackingQueue,
 			) as SurgicalChangeQueue;
 
@@ -960,18 +976,21 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				changesQueue.push({ object, attribute, date });
 			}
 
-			StorageManager.document.store(
+			this.StorageManager.document.store(
 				Names.changeTrackingLookup,
 				changesLookup,
 			);
-			StorageManager.document.store(Names.changeTrackingQueue, changesQueue);
+			this.StorageManager.document.store(
+				Names.changeTrackingQueue,
+				changesQueue,
+			);
 
 			turnstile.exit();
 		}
 	}
 
 	getLastModified(objectId: string): Record<string, number> | undefined {
-		const changes = StorageManager.document.getStored(
+		const changes = this.StorageManager.document.getStored(
 			Names.changeTrackingLookup,
 		) as MatrixLastModified;
 		if (objectId) {
@@ -980,13 +999,13 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	}
 
 	getChangeQueue() {
-		return StorageManager.document.getStored(
+		return this.StorageManager.document.getStored(
 			Names.changeTrackingQueue,
 		) as SurgicalChangeQueue;
 	}
 
 	setChangeQueue(queue: SurgicalChangeQueue | {}) {
-		StorageManager.document.store(Names.changeTrackingQueue, queue);
+		this.StorageManager.document.store(Names.changeTrackingQueue, queue);
 	}
 
 	editCallBack(event: GoogleAppsScript.Events.SheetsOnEdit) {

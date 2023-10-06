@@ -1,10 +1,12 @@
 import fastChunkString from '@shelf/fast-chunk-string';
-import { Turnstile } from 'lib/concurrency';
+import type { Turnstile } from 'lib/concurrency';
 import { compress, decompress } from 'compress-json';
 import type { AMSharedLink, AMReferenceLink } from 'src/data/link';
 import type { UserStorage } from 'src/user-manager';
 import { merge as _merge } from 'lodash';
-import { SocketeerMessage, SocketeerMessageQueue } from 'src/comms/socket';
+import type { SocketeerMessage, SocketeerMessageQueue } from 'src/comms/socket';
+import { injectable, inject } from 'inversify';
+import Service from 'src/dependencies';
 
 class Names {
 	static universal = 'ARTICLEMAN_STORAGE_';
@@ -36,8 +38,28 @@ type StorableValue =
 interface StorableObject extends Record<string, StorableValue> {}
 interface StorableArray extends Array<StorableValue> {}
 
+@injectable()
 export default class StorageManager {
-	private static getFromStorage(
+	private documentStorage: GoogleAppsScript.Properties.Properties;
+	private documentCache: GoogleAppsScript.Cache.Cache;
+	private userStorage: GoogleAppsScript.Properties.Properties;
+	private userCache: GoogleAppsScript.Cache.Cache;
+	private scriptStorage: GoogleAppsScript.Properties.Properties;
+	private scriptCache: GoogleAppsScript.Cache.Cache;
+
+	@inject(Service.Turnstile)
+	private turnstile: Turnstile;
+
+	constructor() {
+		this.documentStorage = PropertiesService.getDocumentProperties();
+		this.documentCache = CacheService.getScriptCache();
+		this.userStorage = PropertiesService.getUserProperties();
+		this.userCache = CacheService.getUserCache();
+		this.scriptStorage = PropertiesService.getScriptProperties();
+		this.scriptCache = CacheService.getScriptCache();
+	}
+
+	private getFromStorage(
 		scope: Scope,
 		key: string,
 		allowBadDigests?: 'UNSAFELY_ALLOW_BAD_DIGESTS' | undefined,
@@ -54,7 +76,7 @@ export default class StorageManager {
 		return this.unFormat(legend, key, airlock, allowBadDigests ?? undefined);
 	}
 
-	private static unFormat(
+	private unFormat(
 		legend: Legend,
 		key: string,
 		airlock: Record<string, string>,
@@ -97,12 +119,12 @@ export default class StorageManager {
 		} else if (allowBadDigests !== 'UNSAFELY_ALLOW_BAD_DIGESTS') {
 			// TODO: standardize error
 			throw new Error(
-				`StorageManager data couldn't be retrieved and/or stored losslessly. The digests don't match. Expected ${legend.digest}, got ${hash}. Use UNSAFELY_ALLOW_BAD_DIGESTS to ignore the digest check.`,
+				`this data couldn't be retrieved and/or stored losslessly. The digests don't match. Expected ${legend.digest}, got ${hash}. Use UNSAFELY_ALLOW_BAD_DIGESTS to ignore the digest check.`,
 			);
 		}
 	}
 
-	private static format(
+	private format(
 		key: string,
 		value: StorableValue,
 		allowCompression: boolean = true,
@@ -161,14 +183,14 @@ export default class StorageManager {
 			length: index,
 			type: dataType,
 			isCompressed,
-			note: "!!!!    This storage is NOT modifiable! Do not try to directly modify any value here or anywhere else in the Properties service that has the ARTICLEMAN_STORAGE namespace. Articleman compresses, and by extension obfuscates all data stored by StorageManager, and checks digests when reading! If you would like to modify this storage, either enter Developer Mode as an admin or recompile the app yourself, importing the 'lib/storage-manager' API when writing code.     !!!!",
+			note: "!!!!    This storage is NOT modifiable! Do not try to directly modify any value here or anywhere else in the Properties service that has the ARTICLEMAN_STORAGE namespace. Articleman compresses, and by extension obfuscates all data stored by this, and checks digests when reading! If you would like to modify this storage, either enter Developer Mode as an admin or recompile the app yourself, importing the 'lib/storage-manager' API when writing code.     !!!!",
 			digest: hash,
 		} as Legend);
 
 		return airlock;
 	}
 
-	private static getScopedStorage(scope: Scope) {
+	private getScopedStorage(scope: Scope) {
 		switch (scope) {
 			case 'document':
 				return PropertiesService.getDocumentProperties();
@@ -181,7 +203,7 @@ export default class StorageManager {
 		}
 	}
 
-	private static getScopedCache(scope: Scope) {
+	private getScopedCache(scope: Scope) {
 		switch (scope) {
 			case 'document':
 				return CacheService.getDocumentCache();
@@ -194,11 +216,7 @@ export default class StorageManager {
 		}
 	}
 
-	private static getFromCache(
-		scope: Scope,
-		key: string,
-		fastMode: boolean = false,
-	) {
+	private getFromCache(scope: Scope, key: string, fastMode: boolean = false) {
 		const cache = this.getScopedCache(scope);
 		const legend = JSON.parse(
 			cache.get(Names.universal + key + Names.legend),
@@ -220,7 +238,7 @@ export default class StorageManager {
 		);
 	}
 
-	private static setCache(
+	private setCache(
 		scope: Scope,
 		key: string,
 		value: StorableValue,
@@ -231,12 +249,11 @@ export default class StorageManager {
 		cache.putAll(airlock);
 	}
 
-	private static setStorage(scope: Scope, key: string, value: StorableValue) {
-		const turnstile = new Turnstile('storage_manager', scope);
-		console.time('StorageManagerTurnstile');
+	private setStorage(scope: Scope, key: string, value: StorableValue) {
+		const turnstile = this.turnstile;
 		if (turnstile.enter(20000)) {
 			console.timeEnd('StorageManagerTurnstile');
-			console.log(`Went through the turnstile for StorageManager`);
+			console.log(`Went through the turnstile for this`);
 		} else {
 			// TODO: standardize error
 			throw new Error(
@@ -251,68 +268,55 @@ export default class StorageManager {
 		turnstile.exit();
 	}
 
-	static document = {
-		getStored: (key: string) =>
-			StorageManager.getFromStorage('document', key),
+	document = {
+		getStored: (key: string) => this.getFromStorage('document', key),
 		store: (key: string, value: StorableValue) =>
-			StorageManager.setStorage('document', key, value),
+			this.setStorage('document', key, value),
 		mergeStore: (key: string, value: StorableValue) =>
-			StorageManager.document.store(
-				key,
-				_merge(StorageManager.document.getStored(key), value),
-			),
+			this.document.store(key, _merge(this.document.getStored(key), value)),
 		cache: (key: string, value: StorableValue) => {
-			StorageManager.setCache('document', key, value);
+			this.setCache('document', key, value);
 		},
 		cacheFast: (key: string, value: StorableValue) => {
-			StorageManager.setCache('document', key, value, true);
+			this.setCache('document', key, value, true);
 		},
-		getCached: (key: string) => StorageManager.getFromCache('document', key),
-		getCachedFast: (key: string) =>
-			StorageManager.getFromCache('document', key, true),
-		deleteStored: (key: string) => StorageManager.setStorage('document', key, null),
+		getCached: (key: string) => this.getFromCache('document', key),
+		getCachedFast: (key: string) => this.getFromCache('document', key, true),
+		deleteStored: (key: string) => this.setStorage('document', key, null),
 	};
 
-	static script = {
-		getStored: (key: string) => StorageManager.getFromStorage('script', key),
+	script = {
+		getStored: (key: string) => this.getFromStorage('script', key),
 		store: (key: string, value: StorableValue) =>
-			StorageManager.setStorage('script', key, value),
+			this.setStorage('script', key, value),
 		mergeStore: (key: string, value: StorableValue) =>
-			StorageManager.script.store(
-				key,
-				_merge(StorageManager.script.getStored(key), value),
-			),
+			this.script.store(key, _merge(this.script.getStored(key), value)),
 		cache: (key: string, value: StorableValue) => {
-			StorageManager.setCache('script', key, value);
+			this.setCache('script', key, value);
 		},
 		cacheFast: (key: string, value: StorableValue) => {
-			StorageManager.setCache('script', key, value, true);
+			this.setCache('script', key, value, true);
 		},
-		getCached: (key: string) => StorageManager.getFromCache('script', key),
-		getCachedFast: (key: string) =>
-			StorageManager.getFromCache('script', key, true),
-		deleteStored: (key: string) => StorageManager.setStorage('script', key, null),
+		getCached: (key: string) => this.getFromCache('script', key),
+		getCachedFast: (key: string) => this.getFromCache('script', key, true),
+		deleteStored: (key: string) => this.setStorage('script', key, null),
 	};
 
-	static user = {
-		store: (key: string) => StorageManager.getFromStorage('user', key),
-		getStored: (key: string, value: StorableValue) =>
-			StorageManager.setStorage('user', key, value),
+	user = {
+		getStored: (key: string) => this.getFromStorage('user', key),
+		store: (key: string, value: StorableValue) =>
+			this.setStorage('user', key, value),
 		mergeStore: (key: string, value: StorableValue) =>
-			StorageManager.user.getStored(
-				key,
-				_merge(StorageManager.user.store(key), value),
-			),
+			this.user.store(key, _merge(this.user.getStored(key), value)),
 		cache: (key: string, value: StorableValue) => {
-			StorageManager.setCache('user', key, value);
+			this.setCache('user', key, value);
 		},
 		cacheFast: (key: string, value: StorableValue) => {
-			StorageManager.setCache('user', key, value, true);
+			this.setCache('user', key, value, true);
 		},
-		getCached: (key: string) => StorageManager.getFromCache('user', key),
-		getCachedFast: (key: string) =>
-			StorageManager.getFromCache('user', key, true),
-		deleteStored: (key: string) => StorageManager.setStorage('user', key, null),
+		getCached: (key: string) => this.getFromCache('user', key),
+		getCachedFast: (key: string) => this.getFromCache('user', key, true),
+		deleteStored: (key: string) => this.setStorage('user', key, null),
 	};
 }
 

@@ -5,8 +5,10 @@
   A better, more reliable way to manipulate spreadsheet data logically, only updating and fetching data as needed.
 */
 
-import MatrixBackend from './backends/matrix';
-import {
+import { injectable, inject } from 'inversify';
+import type MatrixBackend from './backends/matrix';
+import Service from 'src/dependencies';
+import type {
 	SurgicalChangeset,
 	SurgicalChangeQueue,
 	PositionTypeRangeOrOffset,
@@ -15,24 +17,18 @@ import {
 	ContainsSearch,
 	BetweenSearch,
 	FilledSearch,
-	SurgicalBackend,
 	SurgicalTemplate,
 	SurgicalObject,
-	IsContainedSearch
+	IsContainedSearch,
 } from './base/engine';
 
+@injectable()
 export default class SurgicalEngine {
-	backend: MatrixBackend;
 	autoCommit: boolean;
 	changeset: SurgicalChangeset;
 
-	constructor(
-		spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
-		autoCommit?: boolean,
-	) {
-		this.backend = new MatrixBackend(spreadsheet);
-		this.autoCommit = autoCommit;
-	}
+	@inject(Service.Matrix)
+	backend: MatrixBackend;
 
 	newQuery(source: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[]) {
 		return new QueryGenerator(source, this);
@@ -179,11 +175,9 @@ export default class SurgicalEngine {
 
 	getSheetById(id: string) {
 		const sheets = this.backend.spreadsheet.getSheets();
-		const sheet = sheets.find(s => s.getSheetId().toString() === id);
+		const sheet = sheets.find((s) => s.getSheetId().toString() === id);
 		return sheet;
 	}
-
-
 }
 
 class QueryGenerator {
@@ -227,7 +221,12 @@ class SearchGroup {
 		/**
 		 * Type of search to execute
 		 */
-		match: EqualsSearch | ContainsSearch | BetweenSearch | FilledSearch | IsContainedSearch;
+		match:
+			| EqualsSearch
+			| ContainsSearch
+			| BetweenSearch
+			| FilledSearch
+			| IsContainedSearch;
 	}>;
 
 	addEqualsSearch(
@@ -264,7 +263,7 @@ class SearchGroup {
 		attribute: string,
 		value: string,
 		polarity: boolean = true,
-	){
+	) {
 		this.searchGroup.push({
 			attribute,
 			match: {
