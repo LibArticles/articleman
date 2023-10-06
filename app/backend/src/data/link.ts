@@ -10,11 +10,14 @@ import {
 	trim as _trim,
 	uniq as _uniq,
 } from 'lodash';
+import { inject, injectable } from 'inversify';
+import Service from 'src/dependencies';
 
 class Names {
 	static links = 'links';
 }
 
+@injectable()
 export default class LinkManager {
 	sharedLinks: Record<string, AMSharedLink>;
 	referenceLinks: Record<string, AMReferenceLink>;
@@ -23,12 +26,15 @@ export default class LinkManager {
 		initiators: Record<string, string[]>;
 		targets: Record<string, string[]>;
 	};
-	engine: SurgicalEngine;
 
-	constructor(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-		this.engine = new SurgicalEngine(spreadsheet);
+	@inject(Service.Surgical)
+	private engine: SurgicalEngine;
 
-		const links = StorageManager.document.getStored(Names.links);
+	@inject(Service.Storage)
+	private StorageManager: StorageManager;
+
+	constructor() {
+		const links = this.StorageManager.document.getStored(Names.links);
 		this.sharedLinks = links.sharedLinks;
 		this.referenceLinks = links.referenceLinks;
 		this.sharedLookupTable = links.sharedLookupTable;
@@ -370,7 +376,7 @@ export default class LinkManager {
 	}
 
 	commit() {
-		StorageManager.document.store(Names.links, {
+		this.StorageManager.document.store(Names.links, {
 			shared: this.sharedLinks,
 			reference: this.referenceLinks,
 			sharedLookup: this.referenceLookupTable,

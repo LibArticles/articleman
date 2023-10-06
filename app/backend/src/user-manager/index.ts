@@ -1,5 +1,5 @@
-import SurgicalEngine from 'lib/surgical-engine';
-import User, { TermsOfAddress } from './user';
+import type SurgicalEngine from 'lib/surgical-engine';
+import User, { type TermsOfAddress } from './user';
 import {
 	set as _set,
 	merge as _merge,
@@ -7,10 +7,12 @@ import {
 	cloneDeep as _cloneDeep,
 	random as _random,
 } from 'lodash';
-import StorageManager from 'lib/storage-manager';
+import type StorageManager from 'lib/storage-manager';
 import defaultTOA from 'locale/default-toa.json';
 import { v4 as uuidv4 } from 'uuid';
-import 'types/global';
+import { injectable, inject } from 'inversify';
+import { Capabilities } from './caps';
+import Service from 'src/dependencies';
 
 class Names {
 	static userStorage = 'user-metadata';
@@ -22,12 +24,13 @@ class Names {
 //   ██  ██  ██ ██   ██ ██ ██  ██ ██
 //   ██      ██ ██   ██ ██ ██   ████
 
+@injectable()
 export default class UserManager {
-	private activeUser: User;
+	activeUser: User;
 	private allUsers: {
 		[id: string]: User;
 	};
-	private engine: SurgicalEngine;
+
 	private emailLUT: {
 		[email: string]: string;
 	};
@@ -39,13 +42,15 @@ export default class UserManager {
 	};
 	private attributeMap: UserAttributeSet;
 
-	constructor(
-		attributeMap: UserAttributeSet,
-		spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
-	) {
-		this.engine = new SurgicalEngine(spreadsheet);
+	@inject(Service.Storage)
+	private StorageManager: StorageManager;
+
+	@inject(Service.Surgical)
+	private engine: SurgicalEngine;
+
+	load(attributeMap: UserAttributeSet) {
 		const userEmail = Session.getActiveUser().getEmail();
-		const userStorage = StorageManager.document.getStored(
+		const userStorage = this.StorageManager.document.getStored(
 			Names.userStorage,
 		) as UserStorage;
 		this.groups = userStorage.groups;
@@ -96,20 +101,10 @@ export default class UserManager {
 				this.emailLUT[map.email] = newUserObject.id;
 			}
 		}
-
-		// create the global user manager and freeze it at a shallow level so that it can't be directly modified
-		globalThis.userManager = Object.freeze(
-			new GlobalUserManager({
-				activeUser: this.activeUser,
-				allUsers: this.allUsers,
-				emailLUT: this.emailLUT,
-				groupLUT: this.groupLUT,
-				groups: this.groups,
-			}),
-		);
 	}
 
-	@needs(Capabilities.UM.addUsers) newUser(addition: UserAddition) {
+	newUser(addition: UserAddition) {
+		this.guard(Capabilities.UM.addUsers)
 		const allGroupCaps = addition.groups.flatMap(
 			(group) => group.capabilities,
 		);
@@ -166,7 +161,8 @@ export default class UserManager {
 		}
 	}
 
-	@needs(Capabilities.UM.removeUsers) removeUser(user: User) {
+	removeUser(user: User) {
+		this.guard(Capabilities.UM.removeUsers)
 		if (userBalance(this.activeUser, user)) {
 			if (this.activeUser.id === user.id) {
 				throw new Error('cannot remove active user');
@@ -250,7 +246,8 @@ export default class UserManager {
 		}
 	}
 
-	@needs(Capabilities.UM.addGroups) addGroup(group: AMUserGroup) {
+	addGroup(group: AMUserGroup) {
+		this.guard(Capabilities.UM.addGroups)
 		if (userBalance(this.activeUser, group)) {
 			this.groups[group.id] = group;
 		} else {
@@ -258,7 +255,8 @@ export default class UserManager {
 		}
 	}
 
-	@needs(Capabilities.UM.removeGroups) removeGroup(group: AMUserGroup) {
+	removeGroup(group: AMUserGroup) {
+		this.guard(Capabilities.UM.removeGroups)
 		if (userBalance(this.activeUser, group)) {
 			delete this.groups[group.id];
 		} else {
@@ -266,10 +264,11 @@ export default class UserManager {
 		}
 	}
 
-	@needs(Capabilities.UM.promoteUsers) addCapabilitiesToUser(
+	addCapabilitiesToUser(
 		user: User,
 		...capabilities: string[]
 	) {
+		this.guard(Capabilities.UM.promoteUsers)
 		if (
 			userHasCapabilities(this.activeUser, capabilities) &&
 			userBalance(this.activeUser, user)
@@ -278,10 +277,11 @@ export default class UserManager {
 		}
 	}
 
-	@needs(Capabilities.UM.demoteUsers) removeCapabilitiesFromUser(
+	removeCapabilitiesFromUser(
 		user: User,
 		...capabilities: string[]
 	) {
+		this.guard(Capabilities.UM.demoteUsers)
 		if (
 			(userBalance(this.activeUser, user),
 			userHasCapabilities(this.activeUser, capabilities))
@@ -292,35 +292,39 @@ export default class UserManager {
 		}
 	}
 
-	@needs(Capabilities.UM.editUserTOAs) setTermsOfAddress(
+	setTermsOfAddress(
 		user: User,
 		termsOfAddress: TermsOfAddress,
 	) {
+		this.guard(Capabilities.UM.editUserTOAs)
 		if (userBalance(this.activeUser, user)) {
 			_merge(this.allUsers[user.id].termsOfAddress, termsOfAddress);
 		}
 	}
 
-	@needs(Capabilities.UM.editOwnTOAs) setOwnTermsOfAddress(
+	setOwnTermsOfAddress(
 		termsOfAddress: TermsOfAddress,
 	) {
+		this.guard(Capabilities.UM.editOwnTOAs)
 		if (userBalance(this.activeUser, this.activeUser)) {
 			_merge(this.activeUser.termsOfAddress, termsOfAddress);
 		}
 	}
 
-	@needs(Capabilities.UM.editUserAttributes) setAttributes(
+	setAttributes(
 		user: User,
 		attributes: { [key: string]: string },
 	) {
+		this.guard(Capabilities.UM.editUserAttributes)
 		if (userBalance(this.activeUser, user)) {
 			_merge(this.allUsers[user.id].attributes, attributes);
 		}
 	}
 
-	@needs(Capabilities.UM.editOwnAttributes) setOwnAttributes(attributes: {
+	setOwnAttributes(attributes: {
 		[key: string]: string;
 	}) {
+		this.guard(Capabilities.UM.editOwnAttributes)
 		if (userBalance(this.activeUser, this.activeUser)) {
 			_merge(this.activeUser.attributes, attributes);
 		}
@@ -340,112 +344,80 @@ export default class UserManager {
 				locale: user.locale,
 			};
 		}
-		StorageManager.document.store(Names.userStorage, {
+		this.StorageManager.document.store(Names.userStorage, {
 			main: mainStorage,
 			emailLUT: this.emailLUT,
 			groups: this.groups,
 		} as UserStorage);
 	}
-}
 
-//      ██████  ██       ██████  ██████   █████  ██
-//     ██       ██      ██    ██ ██   ██ ██   ██ ██
-//     ██   ███ ██      ██    ██ ██████  ███████ ██
-//     ██    ██ ██      ██    ██ ██   ██ ██   ██ ██
-//      ██████  ███████  ██████  ██████  ██   ██ ███████
-
-// so, blue, why do we have a second class for the global user manager?
-// well, it's a bit of a hack, i'll admit. it's here cause i need the global user manager object (accessible via globalThis.userManager) to be reachable everywhere, but also be immutable, to avoid code injection attacks being able to modify a user's capabilities.
-export class GlobalUserManager {
-	private _activeUser: User;
-	get activeUser(): User {
-		return _cloneDeep(this._activeUser);
-	}
-	private _allUsers: {
-		[id: string]: User;
-	};
-	get allUsers() {
-		return _cloneDeep(this._allUsers);
-	}
-	private _emailLUT: {
-		[email: string]: string;
-	};
-	get emailLUT() {
-		return _cloneDeep(this._emailLUT);
-	}
-	private _groups: {
-		[id: string]: AMUserGroup;
-	};
-	get groups() {
-		return _cloneDeep(this._groups);
-	}
-	private _groupLUT: {
-		[group: string]: User[];
-	};
-	get groupLUT() {
-		return _cloneDeep(this._groupLUT);
+	userCan(capability: string) {
+		return this.activeUser.computedCapabilities.includes(capability);
 	}
 
-	constructor(newGUM: GUMConstructor) {
-		this._activeUser = newGUM.activeUser;
-		this._allUsers = newGUM.allUsers;
-		this._emailLUT = newGUM.emailLUT;
-		this._groups = newGUM.groups;
-		this._groupLUT = newGUM.groupLUT;
+	/**
+	 * Terms of Address
+	 */
+	toa(user: User, locale: string) {
+		return user.termsOfAddress[locale];
+	}
+
+	pronouns(user: User, locale: string) {
+		const pronouns = user.termsOfAddress[locale].pronouns;
+
+		if (pronouns.tactic)
+			switch (pronouns.tactic) {
+				case 'alternateDaily':
+					function getDailyPronoun(user: User) {
+						const dayNumber = new Date().getDay();
+						const dayPronounIndex =
+							(dayNumber % pronouns.values.length) - 1;
+						return pronouns.values[dayPronounIndex];
+					}
+					return getDailyPronoun(user);
+				case 'alternateSentence':
+					return new SentencePronounGenerator(user, locale);
+				case 'alternateWord':
+					return new WordPronounGenerator(user, locale);
+				default:
+					if (pronouns.staticIndex)
+						return pronouns.values[pronouns.staticIndex];
+					else return pronouns.values[0];
+			}
+	}
+
+	guard(capability: string) {
+		if (!this.userCan(capability))
+			throw new Error(
+				`You don't have the "${capability}" capability on your user or in any of the groups you're in. Either fix the spelling of the capability, add the "${capability}" capability to your user or a group you're in, or stop trying to hack the system.`,
+			);
 	}
 }
 
-interface GUMConstructor {
-	activeUser: User;
-	allUsers: {
-		[id: string]: User;
-	};
-	emailLUT: {
-		[email: string]: string;
-	};
-	groups: {
-		[id: string]: AMUserGroup;
-	};
-	groupLUT: {
-		[group: string]: User[];
-	};
+
+
+
+
+
+export function userBalance(initiator: User, target: AMUserGroup | User) {
+	switch (target.type) {
+		case 'group':
+			return target.capabilities.every((capability) =>
+				initiator.computedCapabilities.includes(capability),
+			);
+		case 'user':
+			return target.computedCapabilities.every((capability) =>
+				initiator.computedCapabilities.includes(capability),
+			);
+	}
 }
 
-//     ██   ██ ███████ ██      ██████  ███████ ██████  ███████
-//     ██   ██ ██      ██      ██   ██ ██      ██   ██ ██
-//     ███████ █████   ██      ██████  █████   ██████  ███████
-//     ██   ██ ██      ██      ██      ██      ██   ██      ██
-//     ██   ██ ███████ ███████ ██      ███████ ██   ██ ███████
-
-/**
- * Terms of Address
- */
-export function toa(user: User, locale: string) {
-	return user.termsOfAddress[locale];
+export function userHasCapabilities(user: User, capabilities: string[]) {
+	return capabilities.every((capability) =>
+		user.computedCapabilities.includes(capability),
+	);
 }
 
-export function pronouns(user: User, locale: string) {
-	const pronouns = user.termsOfAddress[locale].pronouns;
-
-	if (pronouns.tactic)
-		switch (pronouns.tactic) {
-			case 'alternateDaily':
-				function getDailyPronoun(user: User) {
-					const dayNumber = new Date().getDay();
-					const dayPronounIndex = (dayNumber % pronouns.values.length) - 1;
-					return pronouns.values[dayPronounIndex];
-				}
-				return getDailyPronoun(user);
-			case 'alternateSentence':
-				return new SentencePronounGenerator(user, locale);
-			case 'alternateWord':
-				return new WordPronounGenerator(user, locale);
-			default:
-				if (pronouns.staticIndex)
-					return pronouns.values[pronouns.staticIndex];
-				else return pronouns.values[0];
-		}
-}
 
 class SentencePronounGenerator {
 	private toa: TermsOfAddress;
@@ -481,68 +453,6 @@ class WordPronounGenerator {
 		this.toa = user.termsOfAddress;
 		this.locale = locale;
 	}
-}
-
-/**
- * Active User Terms of Address
- */
-export function autoa() {
-	return globalThis.activeUser.termsOfAddress;
-}
-
-export function userBalance(initiator: User, target: AMUserGroup | User) {
-	switch (target.type) {
-		case 'group':
-			return target.capabilities.every((capability) =>
-				initiator.computedCapabilities.includes(capability),
-			);
-		case 'user':
-			return target.computedCapabilities.every((capability) =>
-				initiator.computedCapabilities.includes(capability),
-			);
-	}
-}
-
-export function userHasCapabilities(user: User, capabilities: string[]) {
-	return capabilities.every((capability) =>
-		user.computedCapabilities.includes(capability),
-	);
-}
-
-/**
- *
- * @param capability The capability to check
- * @returns A decorator that checks if the user has the given capability at runtime.
- */
-export function needs(capability: string) {
-	return function (
-		target: any,
-		propertyKey: string,
-		descriptor: PropertyDescriptor,
-	) {
-		const originalMethod = descriptor.value;
-
-		descriptor.value = function (...args: any[]) {
-			if (globalThis.activeUser.computedCapabilities.includes(capability)) {
-				return originalMethod.apply(this, args);
-			} else {
-				throw new Error(
-					`You don't have the "${capability}" capability on your user or in any of the groups you're in. Either fix the spelling of the capability for the @needs decorator, add the "${capability}" capability to your user or a group you're in, or stop trying to hack the system.`,
-				);
-			}
-		};
-
-		return descriptor;
-	};
-}
-
-/**
- *
- * @param capability The capability to check
- * @returns Whether the user has the given capability in their computed capabilities
- */
-export function userCan(capability: string) {
-	return globalThis.activeUser.computedCapabilities.includes(capability);
 }
 
 //     ████████ ██    ██ ██████  ███████ ███████
@@ -599,70 +509,6 @@ export interface UserStorage {
 	groups: {
 		[group: string]: AMUserGroup;
 	};
-}
-
-namespace Capabilities {
-	export enum UM {
-		/**
-		 * User can add new users to Articleman
-		 */
-		addUsers = 'cap:um:addUsers',
-
-		/**
-		 * User can remove users from Articleman
-		 */
-		removeUsers = 'cap:um:removeUsers',
-
-		/**
-		 * User can add new groups to Articleman
-		 */
-		addGroups = 'cap:um:addGroups',
-
-		/**
-		 * User can remove groups from Articleman
-		 */
-		removeGroups = 'cap:um:removeGroups',
-
-		/**
-		 * User can add capabilities present in their computed capabilities to groups
-		 */
-		promoteGroups = 'cap:um:promoteGroups',
-
-		/**
-		 * User can remove capabilities present in their computed capabilities from groups
-		 */
-		demoteGroups = 'cap:um:demoteGroups',
-
-		/**
-		 * User can add other users to groups that have equal or fewer capabilities than their computed capabilities.
-		 */
-		promoteUsers = 'cap:um:promoteUsers',
-
-		/**
-		 * User can remove other users from groups that have equal or fewer capabilities than their computed capabilities, and remove capabilities that are present in their own computed capabilities from other users.
-		 */
-		demoteUsers = 'cap:um:demoteUsers',
-
-		/**
-		 * Edit other users' attributes
-		 */
-		editUserAttributes = 'cap:um:editUserAttrs',
-
-		/**
-		 * Edit other users' terms of address
-		 */
-		editUserTOAs = 'cap:um:editUserTOAs',
-
-		/**
-		 * Edit own terms of address
-		 */
-		editOwnTOAs = 'cap:um:editOwnTOAs',
-
-		/**
-		 * Edit own attributes
-		 */
-		editOwnAttributes = 'cap:um:editOwnAttrs',
-	}
 }
 
 // make a typescript decorator that automatically checks authentication, like @requires('cap:manageattributes')

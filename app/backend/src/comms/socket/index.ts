@@ -1,31 +1,37 @@
 import StorageManager from 'lib/storage-manager';
-import type { CMD, FrontendCommand } from 'shared/recognized-commands';
+import type { FrontendCommand } from 'shared/recognized-commands';
+import { injectable, inject } from 'inversify';
+import Service from 'src/dependencies';
 
 class Names {
 	static socketCache = 'socket-cache';
 }
 
+@injectable()
 export default class Socketeer {
-	static check() {
-		const queue = StorageManager.user.getCached(
+	@inject(Service.Storage)
+	private StorageManager: StorageManager;
+
+	check() {
+		const queue = this.StorageManager.user.getCached(
 			Names.socketCache,
 		) as SocketeerMessageQueue;
-		StorageManager.user.cache(Names.socketCache, {});
+		this.StorageManager.user.cache(Names.socketCache, {});
 
-		return;
+		return queue;
 	}
 
-	static send(payload: SocketeerMessage) {
-		const queue = StorageManager.user.getCached(
+	send(payload: SocketeerMessage) {
+		const queue = this.StorageManager.user.getCached(
 			Names.socketCache,
 		) as SocketeerMessageQueue;
 		if (queue) {
 			queue.messages.push(payload);
 			const pollDates = queue.messages.map((message) => message.nextPoll);
 			queue.nextPoll = Math.min(...pollDates);
-			StorageManager.user.cache(Names.socketCache, queue);
+			this.StorageManager.user.cache(Names.socketCache, queue);
 		} else {
-			StorageManager.user.cache(Names.socketCache, {
+			this.StorageManager.user.cache(Names.socketCache, {
 				nextPoll: 0,
 				messages: [],
 			});
@@ -38,9 +44,8 @@ export interface SocketeerMessageQueue {
 	messages: SocketeerMessage[];
 }
 
-
 export interface SocketeerMessage {
-	type: FrontendCommand;
+	type: FrontendCommand | BackendCommand;
 	payload: any;
-	nextPoll: number;
+	nextPoll?: number;
 }
