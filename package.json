@@ -25,6 +25,7 @@
 	},
 	"homepage": "https://github.com/bluelinden/articleman#readme",
 	"workspaces": [
-		"app/*"
+		"app/backend",
+		"app/frontend"
 	]
 }

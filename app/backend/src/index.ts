@@ -1,4 +1,5 @@
-import { setSettings, getSettings } from './comms/get-settings';
+import '@abraham/reflection';
+import './inversify.config';
 
 import config from '../../shared/config.json';
 

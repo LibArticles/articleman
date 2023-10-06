@@ -17,16 +17,16 @@
 			"shared/*": ["../shared/*"]
 		},
 		"baseUrl": ".",
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"noEmit": true
 	},
-
 	"include": [
 		"src/**/*",
 		"lib/**/*",
 		"build/*",
 		"node_modules/@types",
-		"types",
-		"*",
+		"types"
 	],
-	"exclude": ["node_modules", "dist"],
+	"exclude": ["node_modules", "dist"]
 }
