@@ -1,1 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewBox="0 0 8 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h1v1H5zM6 0h1v1H6zM4 1h1v1H4zM5 1h1v1H5zM6 1h1v1H6zM7 1h1v1H7zM3 2h1v1H3zM4 2h1v1H4zM5 2h1v1H5zM6 2h1v1H6zM2 3h1v1H2zM3 3h1v1H3zM4 3h1v1H4zM5 3h1v1H5zM1 4h1v1H1zM2 4h1v1H2zM3 4h1v1H3zM4 4h1v1H4zM0 5h1v1H0zM1 5h1v1H1zM2 5h1v1H2zM3 5h1v1H3zM0 6h1v1H0zM1 6h1v1H1zM2 6h1v1H2zM3 6h1v1H3zM1 7h1v1H1zM2 7h1v1H2zM3 7h1v1H3zM4 7h1v1H4zM2 8h1v1H2zM3 8h1v1H3zM4 8h1v1H4zM5 8h1v1H5zM3 9h1v1H3zM4 9h1v1H4zM5 9h1v1H5zM6 9h1v1H6zM4 10h1v1H4zM5 10h1v1H5zM6 10h1v1H6zM7 10h1v1H7zM5 11h1v1H5zM6 11h1v1H6z"/></svg>
+<svg
+   width="27"
+   height="40"
+   viewBox="0 0 7.1437497 10.583333"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1">
+    <path
+       style="path1 {'{'} fill:currentColor; {'}'}"
+       d="M 0.6687174,5.9603838 4.622949,9.9146156 a 0.94570915,0.94570915 180 0 0 1.3374348,-10e-8 1.0048526,1.0048526 91.461884 0 0 0.034936,-1.3689574 L 3.7953396,6.0064246 a 1.0915446,1.0915446 90 0 1 0,-1.4295162 L 5.99532,2.0376747 A 1.0158271,1.0158271 87.952752 0 0 5.9458657,0.65419921 0.9354997,0.9354997 179.37124 0 0 4.622949,0.66871742 L 0.66871742,4.622949 a 0.94570926,0.94570926 90.000001 0 0 -2e-8,1.3374348 z"
+       id="path1" />
+  </g>
+</svg>
