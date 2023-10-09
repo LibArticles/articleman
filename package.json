@@ -1,7 +1,7 @@
 {
 	"name": "articleman",
 	"version": "0.0.3",
-	"description": "Insanely efficient student media management, for the masses.",
+	"description": "Awesomely efficient student media management, for the masses.",
 	"main": "backend/index.mts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
@@ -26,6 +26,7 @@
 	"homepage": "https://github.com/bluelinden/articleman#readme",
 	"workspaces": [
 		"app/backend",
-		"app/frontend"
+		"app/frontend",
+		"app/frontend-svelte"
 	]
 }
