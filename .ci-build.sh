@@ -1,2 +1,2 @@
-cd app/frontend
-bun ember build --environment=production
+cd app/frontend-svelte
+bun run build
