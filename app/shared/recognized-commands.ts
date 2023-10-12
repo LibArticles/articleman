@@ -22,6 +22,10 @@ export namespace CMD {
 			 * Freeze the frontend and grey it out
 			 */
 			freeze = "freeze",
+			/**
+			 * Unfreeze the frontend
+			 */
+			unfreeze = "unfreeze",
 		}
 		export const enum Remote {
 			/**
@@ -33,9 +37,17 @@ export namespace CMD {
 			 */
 			navigate = "navigate",
 			/**
-			 * Trigger a prompt to the user with specified actions
+			 * Trigger a prompt to the user with an input field
 			 */
-			prompt = "prompt",
+			promptInput = "inputPrompt",
+			/**
+			 * Trigger a prompt to the user with specific, localized buttons
+			 */
+			buttonPrompt = "buttonPrompt",
+			/**
+			 * Trigger a prompt to the user with specific, localized options
+			 */
+			optionPrompt = "optionPrompt",
 		}
 		export const enum Request {
 			/**
@@ -65,13 +77,49 @@ export namespace CMD {
 			 */
 			triggerTamperWarning = "tamperWarning",
 		}
+		export const enum Testing {}
 	}
 
 	/**
 	 * Commands to send to the backend via Socketeer or the Comms service
 	 */
-	export namespace Backend {}
+	export namespace Backend {
+		export const enum Socketeer {
+			status = "checkSocketeer",
+		}
+	}
 }
+
+export interface FrontendCommandFormats {
+	[CMD.Frontend.Onboarding.trigger]: [];
+	[CMD.Frontend.Limit.startRateLimit]: [];
+	[CMD.Frontend.Limit.endRateLimit]: [];
+	[CMD.Frontend.Limit.freeze]: [];
+	[CMD.Frontend.Limit.unfreeze]: [];
+	[CMD.Frontend.Remote.forceQuit]: [warnTime?: number];
+	[CMD.Frontend.Remote.navigate]: [page: string];
+	[CMD.Frontend.Remote.promptInput]: [prompt: {
+		promptId: string,
+		type: 'number' | 'string',
+	}];
+	[CMD.Frontend.Remote.buttonPrompt]: [prompt: {
+		promptId: string,
+		primaryButtons: string[],
+		secondaryButtons: string[],
+		showAs: 'notification' | 'modal',
+		allowCancel: boolean,
+		/**
+		 * localized cancel message
+		 */
+		cancelMessage?: string,
+	}]
+	[CMD.Frontend.Request.isUserActive]: [];
+	[CMD.Frontend.Status.triggerStatusMessage]: [message: string];
+	[CMD.Frontend.Security.destroySession]: [];
+	[CMD.Frontend.Security.triggerTamperWarning]: [];
+}
+
+
 
 type Values<T> = T[keyof T];
 
@@ -83,4 +131,8 @@ type UnionEnumType<T> = T extends infer U
 
 export type FrontendCommand = UnionEnumType<
 	(typeof CMD.Frontend)[keyof typeof CMD.Frontend]
+>;
+
+export type BackendCommand = UnionEnumType<
+	(typeof CMD.Backend)[keyof typeof CMD.Backend]
 >;

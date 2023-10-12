@@ -1,0 +1,13 @@
+:root {
+	--light: #fbd6a2;
+	--medium-light: #cea975;
+	--medium: #8a6736;
+	--dark: #5c3600;
+}
+
+$bg-color: var(--light);
+$pd-color: var(--medium-light);
+$fg-color: var(--dark);
+$bg-color-inverted: var(--dark);
+$pd-color-inverted: var(--medium);
+$fg-color-inverted: var(--light);

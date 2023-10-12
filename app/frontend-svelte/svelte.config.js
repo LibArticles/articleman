@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/kit/vite';
+import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -10,8 +11,12 @@ const config = {
 	kit: {
 		adapter: adapter({
 			fallback: 'index.html',
-		})
-	}
+		}),
+
+		alias: {
+			'l10n': './l10n',
+		}
+	},
 };
 
 export default config;
