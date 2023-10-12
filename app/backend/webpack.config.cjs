@@ -18,6 +18,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+
 
 const progressHandler = (
 	percentage, message, ...args
@@ -55,6 +57,11 @@ const backEndConfig = {
 			allowAsyncCycles: false,
 			// set the current working directory for displaying module paths
 			cwd: cwd(),
+		}),
+		new BundleAnalyzerPlugin({
+			analyzerMode: 'disabled',
+			statsFilename: 'bundle.json',
+			generateStatsFile: true,
 		})
 	],
 	optimization: {
@@ -86,6 +93,7 @@ const backEndConfig = {
 									".js",
 									".jsx",
 									".ts",
+									".d.ts",
 									".tsx",
 									".es",
 									".es6",
@@ -97,13 +105,6 @@ const backEndConfig = {
 									"require",
 									"require.resolve",
 									"import",
-									"System.import",
-									"jest.genMockFromModule",
-									"jest.mock",
-									"jest.unmock",
-									"jest.doMock",
-									"jest.dontMock",
-									"jest.setMock",
 									"require.requireActual",
 									"require.requireMock"
 								]
@@ -114,6 +115,7 @@ const backEndConfig = {
 							optimizeConstEnums: true,
 
 						}],
+						["minify-dead-code-elimination"],
 						["babel-plugin-transform-typescript-metadata"],
 						["@babel/plugin-proposal-decorators", { "version": "legacy" }],
 						["import", {
