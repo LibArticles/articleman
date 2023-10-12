@@ -1,2 +1,2 @@
-cd app/frontend-svelte
+cd app/frontend
 bun run build
