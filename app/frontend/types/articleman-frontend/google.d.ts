@@ -1,22 +1,11 @@
-declare const google: {
+import type { SocketeerMessage } from "backend/src/comms/socket";
+
+export declare const google: {
 	script: GoogleAppsScriptClient;
 };
 
 interface GoogleAppsScriptClient {
-	run: {
-		// Set failure handler
-		withFailureHandler(
-			handler: (error: Error, userObject?: any) => void
-		): ScriptRunner;
-
-		// Set success handler
-		withSuccessHandler<T>(
-			handler: (returnValue: T, userObject?: any) => void
-		): ScriptRunner;
-
-		// Set user object
-		withUserObject(userObject: any): ScriptRunner;
-	};
+	run: ScriptRunner;
 
 	host: {
 		close(): void;
@@ -38,4 +27,5 @@ type ScriptRunner = {
 		handler: (returnValue: T, userObject?: any) => void
 	): ScriptRunner;
 	withUserObject(userObject: any): ScriptRunner;
+	socketeer(message?: SocketeerMessage): void;
 }

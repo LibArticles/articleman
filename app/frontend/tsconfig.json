@@ -1,11 +1,13 @@
 {
 	"extends": "@tsconfig/ember/tsconfig.json",
+	
 	"compilerOptions": {
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"moduleResolution": "Bundler",
 		"moduleDetection": "auto",
-		"module": "ES2022",
+		"target": "ES2020",
+		"lib": ["ESNext", "DOM"],
 
 		// The combination of `baseUrl` with `paths` allows Ember's classic package
 		// layout, which is not resolvable with the Node resolution algorithm, to
@@ -15,11 +17,15 @@
 			"frontend/*": ["./app/*"],
 			"shared/*": ["../shared/*"],
 			"backend/*": ["../backend/*"],
+			"types/*": ["./types/*"],
 		}
 	},
+
+
 	"glint": {
 		"environment": ["ember-loose", "ember-template-imports"]
 	},
+
 	"include": ["app/**/*", "tests/**/*", "types/**/*"],
 	"exclude": ["**/*.gts"]
 }
