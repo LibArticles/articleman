@@ -1,32 +1,32 @@
 {
-	"name": "articleman",
-	"version": "0.0.3",
-	"description": "Awesomely efficient student media management, for the masses.",
-	"main": "backend/index.mts",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"ci-build": "cd frontend && ember build"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/bluelinden/articleman.git"
-	},
-	"keywords": [
-		"articleman",
-		"journalism",
-		"management",
-		"hr",
-		"worktapper"
-	],
-	"author": "blue linden",
-	"license": "AGPL-3.0-only",
-	"bugs": {
-		"url": "https://github.com/bluelinden/articleman/issues"
-	},
-	"homepage": "https://github.com/bluelinden/articleman#readme",
-	"workspaces": [
-		"app/backend",
-		"app/frontend",
-		"app/frontend-svelte"
-	]
+  "name": "articleman",
+  "version": "0.0.3",
+  "author": "blue linden",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluelinden/articleman.git"
+  },
+  "main": "backend/index.mts",
+  "bugs": {
+    "url": "https://github.com/bluelinden/articleman/issues"
+  },
+  "description": "Awesomely efficient student media management, for the masses.",
+  "homepage": "https://github.com/bluelinden/articleman#readme",
+  "keywords": [
+    "articleman",
+    "journalism",
+    "management",
+    "hr",
+    "worktapper"
+  ],
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ci-build": "cd frontend && ember build"
+  },
+  "workspaces": [
+    "app/backend",
+    "app/frontend",
+    "app/frontend-svelte"
+  ]
 }
