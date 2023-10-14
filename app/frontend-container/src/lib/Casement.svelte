@@ -46,29 +46,32 @@
 		dispatch("submit");
 	};
 
-	export let url = "frontend.articleman.org";
+	export let url = "https://frontend.articleman.org";
 
 	function handleOutgoing(message?: SocketeerMessageObjectified) {
 		return new Promise((resolve, reject) => {
 			google.script.run
-			.withSuccessHandler(resolve)
-			.withFailureHandler(reject)
-			.withUserObject(message?.data ?? {})
-			.socketeer(message?.type ?? "checkup", message?.data ?? {});
-		})
+				.withSuccessHandler(resolve)
+				.withFailureHandler(reject)
+				.withUserObject(message?.data ?? {})
+				.socketeer(message?.type ?? "checkup", message?.data ?? {});
+		});
 	}
 
-	const socketeer = new Outside({
-		container: document.getElementById("casement-container")!,
+	let container: HTMLDivElement | undefined = undefined;
+
+	const outside = new Outside({
+		container,
 		pageUrl: url,
 		name: "socketeer",
 		handlers: [],
+		debug: true,
 		onReady: () => {
 			submit();
-		}
+		},
 	});
 
-	socketeer.on("socketeerMessage", handleOutgoing);
+	outside.on("socketeerMessage", handleOutgoing);
 </script>
 
-<div id="casement-container" />
+<div bind:this={container} id="casement-container" />

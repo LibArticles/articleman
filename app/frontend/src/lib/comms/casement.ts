@@ -23,7 +23,8 @@ export class CasementManager {
 			name: 'socketeer',
 			onReady: () => {
 				
-			}
+			},
+			debug: true
 		});
 
 
