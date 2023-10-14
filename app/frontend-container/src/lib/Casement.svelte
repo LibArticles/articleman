@@ -38,7 +38,7 @@
 
 <script lang="ts">
 	import { Outside } from "casement";
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher, onMount } from "svelte";
 
 	const dispatch = createEventDispatcher();
 
@@ -58,20 +58,27 @@
 		});
 	}
 
-	let container: HTMLDivElement | undefined = undefined;
+	onMount(() => {
+		let iFrame: HTMLIFrameElement = document.createElement("iframe");
+		let container: HTMLElement =
+			document.getElementById("casement-container")!;
+		iFrame.style.display = "none";
+		container.appendChild(iFrame);
 
-	const outside = new Outside({
-		container,
-		pageUrl: url,
-		name: "socketeer",
-		handlers: [],
-		debug: true,
-		onReady: () => {
-			submit();
-		},
+		const outside = new Outside({
+			iFrame,
+			pageUrl: url,
+			name: "socketeer",
+			handlers: [],
+			debug: true,
+			onReady: () => {
+				submit();
+				iFrame.style.display = "block";
+			},
+		});
+
+		outside.on("socketeerMessage", handleOutgoing);
 	});
-
-	outside.on("socketeerMessage", handleOutgoing);
 </script>
 
-<div bind:this={container} id="casement-container" />
+<div id="casement-container" />
