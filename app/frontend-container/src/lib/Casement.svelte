@@ -59,13 +59,12 @@
 	}
 
 	onMount(() => {
-		let iFrame: HTMLIFrameElement = document.createElement("iframe");
-		let container: HTMLElement =
-			document.getElementById("casement-container")!;
-		iFrame.style.display = "none";
+		let container = document.getElementById("casement-container")!;
+		let iFrame: HTMLIFrameElement = document.getElementById(
+			"casement-iframe"
+		)! as HTMLIFrameElement;
+		container.style.display = "none";
 		iFrame.src = url;
-		container.appendChild(iFrame);
-
 		const outside = new Outside({
 			iFrame,
 			pageUrl: url,
@@ -74,7 +73,9 @@
 			debug: true,
 			onReady: () => {
 				submit();
-				iFrame.style.display = "block";
+
+				container.style.display = "block";
+				iFrame.focus();
 			},
 		});
 
@@ -82,4 +83,18 @@
 	});
 </script>
 
-<div id="casement-container" />
+<div id="casement-container">
+	<iframe id="casement-iframe" title="Articleman"/>
+</div>
+
+<style lang="scss">
+	#casement-container {
+		width: 100%;
+		height: 100%;
+		#casement-iframe {
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
+	}
+</style>
