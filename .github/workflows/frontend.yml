@@ -23,8 +23,8 @@ jobs:
          - name: Install dependencies
            run: bun install
            working-directory: app/frontend
-         - name: Build for development
-           run: bun build
+         - name: Build the frontend
+           run: bun run build
            working-directory: app/frontend
          - name: Deploy to Pages
            uses: cloudflare/pages-action@v1
@@ -32,5 +32,5 @@ jobs:
               apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
               accountId: ${{ secrets.CF_PAGES_ACCOUNT_ID }}
               branch: ${{ vars.CF_PAGES_BRANCH }}
-              projectName: ${{ vars.CF_PAGES_NAME }}
+              projectName: articleman
               directory: app/frontend/build
