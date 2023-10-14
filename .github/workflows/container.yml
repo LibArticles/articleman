@@ -33,4 +33,4 @@ jobs:
           accountId: ${{ secrets.CF_PAGES_ACCOUNT_ID }}
           branch: ${{ vars.CF_PAGES_BRANCH }}
           projectName: articleman-container
-          directory: app/frontend/build
+          directory: app/frontend/dist
