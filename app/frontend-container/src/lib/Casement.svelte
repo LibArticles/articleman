@@ -63,6 +63,7 @@
 		let container: HTMLElement =
 			document.getElementById("casement-container")!;
 		iFrame.style.display = "none";
+		iFrame.src = url;
 		container.appendChild(iFrame);
 
 		const outside = new Outside({
