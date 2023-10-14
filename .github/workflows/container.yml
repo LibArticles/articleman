@@ -31,4 +31,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
           accountId: ${{ secrets.CF_PAGES_ACCOUNT_ID }}
-          command: pages deploy --project-name=articleman --branch=main app/frontend-container/dist
+          command: pages deploy --project-name=articleman-container --branch=main app/frontend-container/dist

@@ -8,7 +8,7 @@ on:
 # Install and cache all bun dependencies
 
 jobs:
-   build_container:
+   build_frontend:
       runs-on: ubuntu-latest
       strategy:
          matrix:
