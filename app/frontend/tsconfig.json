@@ -9,10 +9,13 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
+		"lib": ["DOM", "ESNext"],
 		"paths": {
 			"l10n/*": ["./l10n/*"],
 			"$lib": ["./src/lib"],
 			"$lib/*": ["./src/lib/*"],
+			"backend/*": ["../backend/*"],
+			"shared/*": ["../shared/*"],
 		}
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
