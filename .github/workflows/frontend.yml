@@ -27,10 +27,8 @@ jobs:
            run: bun run build
            working-directory: app/frontend
          - name: Deploy to Pages
-           uses: cloudflare/pages-action@v1
+           uses: cloudflare/wrangler-action@v3
            with:
               apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
               accountId: ${{ secrets.CF_PAGES_ACCOUNT_ID }}
-              branch: ${{ vars.CF_PAGES_BRANCH }}
-              projectName: articleman
-              directory: app/frontend/build
+              command: pages deploy --project-name=articleman --branch=main app/frontend/build
