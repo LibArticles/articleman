@@ -1,4 +1,4 @@
-import { Inside } from "casement";
+import Inside from "casement/src/inside";
 
 
 
