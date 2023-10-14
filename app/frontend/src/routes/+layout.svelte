@@ -3,11 +3,14 @@
 	import { FluentProvider, Localized } from '@nubolab-ffwd/svelte-fluent';
 	import translationsEn from 'l10n/en.ftl?raw';
 	import HomeBase from '$lib/HomeBase.svelte';
+	import socketeer from '$lib/comms';
 
 	const resource = new FluentResource(translationsEn);
 	const bundle = new FluentBundle('en');
 	bundle.addResource(resource);
 	const outputBundle = [bundle];
+
+	socketeer.initialize();
 </script>
 
 <div class="main-container">

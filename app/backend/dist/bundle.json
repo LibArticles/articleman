@@ -1,8 +1,8 @@
 {
-  "hash": "b8e9e446b54a48893039",
-  "version": "5.88.2",
-  "time": 21651,
-  "builtAt": 1696717194118,
+  "hash": "76005618b769e7ac32d1",
+  "version": "5.89.0",
+  "time": 27608,
+  "builtAt": 1697251013655,
   "publicPath": "auto",
   "outputPath": "/home/blue/code/articleman/app/backend/dist",
   "assetsByChunkName": {
@@ -14,14 +14,14 @@
     {
       "type": "asset",
       "name": "articleman-backend.js",
-      "size": 166931,
+      "size": 166923,
       "emitted": true,
       "comparedForEmit": false,
       "cached": false,
       "info": {
         "javascriptModule": false,
         "minimized": true,
-        "size": 166931
+        "size": 166923
       },
       "chunkNames": [
         "main"
@@ -43,9 +43,9 @@
       "initial": true,
       "entry": true,
       "recorded": false,
-      "size": 353411,
+      "size": 353350,
       "sizes": {
-        "javascript": 352404,
+        "javascript": 352343,
         "runtime": 1007
       },
       "names": [
@@ -59,7 +59,7 @@
         "articleman-backend.js"
       ],
       "auxiliaryFiles": [],
-      "hash": "02f2c9862a1ee2ff08e9",
+      "hash": "ebea577a084482736b63",
       "childrenByOrder": {},
       "id": 179,
       "siblings": [],
@@ -7779,8 +7779,8 @@
           "optional": false,
           "orphan": false,
           "dependent": true,
-          "issuer": "/home/blue/code/articleman/node_modules/lodash/_SetCache.js",
-          "issuerName": "../../node_modules/lodash/_SetCache.js",
+          "issuer": "/home/blue/code/articleman/node_modules/lodash/_castPath.js",
+          "issuerName": "../../node_modules/lodash/_castPath.js",
           "issuerPath": [
             {
               "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -7798,26 +7798,26 @@
               "id": null
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/lodash/uniq.js",
-              "name": "../../node_modules/lodash/uniq.js",
-              "id": 5652
+              "identifier": "/home/blue/code/articleman/node_modules/lodash/set.js",
+              "name": "../../node_modules/lodash/set.js",
+              "id": 6765
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseUniq.js",
-              "name": "../../node_modules/lodash/_baseUniq.js",
-              "id": 7326
+              "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseSet.js",
+              "name": "../../node_modules/lodash/_baseSet.js",
+              "id": 2857
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/lodash/_SetCache.js",
-              "name": "../../node_modules/lodash/_SetCache.js",
-              "id": 5386
+              "identifier": "/home/blue/code/articleman/node_modules/lodash/_castPath.js",
+              "name": "../../node_modules/lodash/_castPath.js",
+              "id": 7297
             }
           ],
           "failed": false,
           "errors": 0,
           "warnings": 0,
           "id": 6152,
-          "issuerId": 5386,
+          "issuerId": 7297,
           "chunks": [
             179
           ],
@@ -8226,8 +8226,8 @@
           "optional": false,
           "orphan": false,
           "dependent": true,
-          "issuer": "/home/blue/code/articleman/node_modules/lodash/isArrayLike.js",
-          "issuerName": "../../node_modules/lodash/isArrayLike.js",
+          "issuer": "/home/blue/code/articleman/node_modules/lodash/_baseMergeDeep.js",
+          "issuerName": "../../node_modules/lodash/_baseMergeDeep.js",
           "issuerPath": [
             {
               "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -8240,31 +8240,31 @@
               "id": null
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/lib/surgical-engine/backends/matrix.ts",
-              "name": "./lib/surgical-engine/backends/matrix.ts",
+              "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/user-manager/index.ts",
+              "name": "./src/user-manager/index.ts",
               "id": null
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/lodash/unzip.js",
-              "name": "../../node_modules/lodash/unzip.js",
-              "id": 7226
+              "identifier": "/home/blue/code/articleman/node_modules/lodash/merge.js",
+              "name": "../../node_modules/lodash/merge.js",
+              "id": 8537
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/lodash/isArrayLikeObject.js",
-              "name": "../../node_modules/lodash/isArrayLikeObject.js",
-              "id": 3746
+              "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseMerge.js",
+              "name": "../../node_modules/lodash/_baseMerge.js",
+              "id": 4565
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/lodash/isArrayLike.js",
-              "name": "../../node_modules/lodash/isArrayLike.js",
-              "id": 7878
+              "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseMergeDeep.js",
+              "name": "../../node_modules/lodash/_baseMergeDeep.js",
+              "id": 5561
             }
           ],
           "failed": false,
           "errors": 0,
           "warnings": 0,
           "id": 1049,
-          "issuerId": 7878,
+          "issuerId": 5561,
           "chunks": [
             179
           ],
@@ -10886,9 +10886,9 @@
           "type": "module",
           "moduleType": "javascript/esm",
           "layer": null,
-          "size": 276623,
+          "size": 276562,
           "sizes": {
-            "javascript": 276623
+            "javascript": 276562
           },
           "built": true,
           "codeGenerated": true,
@@ -10948,9 +10948,9 @@
               "type": "module",
               "moduleType": "javascript/auto",
               "layer": null,
-              "size": 1226,
+              "size": 1165,
               "sizes": {
-                "javascript": 1226
+                "javascript": 1165
               },
               "built": true,
               "codeGenerated": false,
@@ -10981,7 +10981,7 @@
               "usedExports": [],
               "providedExports": [],
               "optimizationBailout": [
-                "Statement (VariableDeclaration) with side effects in source code at 3:0-6:2"
+                "Statement (VariableDeclaration) with side effects in source code at 3:0-5:2"
               ],
               "depth": 0
             },
@@ -13449,8 +13449,8 @@
               "optional": false,
               "orphan": false,
               "dependent": true,
-              "issuer": "/home/blue/code/articleman/node_modules/inversify/es/container/container.js",
-              "issuerName": "../../node_modules/inversify/es/container/container.js",
+              "issuer": "/home/blue/code/articleman/node_modules/inversify/es/annotation/decorator_utils.js",
+              "issuerName": "../../node_modules/inversify/es/annotation/decorator_utils.js",
               "issuerPath": [
                 {
                   "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -13468,8 +13468,8 @@
                   "id": null
                 },
                 {
-                  "identifier": "/home/blue/code/articleman/node_modules/inversify/es/container/container.js",
-                  "name": "../../node_modules/inversify/es/container/container.js",
+                  "identifier": "/home/blue/code/articleman/node_modules/inversify/es/annotation/decorator_utils.js",
+                  "name": "../../node_modules/inversify/es/annotation/decorator_utils.js",
                   "id": null
                 }
               ],
@@ -19947,8 +19947,8 @@
               "optional": false,
               "orphan": false,
               "dependent": true,
-              "issuer": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v4.js",
-              "issuerName": "../../node_modules/uuid/dist/esm-browser/v4.js",
+              "issuer": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v1.js",
+              "issuerName": "../../node_modules/uuid/dist/esm-browser/v1.js",
               "issuerPath": [
                 {
                   "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -19971,8 +19971,8 @@
                   "id": null
                 },
                 {
-                  "identifier": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v4.js",
-                  "name": "../../node_modules/uuid/dist/esm-browser/v4.js",
+                  "identifier": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v1.js",
+                  "name": "../../node_modules/uuid/dist/esm-browser/v1.js",
                   "id": null
                 }
               ],
@@ -22036,8 +22036,8 @@
               "optional": false,
               "orphan": false,
               "dependent": true,
-              "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-              "issuerName": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+              "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+              "issuerName": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
               "issuerPath": [
                 {
                   "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -22065,8 +22065,8 @@
                   "id": null
                 },
                 {
-                  "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-                  "name": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+                  "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+                  "name": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
                   "id": null
                 }
               ],
@@ -22211,8 +22211,8 @@
               "optional": false,
               "orphan": false,
               "dependent": true,
-              "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-              "issuerName": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+              "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+              "issuerName": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
               "issuerPath": [
                 {
                   "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -22240,8 +22240,8 @@
                   "id": null
                 },
                 {
-                  "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-                  "name": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+                  "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+                  "name": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
                   "id": null
                 }
               ],
@@ -22849,9 +22849,9 @@
       "type": "module",
       "moduleType": "javascript/esm",
       "layer": null,
-      "size": 276623,
+      "size": 276562,
       "sizes": {
-        "javascript": 276623
+        "javascript": 276562
       },
       "built": true,
       "codeGenerated": true,
@@ -22910,9 +22910,9 @@
           "type": "module",
           "moduleType": "javascript/auto",
           "layer": null,
-          "size": 1226,
+          "size": 1165,
           "sizes": {
-            "javascript": 1226
+            "javascript": 1165
           },
           "built": true,
           "codeGenerated": false,
@@ -22942,7 +22942,7 @@
           "usedExports": [],
           "providedExports": [],
           "optimizationBailout": [
-            "Statement (VariableDeclaration) with side effects in source code at 3:0-6:2"
+            "Statement (VariableDeclaration) with side effects in source code at 3:0-5:2"
           ],
           "depth": 0
         },
@@ -25396,8 +25396,8 @@
           "cacheable": true,
           "optional": false,
           "orphan": false,
-          "issuer": "/home/blue/code/articleman/node_modules/inversify/es/container/container.js",
-          "issuerName": "../../node_modules/inversify/es/container/container.js",
+          "issuer": "/home/blue/code/articleman/node_modules/inversify/es/annotation/decorator_utils.js",
+          "issuerName": "../../node_modules/inversify/es/annotation/decorator_utils.js",
           "issuerPath": [
             {
               "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -25415,8 +25415,8 @@
               "id": null
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/inversify/es/container/container.js",
-              "name": "../../node_modules/inversify/es/container/container.js",
+              "identifier": "/home/blue/code/articleman/node_modules/inversify/es/annotation/decorator_utils.js",
+              "name": "../../node_modules/inversify/es/annotation/decorator_utils.js",
               "id": null
             }
           ],
@@ -31867,8 +31867,8 @@
           "cacheable": true,
           "optional": false,
           "orphan": false,
-          "issuer": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v4.js",
-          "issuerName": "../../node_modules/uuid/dist/esm-browser/v4.js",
+          "issuer": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v1.js",
+          "issuerName": "../../node_modules/uuid/dist/esm-browser/v1.js",
           "issuerPath": [
             {
               "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -31891,8 +31891,8 @@
               "id": null
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v4.js",
-              "name": "../../node_modules/uuid/dist/esm-browser/v4.js",
+              "identifier": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v1.js",
+              "name": "../../node_modules/uuid/dist/esm-browser/v1.js",
               "id": null
             }
           ],
@@ -33940,8 +33940,8 @@
           "cacheable": true,
           "optional": false,
           "orphan": false,
-          "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-          "issuerName": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+          "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+          "issuerName": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
           "issuerPath": [
             {
               "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -33969,8 +33969,8 @@
               "id": null
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-              "name": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+              "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+              "name": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
               "id": null
             }
           ],
@@ -34114,8 +34114,8 @@
           "cacheable": true,
           "optional": false,
           "orphan": false,
-          "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-          "issuerName": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+          "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+          "issuerName": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
           "issuerPath": [
             {
               "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -34143,8 +34143,8 @@
               "id": null
             },
             {
-              "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-              "name": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+              "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+              "name": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
               "id": null
             }
           ],
@@ -37926,8 +37926,8 @@
       "cacheable": true,
       "optional": false,
       "orphan": true,
-      "issuer": "/home/blue/code/articleman/node_modules/inversify/es/container/container.js",
-      "issuerName": "../../node_modules/inversify/es/container/container.js",
+      "issuer": "/home/blue/code/articleman/node_modules/inversify/es/annotation/decorator_utils.js",
+      "issuerName": "../../node_modules/inversify/es/annotation/decorator_utils.js",
       "issuerPath": [
         {
           "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -37945,8 +37945,8 @@
           "id": null
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/inversify/es/container/container.js",
-          "name": "../../node_modules/inversify/es/container/container.js",
+          "identifier": "/home/blue/code/articleman/node_modules/inversify/es/annotation/decorator_utils.js",
+          "name": "../../node_modules/inversify/es/annotation/decorator_utils.js",
           "id": null
         }
       ],
@@ -47844,8 +47844,8 @@
       "cacheable": true,
       "optional": false,
       "orphan": true,
-      "issuer": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v4.js",
-      "issuerName": "../../node_modules/uuid/dist/esm-browser/v4.js",
+      "issuer": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v1.js",
+      "issuerName": "../../node_modules/uuid/dist/esm-browser/v1.js",
       "issuerPath": [
         {
           "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -47868,8 +47868,8 @@
           "id": null
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v4.js",
-          "name": "../../node_modules/uuid/dist/esm-browser/v4.js",
+          "identifier": "/home/blue/code/articleman/node_modules/uuid/dist/esm-browser/v1.js",
+          "name": "../../node_modules/uuid/dist/esm-browser/v1.js",
           "id": null
         }
       ],
@@ -54948,8 +54948,8 @@
       "cacheable": true,
       "optional": false,
       "orphan": true,
-      "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-      "issuerName": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+      "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+      "issuerName": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
       "issuerPath": [
         {
           "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -54977,8 +54977,8 @@
           "id": null
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-          "name": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+          "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+          "name": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
           "id": null
         }
       ],
@@ -55122,8 +55122,8 @@
       "cacheable": true,
       "optional": false,
       "orphan": true,
-      "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-      "issuerName": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+      "issuer": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+      "issuerName": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
       "issuerPath": [
         {
           "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -55151,8 +55151,8 @@
           "id": null
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
-          "name": "../../node_modules/inversify/es/syntax/binding_in_when_on_syntax.js",
+          "identifier": "/home/blue/code/articleman/node_modules/inversify/es/syntax/binding_when_on_syntax.js",
+          "name": "../../node_modules/inversify/es/syntax/binding_when_on_syntax.js",
           "id": null
         }
       ],
@@ -56264,8 +56264,8 @@
       "cacheable": true,
       "optional": false,
       "orphan": false,
-      "issuer": "/home/blue/code/articleman/node_modules/lodash/_SetCache.js",
-      "issuerName": "../../node_modules/lodash/_SetCache.js",
+      "issuer": "/home/blue/code/articleman/node_modules/lodash/_castPath.js",
+      "issuerName": "../../node_modules/lodash/_castPath.js",
       "issuerPath": [
         {
           "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -56283,26 +56283,26 @@
           "id": null
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/lodash/uniq.js",
-          "name": "../../node_modules/lodash/uniq.js",
-          "id": 5652
+          "identifier": "/home/blue/code/articleman/node_modules/lodash/set.js",
+          "name": "../../node_modules/lodash/set.js",
+          "id": 6765
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseUniq.js",
-          "name": "../../node_modules/lodash/_baseUniq.js",
-          "id": 7326
+          "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseSet.js",
+          "name": "../../node_modules/lodash/_baseSet.js",
+          "id": 2857
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/lodash/_SetCache.js",
-          "name": "../../node_modules/lodash/_SetCache.js",
-          "id": 5386
+          "identifier": "/home/blue/code/articleman/node_modules/lodash/_castPath.js",
+          "name": "../../node_modules/lodash/_castPath.js",
+          "id": 7297
         }
       ],
       "failed": false,
       "errors": 0,
       "warnings": 0,
       "id": 6152,
-      "issuerId": 5386,
+      "issuerId": 7297,
       "chunks": [
         179
       ],
@@ -56396,8 +56396,8 @@
       "cacheable": true,
       "optional": false,
       "orphan": false,
-      "issuer": "/home/blue/code/articleman/node_modules/lodash/isArrayLike.js",
-      "issuerName": "../../node_modules/lodash/isArrayLike.js",
+      "issuer": "/home/blue/code/articleman/node_modules/lodash/_baseMergeDeep.js",
+      "issuerName": "../../node_modules/lodash/_baseMergeDeep.js",
       "issuerPath": [
         {
           "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/index.ts",
@@ -56410,31 +56410,31 @@
           "id": null
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/lib/surgical-engine/backends/matrix.ts",
-          "name": "./lib/surgical-engine/backends/matrix.ts",
+          "identifier": "/home/blue/code/articleman/node_modules/babel-loader/lib/index.js??ruleSet[1].rules[0]!/home/blue/code/articleman/app/backend/src/user-manager/index.ts",
+          "name": "./src/user-manager/index.ts",
           "id": null
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/lodash/unzip.js",
-          "name": "../../node_modules/lodash/unzip.js",
-          "id": 7226
+          "identifier": "/home/blue/code/articleman/node_modules/lodash/merge.js",
+          "name": "../../node_modules/lodash/merge.js",
+          "id": 8537
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/lodash/isArrayLikeObject.js",
-          "name": "../../node_modules/lodash/isArrayLikeObject.js",
-          "id": 3746
+          "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseMerge.js",
+          "name": "../../node_modules/lodash/_baseMerge.js",
+          "id": 4565
         },
         {
-          "identifier": "/home/blue/code/articleman/node_modules/lodash/isArrayLike.js",
-          "name": "../../node_modules/lodash/isArrayLike.js",
-          "id": 7878
+          "identifier": "/home/blue/code/articleman/node_modules/lodash/_baseMergeDeep.js",
+          "name": "../../node_modules/lodash/_baseMergeDeep.js",
+          "id": 5561
         }
       ],
       "failed": false,
       "errors": 0,
       "warnings": 0,
       "id": 1049,
-      "issuerId": 7878,
+      "issuerId": 5561,
       "chunks": [
         179
       ],
@@ -60468,11 +60468,11 @@
       "assets": [
         {
           "name": "articleman-backend.js",
-          "size": 166931
+          "size": 166923
         }
       ],
       "filteredAssets": 0,
-      "assetsSize": 166931,
+      "assetsSize": 166923,
       "auxiliaryAssets": [],
       "filteredAuxiliaryAssets": 0,
       "auxiliaryAssetsSize": 0,
@@ -60490,11 +60490,11 @@
       "assets": [
         {
           "name": "articleman-backend.js",
-          "size": 166931
+          "size": 166923
         }
       ],
       "filteredAssets": 0,
-      "assetsSize": 166931,
+      "assetsSize": 166923,
       "auxiliaryAssets": [],
       "filteredAuxiliaryAssets": 0,
       "auxiliaryAssetsSize": 0,

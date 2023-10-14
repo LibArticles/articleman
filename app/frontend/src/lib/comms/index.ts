@@ -91,3 +91,6 @@ export class SocketeerClient {
 	}
 
 }
+
+const socketeer = new SocketeerClient();
+export default socketeer;
