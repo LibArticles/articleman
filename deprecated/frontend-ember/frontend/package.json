@@ -78,7 +78,7 @@
     "ember-resolver": "^11.0.0",
     "ember-source": "~5.2.0",
     "ember-svg-jar": "^2.4.4",
-    "ember-template-imports": "^3.4.2",
+    "ember-template-imports": "^4.0.0",
     "ember-template-lint": "^5.11.1",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.9.0",
