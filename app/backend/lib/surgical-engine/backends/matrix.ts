@@ -26,7 +26,7 @@ import StorageManager from 'lib/storage-manager';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { unzip as _unzip, set as _set, get as _get } from 'lodash';
+import { unzip as _unzip, set as _set, get as _get } from 'lodash-es';
 
 import { inject, injectable } from 'inversify';
 import Service from 'src/dependencies';
@@ -81,10 +81,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 		for (const sheetId in Object.keys(template.sheetLayouts)) {
 			const sheet = this.getSheetById(sheetId);
-			sheet.addDeveloperMetadata(
-				Names.layout,
-				template.sheetLayouts[sheetId],
-			);
+			if (sheet)
+				sheet.addDeveloperMetadata(
+					Names.layout,
+					template.sheetLayouts[sheetId],
+				);
 		}
 
 		for (const header in template.ignoredAreas.headers) {
@@ -113,11 +114,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		const objectNamedRange = this.spreadsheet.getRangeByName(
 			Names.object + id,
 		);
-		const sheet = objectNamedRange.getSheet();
+		const sheet = objectNamedRange?.getSheet();
 
 		// get all attributes for that sheet
 		const attributes = [];
-		for (const range in sheet.getNamedRanges()) {
+		for (const range in sheet?.getNamedRanges()) {
 			if (range.startsWith(Names.attribute)) {
 				attributes.push(range);
 			}
@@ -132,6 +133,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 				attributes[attribute],
 			);
 
+			if (!attrRange || !objectNamedRange) continue;
 			object[attribute] = this.intersectRanges(attrRange, objectNamedRange);
 		}
 
@@ -150,87 +152,98 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 
 	applyChangeset(changeset: SurgicalChangeset) {
 		// for each new attribute add a named range at the specified position
-		for (const newAttributeId in changeset.create.attributes) {
-			const currentAttrCreation =
-				changeset.create.attributes[newAttributeId];
+		if (changeset.create)
+			for (const newAttributeId in changeset.create.attributes) {
+				const currentAttrCreation =
+					changeset.create.attributes[newAttributeId];
 
-			if (currentAttrCreation.position.range) {
-				this.ingestNewRangeByNotation(
-					currentAttrCreation.position.range,
-					'ATTRIBUTE',
-					newAttributeId,
-				);
-
-				// otherwise add it at the specified offset from the end.
-			} else if (currentAttrCreation.sheetId !== undefined) {
-				const currentSheet = this.getSheetById(currentAttrCreation.sheetId);
-
-				switch (currentAttrCreation.type) {
-					case 'ingest':
-						this.ingestNewRangeByOffset(
-							currentSheet,
+				if (currentAttrCreation.position)
+					if (currentAttrCreation.position.range) {
+						this.ingestNewRangeByNotation(
+							currentAttrCreation.position.range,
 							'ATTRIBUTE',
-							currentAttrCreation.position.offset,
 							newAttributeId,
 						);
-						break;
-					case 'append':
-						this.appendAttribute(currentSheet, newAttributeId);
-					case 'hidden':
-						this.appendAttribute(currentSheet, newAttributeId);
-						this.hideData(newAttributeId, 'attribute');
-				}
+
+						// otherwise add it at the specified offset from the end.
+					} else if (currentAttrCreation.sheetId !== undefined) {
+						const currentSheet = this.getSheetById(
+							currentAttrCreation.sheetId,
+						);
+
+						if (currentSheet)
+							switch (currentAttrCreation.type) {
+								case 'ingest':
+									if (currentAttrCreation.position.offset)
+										this.ingestNewRangeByOffset(
+											currentSheet,
+											'ATTRIBUTE',
+											currentAttrCreation.position.offset,
+											newAttributeId,
+										);
+									break;
+								case 'append':
+									this.appendAttribute(currentSheet, newAttributeId);
+								case 'hidden':
+									this.appendAttribute(currentSheet, newAttributeId);
+									this.hideData(newAttributeId, 'attribute');
+							}
+					}
 			}
-		}
 		SpreadsheetApp.flush();
 
-		for (const newObjectId in changeset.create.objects) {
-			const currentObjCreation = changeset.create.objects[newObjectId];
-			if (currentObjCreation.sheetId !== undefined) {
-				const currentSheet = this.getSheetById(currentObjCreation.sheetId);
-				switch (currentObjCreation.type) {
-					case 'append':
-						this.appendObject(currentSheet, newObjectId);
-						break;
-					case 'ingest':
-						if (currentObjCreation.position.range) {
-							this.ingestNewRangeByNotation(
-								currentObjCreation.position.range,
-								'OBJECT',
-								newObjectId,
-							);
-						} else if (currentObjCreation.position.offset) {
-							this.ingestNewRangeByOffset(
-								currentSheet,
-								'OBJECT',
-								currentObjCreation.position.offset,
-								newObjectId,
-							);
+		if (changeset.create)
+			for (const newObjectId in changeset.create.objects) {
+				const currentObjCreation = changeset.create.objects[newObjectId];
+				if (currentObjCreation.sheetId !== undefined) {
+					const currentSheet = this.getSheetById(
+						currentObjCreation.sheetId,
+					);
+					if (currentSheet)
+						switch (currentObjCreation.type) {
+							case 'append':
+								this.appendObject(currentSheet, newObjectId);
+								break;
+							case 'ingest':
+								if (currentObjCreation.position?.range) {
+									this.ingestNewRangeByNotation(
+										currentObjCreation.position.range,
+										'OBJECT',
+										newObjectId,
+									);
+								} else if (currentObjCreation.position?.offset) {
+									this.ingestNewRangeByOffset(
+										currentSheet,
+										'OBJECT',
+										currentObjCreation.position.offset,
+										newObjectId,
+									);
+								}
 						}
 				}
 			}
-		}
 		SpreadsheetApp.flush();
 
-		for (const attributeUpdateId in changeset.update.attributes) {
+		for (const attributeUpdateId in changeset.update?.attributes) {
 			const currentAttrUpdate =
 				changeset.update.attributes[attributeUpdateId];
 
-			this.moveDataByOffset(
-				attributeUpdateId,
-				'attribute',
-				currentAttrUpdate.position.offset,
-			);
+			if (currentAttrUpdate.position?.offset)
+				this.moveDataByOffset(
+					attributeUpdateId,
+					'attribute',
+					currentAttrUpdate.position.offset,
+				);
 		}
 		SpreadsheetApp.flush();
 
-		for (const objectUpdateId in changeset.update.attributes) {
+		for (const objectUpdateId in changeset.update?.objects) {
 			const currentObjUpdate = changeset.update.objects[objectUpdateId];
 			const objRange = this.spreadsheet.getRangeByName(
 				Names.object + objectUpdateId,
 			);
 
-			if (currentObjUpdate.position.offset) {
+			if (currentObjUpdate.position?.offset) {
 				this.moveDataByOffset(
 					objectUpdateId,
 					'object',
@@ -241,28 +254,32 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			// if the updated object is definitive
 			if (currentObjUpdate.isDefinitive) {
 				const attrRanges = objRange
-					.getSheet()
+					?.getSheet()
 					.getNamedRanges()
 					.filter((r) => {
 						r.getName().startsWith(Names.attribute);
 					});
 
-				for (const attrRange in attrRanges) {
-					const intersection = this.intersectRanges(
-						objRange,
-						attrRanges[attrRange].getRange(),
-					);
-					intersection.setValue('');
-				}
+				if (attrRanges)
+					for (const attrRange of attrRanges) {
+						if (!attrRange || !objRange) continue;
+						const intersection = this.intersectRanges(
+							objRange,
+							attrRange.getRange(),
+						);
+						intersection.setValue('');
+					}
 			}
 			for (const objAttrUpdateId in currentObjUpdate.attributes) {
 				// intersect the ranges for the object and attributes
-				const range = this.intersectRanges(
-					objRange,
-					this.spreadsheet.getRangeByName(
-						Names.attribute + objAttrUpdateId,
-					),
+
+				const attributeRange = this.spreadsheet.getRangeByName(
+					Names.attribute + objAttrUpdateId,
 				);
+
+				if (!objRange || !objAttrUpdateId || !attributeRange) continue;
+
+				const range = this.intersectRanges(objRange, attributeRange);
 				const objAttrUpdateValue =
 					currentObjUpdate.attributes[objAttrUpdateId];
 
@@ -271,60 +288,68 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		}
 		SpreadsheetApp.flush();
 
-		for (const attrDeleteId in changeset.delete.attributes) {
-			const currentAttrDelete = changeset.delete.attributes[attrDeleteId];
-			switch (currentAttrDelete.type) {
-				case 'splice':
-					this.deleteData(attrDeleteId, 'attribute');
-					break;
-				case 'ignore':
-					// set an ignore attribute on the data and remove the old attr named range
-					const attrRange = this.spreadsheet.getRangeByName(
-						Names.attribute + attrDeleteId,
-					);
-					this.spreadsheet.setNamedRange(
-						Names.ignore + attrDeleteId,
-						attrRange,
-					);
-					attrRange
-						.getSheet()
-						.getNamedRanges()
-						.find((r) => r.getName() === Names.attribute + attrDeleteId)
-						.remove();
-					break;
-				case 'hide':
-					this.hideData(attrDeleteId, 'attribute');
-					break;
+		if (changeset.delete)
+			for (const attrDeleteId in changeset.delete.attributes) {
+				const currentAttrDelete = changeset.delete.attributes[attrDeleteId];
+				switch (currentAttrDelete.type) {
+					case 'splice':
+						this.deleteData(attrDeleteId, 'attribute');
+						break;
+					case 'ignore':
+						// set an ignore attribute on the data and remove the old attr named range
+						const attrRange = this.spreadsheet.getRangeByName(
+							Names.attribute + attrDeleteId,
+						);
+						if (!attrRange) continue;
+						this.spreadsheet.setNamedRange(
+							Names.ignore + attrDeleteId,
+							attrRange,
+						);
+						attrRange
+							.getSheet()
+							.getNamedRanges()
+							.find(
+								(r) => r.getName() === Names.attribute + attrDeleteId,
+							)
+							?.remove();
+						break;
+					case 'hide':
+						this.hideData(attrDeleteId, 'attribute');
+						break;
+				}
 			}
-		}
 		SpreadsheetApp.flush();
 
-		for (const objDeleteId in changeset.delete.objects) {
-			const currentObjDelete = changeset.delete.objects[objDeleteId];
-			switch (currentObjDelete.type) {
-				case 'splice':
-					this.deleteData(objDeleteId, 'object');
-					break;
-				case 'ignore':
-					// set an ignore attribute on the data and remove the old obj named range
-					const objRange = this.spreadsheet.getRangeByName(
-						Names.object + objDeleteId,
-					);
-					this.spreadsheet.setNamedRange(
-						Names.generalIgnore + objDeleteId,
-						objRange,
-					);
-					objRange
-						.getSheet()
-						.getNamedRanges()
-						.find((r) => r.getName() === Names.object + objDeleteId)
-						.remove();
-					break;
-				case 'hide':
-					this.hideData(objDeleteId, 'object');
-					break;
+		if (changeset.delete)
+			for (const objDeleteId in changeset.delete.objects) {
+				const currentObjDelete = changeset.delete.objects[objDeleteId];
+				switch (currentObjDelete.type) {
+					case 'splice':
+						this.deleteData(objDeleteId, 'object');
+						break;
+					case 'ignore':
+						// set an ignore attribute on the data and remove the old obj named range
+						const objRange = this.spreadsheet.getRangeByName(
+							Names.object + objDeleteId,
+						);
+
+						if (!objRange) continue;
+						this.spreadsheet.setNamedRange(
+							Names.generalIgnore + objDeleteId,
+							objRange,
+						);
+
+						objRange
+							.getSheet()
+							.getNamedRanges()
+							.find((r) => r.getName() === Names.object + objDeleteId)
+							?.remove();
+						break;
+					case 'hide':
+						this.hideData(objDeleteId, 'object');
+						break;
+				}
 			}
-		}
 		SpreadsheetApp.flush();
 		return this;
 	}
@@ -450,6 +475,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			'after-content-end',
 			'attribute',
 		);
+		if (!range) return;
 		this.spreadsheet.setNamedRange(Names.attribute + id, range);
 		return sheet
 			.getNamedRanges()
@@ -459,6 +485,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	// append a new named range and return it
 	private appendObject(sheet: GoogleAppsScript.Spreadsheet.Sheet, id: string) {
 		const range = this.findEmptySpace(sheet, 'after-content-end', 'object');
+		if (!range) return;
 		this.spreadsheet.setNamedRange(Names.object + id, range);
 		return sheet
 			.getNamedRanges()
@@ -533,6 +560,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		const range = this.spreadsheet.getRangeByName(
 			(type === 'attribute' ? Names.attribute : Names.object) + id,
 		);
+		if (!range) return;
 		const sheet = range.getSheet();
 		const layout = this.getSheetLayout(sheet);
 		switch (true) {
@@ -551,6 +579,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		const range = this.spreadsheet.getRangeByName(
 			(type === 'attribute' ? Names.attribute : Names.object) + id,
 		);
+		if (!range) return;
 		const layout = this.getSheetLayout(range.getSheet());
 
 		switch (true) {
@@ -568,6 +597,7 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		const range = this.spreadsheet.getRangeByName(
 			(type === 'attribute' ? Names.attribute : Names.object) + id,
 		);
+		if (!range) return;
 		const layout = this.getSheetLayout(range.getSheet());
 
 		switch (true) {
@@ -582,10 +612,11 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 	}
 
 	private getSheetLayout(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
-		const layout = sheet
+		const layout: string = sheet
 			.getDeveloperMetadata()
 			.find((m) => m.getKey() === Names.layout)
-			.getValue();
+			?.getValue() as string;
+		if (!layout) return;
 
 		if (layout !== 'vertical' && layout !== 'horizontal') {
 			throw new MatrixError('Invalid layout');
@@ -784,11 +815,13 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 		const range = this.spreadsheet.getRangeByName(
 			Names.attribute + attributeId,
 		);
+		if (!range) throw new Error('Sheet for given attribute id not found.');
 		return range.getSheet();
 	}
 
 	getSheetForObject(objectId: string) {
 		const range = this.spreadsheet.getRangeByName(Names.object + objectId);
+		if (!range) throw new Error('Sheet for given object id not found.');
 		return range.getSheet();
 	}
 
@@ -958,35 +991,42 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			Names.changeTrackingLookup,
 			'document',
 		);
-		if (turnstile.enter(1000, true)) {
-			const changesLookup = this.StorageManager.document.getStored(
-				Names.changeTracking,
-			) as MatrixLastModified;
+		turnstile
+			.enter(1000, true)
+			.then(() => {
+				const changesLookup = this.StorageManager.document.getStored(
+					Names.changeTracking,
+				) as MatrixLastModified;
 
-			const changesQueue = this.StorageManager.document.getStored(
-				Names.changeTrackingQueue,
-			) as SurgicalChangeQueue;
+				const changesQueue = this.StorageManager.document.getStored(
+					Names.changeTrackingQueue,
+				) as SurgicalChangeQueue;
 
-			const date = new Date().getTime();
+				const date = new Date().getTime();
 
-			for (const pairing in objectAttributePairings) {
-				const object = objectAttributePairings[pairing].object;
-				const attribute = objectAttributePairings[pairing].attribute;
-				_set(changesLookup, [object, attribute], date);
-				changesQueue.push({ object, attribute, date });
-			}
+				for (const pairing in objectAttributePairings) {
+					const object = objectAttributePairings[pairing].object;
+					const attribute = objectAttributePairings[pairing].attribute;
+					_set(changesLookup, [object, attribute], date);
+					changesQueue.push({ object, attribute, date });
+				}
 
-			this.StorageManager.document.store(
-				Names.changeTrackingLookup,
-				changesLookup,
-			);
-			this.StorageManager.document.store(
-				Names.changeTrackingQueue,
-				changesQueue,
-			);
+				this.StorageManager.document.store(
+					Names.changeTrackingLookup,
+					changesLookup,
+				);
+				this.StorageManager.document.store(
+					Names.changeTrackingQueue,
+					changesQueue,
+				);
 
-			turnstile.exit();
-		}
+				turnstile.exit();
+			})
+			.catch(() => {
+				throw new Error(
+					'Failed to commit last modified, turnstile timed out.',
+				);
+			});
 	}
 
 	getLastModified(objectId: string): Record<string, number> | undefined {
@@ -1035,8 +1075,8 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 			});
 
 		// check which cells intersect with which objects and attributes
-		const objAttrPairings: ObjectAttributePairingSet = cells.map(
-			(cell: GoogleAppsScript.Spreadsheet.Range) => {
+		const objAttrPairings: ObjectAttributePairingSet = cells
+			.map((cell: GoogleAppsScript.Spreadsheet.Range) => {
 				const attribute = allAttributes.find(
 					(attribute: GoogleAppsScript.Spreadsheet.NamedRange) =>
 						this.isRangeContainedIn(cell, attribute.getRange()),
@@ -1046,11 +1086,13 @@ export default class MatrixBackend implements SurgicalBackend<MatrixBackend> {
 						this.isRangeContainedIn(cell, object.getRange()),
 				);
 				return {
-					attribute: attribute.getName().split(Names.attribute)[0],
-					object: object.getName().split(Names.object)[0],
+					attribute: attribute?.getName().split(Names.attribute)[0] ?? '',
+					object: object?.getName().split(Names.object)[0] ?? '',
 				};
-			},
-		);
+			})
+			.filter((pairing) => {
+				return pairing.object !== '' && pairing.attribute !== '';
+			});
 
 		this.commitLastModified(sheet, objAttrPairings);
 	}

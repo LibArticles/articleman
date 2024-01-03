@@ -9,7 +9,7 @@ import {
 	has as _has,
 	trim as _trim,
 	uniq as _uniq,
-} from 'lodash';
+} from 'lodash-es';
 import { inject, injectable } from 'inversify';
 import Service from 'src/dependencies';
 
@@ -107,7 +107,7 @@ export default class LinkManager {
 		if (objects.length > 0) {
 			for (const id of objects) {
 				const entry = lookupTableEntries[id];
-				if (!entry) {
+				if (entry) {
 					entry.splice(entry.indexOf(id), 1);
 				}
 			}

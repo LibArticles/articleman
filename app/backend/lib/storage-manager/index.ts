@@ -1,9 +1,9 @@
-import fastChunkString from '@shelf/fast-chunk-string';
+import fastChunkString from '@shelf/fast-chunk-string/lib/';
 import type { Turnstile } from 'lib/concurrency';
-import { compress, decompress } from 'compress-json';
+import { compress, decompress } from 'lib/external/compress-json';
 import type { AMSharedLink, AMReferenceLink } from 'src/data/link';
 import type { UserStorage } from 'src/user-manager';
-import { merge as _merge } from 'lodash';
+import { merge as _merge } from 'lodash-es';
 import type { SocketeerMessage, SocketeerMessageQueue } from 'src/comms/socket';
 import { injectable, inject } from 'inversify';
 import Service from 'src/dependencies';
@@ -206,7 +206,7 @@ export default class StorageManager {
 	private getScopedCache(scope: Scope) {
 		switch (scope) {
 			case 'document':
-				return CacheService.getDocumentCache();
+				return CacheService.getDocumentCache()!;
 			case 'script':
 				return CacheService.getScriptCache();
 			case 'user':
@@ -218,9 +218,12 @@ export default class StorageManager {
 
 	private getFromCache(scope: Scope, key: string, fastMode: boolean = false) {
 		const cache = this.getScopedCache(scope);
-		const legend = JSON.parse(
-			cache.get(Names.universal + key + Names.legend),
-		);
+		const legendText = cache.get(Names.universal + key + Names.legend);
+		if (!legendText)
+			throw new Error(
+				`Legend not found for specified key ${key}. StorageManager needs a legend to function properly.`,
+			);
+		const legend = JSON.parse(legendText);
 		const chunkNames: string[] = [];
 
 		for (let i = 0; i < legend.length; i++) {
@@ -251,21 +254,14 @@ export default class StorageManager {
 
 	private setStorage(scope: Scope, key: string, value: StorableValue) {
 		const turnstile = this.turnstile;
-		if (turnstile.enter(20000)) {
-			console.timeEnd('StorageManagerTurnstile');
-			console.log(`Went through the turnstile for this`);
-		} else {
-			// TODO: standardize error
-			throw new Error(
-				'Unable to use Turnstile on Storage Manager, Articleman seems dangerously busy.',
-			);
-		}
 
-		const storage = this.getScopedStorage(scope);
-		const airlock = this.format(key, value, true);
+		turnstile.enter(1000, true).then(() => {
+			const storage = this.getScopedStorage(scope);
+			const airlock = this.format(key, value, true);
 
-		storage.setProperties(airlock);
-		turnstile.exit();
+			storage.setProperties(airlock);
+			turnstile.exit();
+		});
 	}
 
 	document = {

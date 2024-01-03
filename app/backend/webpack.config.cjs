@@ -76,7 +76,15 @@ const backEndConfig = {
 				extractComments: false,
 				// minify: TerserPlugin.esbuildMinify
 			})
-		]
+		],
+		usedExports: true,
+		sideEffects: true,
+		providedExports: true,
+		mangleExports: 'size',
+		moduleIds: 'size',
+		nodeEnv: 'production',
+		removeAvailableModules: true,
+		
 	},
 	module: {
 		rules: [
@@ -113,8 +121,15 @@ const backEndConfig = {
 						["@babel/plugin-transform-typescript", {
 							dts: false,
 							optimizeConstEnums: true,
-
+							importHelpers: true
 						}],
+						["@babel/plugin-transform-runtime",
+							{
+								"absoluteRuntime": false,
+								"corejs": false,
+								"helpers": true,
+								"regenerator": true,
+							}],
 						["minify-dead-code-elimination"],
 						["babel-plugin-transform-typescript-metadata"],
 						["@babel/plugin-proposal-decorators", { "version": "legacy" }],

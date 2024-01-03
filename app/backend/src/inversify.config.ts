@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { Container } from 'inversify';
 import SurgicalEngine from 'lib/surgical-engine';
 import MatrixBackend from 'lib/surgical-engine/backends/matrix';
@@ -21,9 +23,3 @@ container.bind(Service.Settings).to(SettingsManager).inSingletonScope();
 container.bind(Service.Socketeer).to(Socketeer).inSingletonScope();
 container.bind(Service.Turnstile).toConstructor(Turnstile);
 
-declare namespace globalThis {
-	var socketeer: (payload?: SocketeerMessage) => void;
-}
-
-const socketeer = container.get<Socketeer>(Service.Socketeer);
-globalThis.socketeer = socketeer.checkup.bind(socketeer);

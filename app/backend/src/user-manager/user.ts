@@ -1,5 +1,5 @@
-import { AMUserGroup } from ".";
-import { uniq as _uniq } from "lodash";
+import { AMUserGroup } from '.';
+import { uniq as _uniq } from 'lodash-es';
 
 export default class User {
 	email: string;
@@ -8,11 +8,11 @@ export default class User {
 	capabilities: string[];
 	locale?: string;
 	onboarded: boolean;
-	type = "user";
+	type = 'user';
 	attributes: {
 		[attr: string]: string | boolean | number;
-	}
-	groups: AMUserGroup[]
+	};
+	groups: AMUserGroup[];
 
 	get computedCapabilities(): string[] {
 		const allGroupCaps = this.groups.flatMap((group) => group.capabilities);
@@ -35,7 +35,7 @@ export default class User {
 export interface UserConstructor {
 	email: string;
 	id: string;
-	groups: AMUserGroup[]
+	groups: AMUserGroup[];
 	termsOfAddress: TermsOfAddress;
 	locale?: string;
 	attributes: {
@@ -56,7 +56,7 @@ export interface TermsOfAddress {
 			surname: string;
 			full: string;
 		};
-		pronouns?: {
+		pronouns: {
 			tactic?:
 				| 'alternateDaily'
 				| 'alternateSentence'

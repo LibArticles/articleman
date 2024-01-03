@@ -17,7 +17,10 @@ export default class Socketeer {
 
 	private checkupCallback: ((message?: SocketeerMessage) => void) | undefined = undefined;
 
-	checkup(payload: SocketeerMessage) {
+	checkup(payload?: SocketeerMessage) {
+		if (payload && this.checkupCallback) {
+			this.checkupCallback(payload);
+		}
 		const queue = this.StorageManager.user.getCached(
 			Names.socketCache,
 		) as SocketeerMessageQueue;
@@ -32,7 +35,7 @@ export default class Socketeer {
 		) as SocketeerMessageQueue;
 		if (queue) {
 			queue.messages.push(payload);
-			const pollDates = queue.messages.map((message) => message.nextPoll);
+			const pollDates = queue.messages.map((message) => message.nextPoll ?? 0)
 			queue.nextPoll = Math.min(...pollDates);
 			this.StorageManager.user.cache(Names.socketCache, queue);
 		} else {

@@ -25,7 +25,7 @@ export interface SurgicalBackend<ExtenderClass> {
 	// get multiple objects
 	getObjects: (...ids: string[]) => SurgicalObject[];
 
-	runQuery: (query: SurgicalQuery, source?: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[]) => SurgicalObject[];
+	runQuery: (query: SurgicalQuery, source: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[]) => SurgicalObject[];
 
 	applyChangeset: (changes: SurgicalChangeset) => ExtenderClass;
 
@@ -37,7 +37,7 @@ export interface SurgicalBackend<ExtenderClass> {
 
 	supportedLayouts: SupportedLayout[];
 
-	getLastModified: (object: string) => Record<string, number>;
+	getLastModified: (object: string) => Record<string, number> | undefined;
 	getChangeQueue: () => SurgicalChangeQueue;
 	setChangeQueue: (queue: SurgicalChangeQueue | []) => void;
 	getObjectsFromSheet: (sheet: GoogleAppsScript.Spreadsheet.Sheet) => SurgicalObject[];

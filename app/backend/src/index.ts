@@ -1,5 +1,9 @@
-import '@abraham/reflection';
-import './inversify.config';
+
+
+import container from './inversify.config';
+import type { SocketeerMessage } from './comms/socket';
+import type Socketeer from './comms/socket';
+import Service from './dependencies';
 
 import config from '../../shared/config.json';
 
@@ -12,10 +16,12 @@ global.onOpen = function onOpen() {
 		.addToUi();
 };
 
-// @ts-ignore
-global.setSettings = setSettings;
-// @ts-ignore
-global.getSettings = getSettings;
+declare namespace global {
+	var socketeer: (payload?: SocketeerMessage) => void;
+}
+
+const socketeer = container.get<Socketeer>(Service.Socketeer);
+global.socketeer = socketeer.checkup.bind(socketeer);
 
 // @ts-ignore
 global.onSelectionChange = () => {
@@ -42,11 +48,6 @@ global.showSidebar = () => {
 	);
 };
 
-// @ts-ignore
-global.showHelp = () => {
-	CacheService.getUserCache().put('help', 'true', 20); // @ts-ignore
-	global.showSidebar();
-};
 
 // @ts-ignore
 global.onInstall = function onInstall() {

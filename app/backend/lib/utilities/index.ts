@@ -1,4 +1,4 @@
-import { isNumber as _isNumber } from "lodash";
+import { isNumber as _isNumber } from 'lodash-es';
 
 export function traverseObject(
 	obj: any,
@@ -38,8 +38,5 @@ export function classify(value: any) {
 			return 'undefined';
 		default:
 			return 'unknown';
-
 	}
 }
-
-

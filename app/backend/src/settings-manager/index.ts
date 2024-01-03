@@ -2,7 +2,7 @@ import UserManager, { UserAttributeSet } from 'src/user-manager';
 import StorageManager from 'lib/storage-manager';
 import * as Toolbelt from 'lib/utilities';
 import { CMD } from 'shared/recognized-commands';
-import { set as _set, get as _get, merge as _merge } from 'lodash';
+import { set as _set, get as _get, merge as _merge } from 'lodash-es';
 import { injectable } from 'inversify';
 import { Capabilities } from 'src/user-manager/caps';
 

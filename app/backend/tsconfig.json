@@ -7,15 +7,23 @@
 		"lib": ["ESNext"],
 		"module": "ESNext",
 		"target": "es2018",
-		"allowJs": false,
+		"allowJs": true,
 		"allowArbitraryExtensions": true,
 		"resolveJsonModule": true,
 		"paths": {
 			"lib/*": ["lib/*"],
+			"lib/external/*": ["lib/external/*"],
+			"lib/external/compress-json": ["lib/external/compress-json/src"],
 			"src/*": ["src/*"],
 			"locale/*": ["locale/*"],
 			"shared/*": ["../shared/*"]
 		},
+
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"isolatedModules": true,
+		"importHelpers": true,
+
 		"baseUrl": ".",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
@@ -28,5 +36,5 @@
 		"node_modules/@types",
 		"types"
 	],
-	"exclude": ["node_modules", "dist"]
+	"exclude": ["node_modules", "dist", "@types/ws"]
 }

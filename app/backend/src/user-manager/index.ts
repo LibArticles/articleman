@@ -6,7 +6,7 @@ import {
 	uniq as _uniq,
 	cloneDeep as _cloneDeep,
 	random as _random,
-} from 'lodash';
+} from 'lodash-es';
 import type StorageManager from 'lib/storage-manager';
 import defaultTOA from 'locale/default-toa.json';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,6 +27,7 @@ class Names {
 @injectable()
 export default class UserManager {
 	activeUser: User;
+
 	private allUsers: {
 		[id: string]: User;
 	};
@@ -59,6 +60,11 @@ export default class UserManager {
 		// for each sheet in the map, add the user to the manager and the lookup tables
 		for (const sheetId in attributeMap) {
 			const sheet = this.engine.getSheetById(sheetId);
+			if (!sheet) {
+				throw new Error(
+					`sheet ${sheetId} from a user attribute map not found.`,
+				);
+			}
 			const users = this.engine.getAllObjectsForSheet(sheet);
 			const map = attributeMap[sheetId];
 			const userLocaleRaw = Session.getActiveUserLocale();
@@ -94,7 +100,7 @@ export default class UserManager {
 
 				_set(this.allUsers, [sheetId, newUserObject.id], newUserObject);
 
-				if (!this.activeUser && this.activeUser.email === userEmail) {
+				if (this.activeUser && this.activeUser.email === userEmail) {
 					this.activeUser = newUserObject;
 				}
 
@@ -104,7 +110,7 @@ export default class UserManager {
 	}
 
 	newUser(addition: UserAddition) {
-		this.guard(Capabilities.UM.addUsers)
+		this.guard(Capabilities.UM.addUsers);
 		const allGroupCaps = addition.groups.flatMap(
 			(group) => group.capabilities,
 		);
@@ -162,7 +168,7 @@ export default class UserManager {
 	}
 
 	removeUser(user: User) {
-		this.guard(Capabilities.UM.removeUsers)
+		this.guard(Capabilities.UM.removeUsers);
 		if (userBalance(this.activeUser, user)) {
 			if (this.activeUser.id === user.id) {
 				throw new Error('cannot remove active user');
@@ -247,7 +253,7 @@ export default class UserManager {
 	}
 
 	addGroup(group: AMUserGroup) {
-		this.guard(Capabilities.UM.addGroups)
+		this.guard(Capabilities.UM.addGroups);
 		if (userBalance(this.activeUser, group)) {
 			this.groups[group.id] = group;
 		} else {
@@ -256,7 +262,7 @@ export default class UserManager {
 	}
 
 	removeGroup(group: AMUserGroup) {
-		this.guard(Capabilities.UM.removeGroups)
+		this.guard(Capabilities.UM.removeGroups);
 		if (userBalance(this.activeUser, group)) {
 			delete this.groups[group.id];
 		} else {
@@ -264,11 +270,8 @@ export default class UserManager {
 		}
 	}
 
-	addCapabilitiesToUser(
-		user: User,
-		...capabilities: string[]
-	) {
-		this.guard(Capabilities.UM.promoteUsers)
+	addCapabilitiesToUser(user: User, ...capabilities: string[]) {
+		this.guard(Capabilities.UM.promoteUsers);
 		if (
 			userHasCapabilities(this.activeUser, capabilities) &&
 			userBalance(this.activeUser, user)
@@ -277,11 +280,8 @@ export default class UserManager {
 		}
 	}
 
-	removeCapabilitiesFromUser(
-		user: User,
-		...capabilities: string[]
-	) {
-		this.guard(Capabilities.UM.demoteUsers)
+	removeCapabilitiesFromUser(user: User, ...capabilities: string[]) {
+		this.guard(Capabilities.UM.demoteUsers);
 		if (
 			(userBalance(this.activeUser, user),
 			userHasCapabilities(this.activeUser, capabilities))
@@ -292,39 +292,29 @@ export default class UserManager {
 		}
 	}
 
-	setTermsOfAddress(
-		user: User,
-		termsOfAddress: TermsOfAddress,
-	) {
-		this.guard(Capabilities.UM.editUserTOAs)
+	setTermsOfAddress(user: User, termsOfAddress: TermsOfAddress) {
+		this.guard(Capabilities.UM.editUserTOAs);
 		if (userBalance(this.activeUser, user)) {
 			_merge(this.allUsers[user.id].termsOfAddress, termsOfAddress);
 		}
 	}
 
-	setOwnTermsOfAddress(
-		termsOfAddress: TermsOfAddress,
-	) {
-		this.guard(Capabilities.UM.editOwnTOAs)
+	setOwnTermsOfAddress(termsOfAddress: TermsOfAddress) {
+		this.guard(Capabilities.UM.editOwnTOAs);
 		if (userBalance(this.activeUser, this.activeUser)) {
 			_merge(this.activeUser.termsOfAddress, termsOfAddress);
 		}
 	}
 
-	setAttributes(
-		user: User,
-		attributes: { [key: string]: string },
-	) {
-		this.guard(Capabilities.UM.editUserAttributes)
+	setAttributes(user: User, attributes: { [key: string]: string }) {
+		this.guard(Capabilities.UM.editUserAttributes);
 		if (userBalance(this.activeUser, user)) {
 			_merge(this.allUsers[user.id].attributes, attributes);
 		}
 	}
 
-	setOwnAttributes(attributes: {
-		[key: string]: string;
-	}) {
-		this.guard(Capabilities.UM.editOwnAttributes)
+	setOwnAttributes(attributes: { [key: string]: string }) {
+		this.guard(Capabilities.UM.editOwnAttributes);
 		if (userBalance(this.activeUser, this.activeUser)) {
 			_merge(this.activeUser.attributes, attributes);
 		}
@@ -363,16 +353,19 @@ export default class UserManager {
 	}
 
 	pronouns(user: User, locale: string) {
-		const pronouns = user.termsOfAddress[locale].pronouns;
+		const userPronouns = user.termsOfAddress[locale].pronouns;
+		if (!userPronouns) {
+			throw new Error(`no pronouns found for user ${user.id}`);
+		}
 
-		if (pronouns.tactic)
-			switch (pronouns.tactic) {
+		if (userPronouns.tactic)
+			switch (userPronouns.tactic) {
 				case 'alternateDaily':
 					function getDailyPronoun(user: User) {
 						const dayNumber = new Date().getDay();
 						const dayPronounIndex =
-							(dayNumber % pronouns.values.length) - 1;
-						return pronouns.values[dayPronounIndex];
+							(dayNumber % userPronouns.values.length) - 1;
+						return userPronouns.values[dayPronounIndex];
 					}
 					return getDailyPronoun(user);
 				case 'alternateSentence':
@@ -380,9 +373,9 @@ export default class UserManager {
 				case 'alternateWord':
 					return new WordPronounGenerator(user, locale);
 				default:
-					if (pronouns.staticIndex)
-						return pronouns.values[pronouns.staticIndex];
-					else return pronouns.values[0];
+					if (userPronouns.staticIndex)
+						return userPronouns.values[userPronouns.staticIndex];
+					else return userPronouns.values[0];
 			}
 	}
 
@@ -393,11 +386,6 @@ export default class UserManager {
 			);
 	}
 }
-
-
-
-
-
 
 export function userBalance(initiator: User, target: AMUserGroup | User) {
 	switch (target.type) {
@@ -417,7 +405,6 @@ export function userHasCapabilities(user: User, capabilities: string[]) {
 		user.computedCapabilities.includes(capability),
 	);
 }
-
 
 class SentencePronounGenerator {
 	private toa: TermsOfAddress;

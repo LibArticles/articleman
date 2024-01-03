@@ -21,6 +21,7 @@ import type {
 	SurgicalObject,
 	IsContainedSearch,
 } from './base/engine';
+import { set as _set } from 'lodash-es';
 
 @injectable()
 export default class SurgicalEngine {
@@ -35,64 +36,66 @@ export default class SurgicalEngine {
 	}
 
 	newObject(input: ObjectCreation) {
-		this.changeset.create.objects[input.id] = {
+		_set(this, `this.changeset.create.objects.${input.id}`, {
 			position: input.position,
 			type: input.type,
 			sheetId: input.sheetId ?? undefined,
-		};
-		this.changeset.update.objects[input.id] = {
-			attributes: input.attributes ?? {},
-			isDefinitive: input.isDefinitive ?? false,
-		};
+		});
+
+		if (Object.keys(input.attributes ?? {}).length > 0)
+			_set(this, `this.changeset.update.objects.${input.id}`, {
+				attributes: input.attributes ?? {},
+				isDefinitive: input.isDefinitive ?? false,
+			});
 		if (this.autoCommit) {
 			this.commit();
 		}
 	}
 
 	newAttribute(input: AttributeCreation) {
-		this.changeset.create.attributes[input.id] = {
+		_set(this, `this.changeset.update.objects.${input.id}`, {
 			position: input.position,
 			type: input.type,
 			sheetId: input.sheetId,
-		};
+		});
 		if (this.autoCommit) {
 			this.commit();
 		}
 	}
 
 	updateObject(input: ObjectUpdate) {
-		this.changeset.update.objects[input.id] = {
+		_set(this, `this.changeset.update.objects.${input.id}`, {
 			position: input.position,
 			attributes: input.attributes ?? {},
 			isDefinitive: input.isDefinitive ?? false,
-		};
+		});
 		if (this.autoCommit) {
 			this.commit();
 		}
 	}
 
 	updateAttribute(input: AttributeUpdate) {
-		this.changeset.update.attributes[input.id] = {
+		_set(this, `this.changeset.update.attributes.${input.id}`, {
 			position: input.position,
-		};
+		});
 		if (this.autoCommit) {
 			this.commit();
 		}
 	}
 
 	deleteObject(input: DataDelete) {
-		this.changeset.delete.objects[input.id] = {
+		_set(this, `this.changeset.delete.objects.${input.id}`, {
 			type: input.type,
-		};
+		});
 		if (this.autoCommit) {
 			this.commit();
 		}
 	}
 
 	deleteAttribute(input: DataDelete) {
-		this.changeset.delete.attributes[input.id] = {
+		_set(this, `this.changeset.delete.attributes.${input.id}`, {
 			type: input.type,
-		};
+		});
 		if (this.autoCommit) {
 			this.commit();
 		}
@@ -102,9 +105,11 @@ export default class SurgicalEngine {
 		if (!this.autoCommit) {
 			this.backend.applyChangeset(this.changeset);
 		} else if (
-			!!Object.keys(this.changeset.create).length ||
-			!!Object.keys(this.changeset.update).length ||
-			!!Object.keys(this.changeset.delete).length
+			(this.changeset.create &&
+				!!Object.keys(this.changeset.create).length) ||
+			(this.changeset.update &&
+				!!Object.keys(this.changeset.update).length) ||
+			(this.changeset.delete && !!Object.keys(this.changeset.delete).length)
 		) {
 			this.backend.applyChangeset(this.changeset);
 			this.changeset = {

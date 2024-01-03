@@ -5,9 +5,7 @@ class Names {
 	static universal = 'TURNSTILE_CONCURRENCY_';
 }
 
-export default class Concurrency {
-
-}
+export default class Concurrency {}
 
 @injectable()
 export class Turnstile {
@@ -21,27 +19,23 @@ export class Turnstile {
 	 * @param error Should it throw an error if it times out?
 	 * @returns A promise with true or false, for whether the executor could enter the turnstile
 	 */
-	async enter(timeOut: number, error?: boolean) {
-		if (!this.get(this.name)) {
-			this.set(this.name, [this.id]);
-		} else if (this.get(this.name)[0] !== this.id) {
-			this.set(this.name, [...this.get(this.name), this.id]);
-
-		}
-		for (let i = 0; i < timeOut / 1000; i += 10) {
-			Utilities.sleep(10);
-			if (this.get(this.name)[0] === this.id || !this.get(this.name)) {
-				return true;
+	enter(timeOut: number, error?: boolean) {
+		return new Promise((resolve, reject) => {
+			if (!this.get(this.name)) {
+				this.set(this.name, [this.id]);
+			} else if (this.get(this.name)[0] !== this.id) {
+				this.set(this.name, [...this.get(this.name), this.id]);
 			}
+			for (let i = 0; i < timeOut / 1000; i += 10) {
+				Utilities.sleep(10);
+				if (this.get(this.name)[0] === this.id || !this.get(this.name)) {
+					resolve(true);
+				}
+			}
+			this.exit();
 
-		}
-		this.exit()
-
-		if (error) {
-			throw new Error('Turnstile was occupied for too long.');
-		} else {
-			return false;
-		}
+			reject();
+		});
 	}
 
 	/**
@@ -49,45 +43,58 @@ export class Turnstile {
 	 */
 	exit() {
 		const arrayToDeleteMyNameIn: Array<string> = this.get(this.name);
-		const arrayWithoutMyName = arrayToDeleteMyNameIn.splice(arrayToDeleteMyNameIn.indexOf(this.id));
+		const arrayWithoutMyName = arrayToDeleteMyNameIn.splice(
+			arrayToDeleteMyNameIn.indexOf(this.id),
+		);
 		if (arrayWithoutMyName.length !== 0)
-		this.set(this.name, arrayWithoutMyName);
-		else
-		this.delete(this.name)
+			this.set(this.name, arrayWithoutMyName);
+		else this.delete(this.name);
 	}
 
 	private get(key: string) {
 		switch (this.type) {
 			case 'document':
-				return JSON.parse(CacheService.getDocumentCache().get(Names.universal + key));
+				return JSON.parse(
+					CacheService.getDocumentCache()!.get(Names.universal + key) || '{}',
+				);
 			case 'script':
-				return JSON.parse(CacheService.getScriptCache().get(Names.universal + key));
+				return JSON.parse(
+					CacheService.getScriptCache().get(Names.universal + key) || '{}',
+				);
 			case 'user':
-				return JSON.parse(CacheService.getUserCache().get(Names.universal + key));
+				return JSON.parse(
+					CacheService.getUserCache().get(Names.universal + key) || '{}',
+				);
 		}
 	}
 
 	private set(key: string, value: object) {
 		switch (this.type) {
 			case 'document':
-				CacheService.getDocumentCache().put(Names.universal + key, JSON.stringify(value));
+				CacheService.getDocumentCache()!.put(
+					Names.universal + key,
+					JSON.stringify(value),
+				);
 				break;
 			case 'script':
-				CacheService.getScriptCache().put(Names.universal + key, JSON.stringify(value));
+				CacheService.getScriptCache().put(
+					Names.universal + key,
+					JSON.stringify(value),
+				);
 				break;
 			case 'user':
-				CacheService.getUserCache().put(Names.universal + key, JSON.stringify(value));
+				CacheService.getUserCache().put(
+					Names.universal + key,
+					JSON.stringify(value),
+				);
 				break;
 		}
 	}
 
-
-
-
 	private delete(key: string) {
 		switch (this.type) {
 			case 'document':
-				CacheService.getDocumentCache().remove(Names.universal + key);
+				CacheService.getDocumentCache()!.remove(Names.universal + key);
 				break;
 			case 'script':
 				CacheService.getScriptCache().remove(Names.universal + key);
