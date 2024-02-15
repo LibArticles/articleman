@@ -5,7 +5,6 @@
   A better, more reliable way to manipulate spreadsheet data logically, only updating and fetching data as needed.
 */
 
-import { injectable, inject } from 'inversify';
 import type MatrixBackend from './backends/matrix';
 import Service from 'src/dependencies';
 import type {
@@ -23,13 +22,15 @@ import type {
 } from './base/engine';
 import { set as _set } from 'lodash-es';
 
-@injectable()
 export default class SurgicalEngine {
 	autoCommit: boolean;
 	changeset: SurgicalChangeset;
 
-	@inject(Service.Matrix)
-	backend: MatrixBackend;
+	constructor(
+		public backend: MatrixBackend,
+	) {
+
+	}
 
 	newQuery(source: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[]) {
 		return new QueryGenerator(source, this);
@@ -207,6 +208,7 @@ class QueryGenerator {
 	constructor(
 		source: GoogleAppsScript.Spreadsheet.Sheet | SurgicalObject[],
 		engine: SurgicalEngine,
+
 	) {
 		this.source = source;
 		this.groups = [];

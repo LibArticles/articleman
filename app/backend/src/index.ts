@@ -1,6 +1,5 @@
 
 
-import container from './inversify.config';
 import type { SocketeerMessage } from './comms/socket';
 import type Socketeer from './comms/socket';
 import Service from './dependencies';
@@ -20,8 +19,8 @@ declare namespace global {
 	var socketeer: (payload?: SocketeerMessage) => void;
 }
 
-const socketeer = container.get<Socketeer>(Service.Socketeer);
-global.socketeer = socketeer.checkup.bind(socketeer);
+// const socketeer =
+// global.socketeer = socketeer.checkup.bind(socketeer);
 
 // @ts-ignore
 global.onSelectionChange = () => {

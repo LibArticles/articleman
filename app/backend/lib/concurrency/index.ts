@@ -1,4 +1,3 @@
-import { injectable } from 'inversify';
 import { v4 as uuidv4 } from 'uuid';
 
 class Names {
@@ -7,7 +6,6 @@ class Names {
 
 export default class Concurrency {}
 
-@injectable()
 export class Turnstile {
 	name: string;
 	type: string;

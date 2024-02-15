@@ -5,7 +5,6 @@ import type { AMSharedLink, AMReferenceLink } from 'src/data/link';
 import type { UserStorage } from 'src/user-manager';
 import { merge as _merge } from 'lodash-es';
 import type { SocketeerMessage, SocketeerMessageQueue } from 'src/comms/socket';
-import { injectable, inject } from 'inversify';
 import Service from 'src/dependencies';
 
 class Names {
@@ -38,7 +37,6 @@ type StorableValue =
 interface StorableObject extends Record<string, StorableValue> {}
 interface StorableArray extends Array<StorableValue> {}
 
-@injectable()
 export default class StorageManager {
 	private documentStorage: GoogleAppsScript.Properties.Properties;
 	private documentCache: GoogleAppsScript.Cache.Cache;
@@ -47,10 +45,10 @@ export default class StorageManager {
 	private scriptStorage: GoogleAppsScript.Properties.Properties;
 	private scriptCache: GoogleAppsScript.Cache.Cache;
 
-	@inject(Service.Turnstile)
-	private turnstile: Turnstile;
 
-	constructor() {
+	constructor(
+		private turnstile: Turnstile,
+	) {
 		this.documentStorage = PropertiesService.getDocumentProperties();
 		this.documentCache = CacheService.getScriptCache();
 		this.userStorage = PropertiesService.getUserProperties();

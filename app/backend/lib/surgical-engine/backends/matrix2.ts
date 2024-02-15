@@ -28,7 +28,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { unzip as _unzip, set as _set, get as _get } from 'lodash-es';
 
-import Service from 'src/dependencies';
 
 class Names {
 	static universal = 'SURGICAL_ENGINE_MATRIX_';
