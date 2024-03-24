@@ -1,13 +1,18 @@
-# Project Articleman
+# Articleman
 
-Student journalism has a big problem: managing the publication based on real workflow data is next to impossible unless you've got a dev onstaff. This project aims to solve that problem by providing a simple, easy-to-use, and extensible platform for managing the publication process.
+I don't like running things on spreadsheets - they're just not the best option. They work for one person, _maybe,_ but with two people suddenly either email or Google Workspace gets involved and things only go downhill from there.
 
-## Stack
-The frontend and backend are both written in TypeScript, with the frontend using Ember.js and the backend using Google Apps Script. The data source is Google Sheets, using a custom, in-house parsing system called Dataset Manager. Dataset Manager is more resistant to schema changes than other systems, and doesn't require code changes to add new fields and swap positions.
+"Please don't touch the A2:C13 range of cells!" -statements made by the utterly deranged.
 
-## Installation
-To use a custom frontend you need to have a publicly available domain name. Github.io domains will work. The 'index.html' file in the 'dist' folder is the entry point for the app, and the backend will fetch it from your server to send to the sidebar container in Google Sheets. 
+Designed to be extraordinarily lightweight (the _entire_ backend stack, excluding the frontend server, is written in Rust, which lacks a garbage collector) and fast (aiming for <250ms round-trip response time on any given request)
 
-To use a custom frontend, both the backend and frontend have to be modified. Edit the `containerUrl` variable in `shared/config.json` to point to the location of your frontend container. Then, edit the `frontendUrl` variable `shared/config.json` to point to the CDN prefix (for example, `https://articleman.bluelinden.art/`) of the various JavaScript and CSS files linked to by your `index.html` file. Run `pnpm ember build` in the `frontend` folder to build the frontend. Deploy the `dist` folder to your server. Then, follow the paragraph below to deploy the backend, and you're done!
+Articleman is built in Rust and TypeScript, and uses:
 
-To only build the backend, run `pnpm webpack` in the `backend` folder. Copy the generated JS file in the `dist` folder to a Google Apps Script project attached to your spreadsheet.
+## backend
+1. [SurrealDB](https://surrealdb.com) as the database
+2. [KanIDM](https://kanidm.com) as the IAM backend
+3. [Meilisearch](https://www.meilisearch.com) as the search engine
+4. [Coerce-rs](https://github.com/leonhartley/coerce-rs) as the actor framework
+
+## frontend
+1. [SvelteKit](https://kit.svelte.dev) as the web frontend
