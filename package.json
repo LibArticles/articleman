@@ -25,7 +25,9 @@
     "ci-build": "cd frontend && ember build"
   },
   "workspaces": [
-    "app/backend",
+    "app/backend/google",
+	 "app/backend/backplane",
+	 "app/backend/shared",
     "app/frontend",
     "app/frontend-container"
   ],

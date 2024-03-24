@@ -16,7 +16,7 @@
 			"lib/external/compress-json": ["lib/external/compress-json/src"],
 			"src/*": ["src/*"],
 			"locale/*": ["locale/*"],
-			"shared/*": ["../shared/*"]
+			"shared/*": ["../../shared/*"]
 		},
 
 		"strict": true,

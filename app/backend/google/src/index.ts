@@ -4,7 +4,7 @@ import type { SocketeerMessage } from './comms/socket';
 import type Socketeer from './comms/socket';
 import Service from './dependencies';
 
-import config from '../../shared/config.json';
+import config from '../../../shared/config.json';
 
 // @ts-ignore
 global.onOpen = function onOpen() {
