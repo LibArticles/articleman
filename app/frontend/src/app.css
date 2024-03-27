@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+	.font-soft-100 {
+		font-variation-settings: 'SOFT' 100;
+	}
+	.font-soft-75 {
+		font-variation-settings: 'SOFT' 75;
+	}
+	.font-soft-50 {
+		font-variation-settings: 'SOFT' 50;
+	}
+	.font-soft-25 {
+		font-variation-settings: 'SOFT' 25;
+	}
+	.font-soft-0 {
+		font-variation-settings: 'SOFT' 0;
+	}
+}
