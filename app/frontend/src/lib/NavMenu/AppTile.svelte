@@ -16,7 +16,7 @@
 	<li
 		class=" flex-col flex justify-center items-center p-2 rounded-lg aspect-square transition delay-0 duration-100 {active
 			? 'bg-caramel-100 text-caramel-800 hover:bg-caramel-50'
-			: 'bg-caramel-800 text-caramel-50 hover:bg-caramel-700'}"
+			: 'bg-caramel-900 text-caramel-50 hover:bg-caramel-800'}"
 	>
 		<Icon name={iconName} classes="text-1xl" />
 		<span class="text-sm font-bold">

@@ -5,7 +5,7 @@
 	export let name: string;
 	export let type: 'rounded' | 'outlined' | 'sharp' = 'rounded';
 	export let filled = true;
-	export let weight = 900;
+	export let weight = 700;
 	export let classes = '';
 </script>
 
