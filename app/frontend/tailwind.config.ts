@@ -41,7 +41,7 @@ export default {
 				green: {
 					800: '#285333'
 				}
-			},
+			}
 		},
 		fontFamily: {
 			sans: ['Lexend', 'sans-serif'],
@@ -55,6 +55,6 @@ export default {
 			borderRadius: {
 				'4xl': '2rem'
 			}
-		}
+		},
 	}
 } as Config;

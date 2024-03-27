@@ -3,7 +3,4 @@
 </script>
 
 {#await i18n then i18n}
-	<h1 class="text-4xl mt-4 font-bold text-caramel-700 font-serif font-soft-100">
-		{i18n.t('pages:overview')}
-	</h1>
 {/await}

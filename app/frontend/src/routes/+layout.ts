@@ -1,6 +1,10 @@
 import type { LayoutLoad } from './$types';
+import Layout from './+layout.svelte';
 
 export const ssr = false;
 
-export const load = (async () => {
-}) satisfies LayoutLoad;
+export async function load({ url }: { url: URL}) {
+	return {
+		url: url.pathname
+	};
+};
