@@ -78,7 +78,7 @@
 
 		{#if !isInProfileSwitchMode}
 			<ul
-				transition:fade={{ duration: 100 }}
+				in:fade={{ duration: 100 }}
 				class="grid grid-flow-row grid-cols-3 gap-4 transition-all p-4"
 			>
 				{#each menuItems as item}
