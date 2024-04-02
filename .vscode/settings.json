@@ -1,7 +1,7 @@
 {
-	"rust-analyzer": {
-		"linkedProjects": [
-			"backend/Cargo.toml"
-		]
-	}
+	// these fix several errors in the repo that appear when using VSCode
+	"rust-analyzer.linkedProjects": ["backend/Cargo.toml"],
+	"prettier.configPath": "frontend/.prettierrc",
+	"prettier.prettierPath": "frontend/node_modules/prettier",
+	"eslint.workingDirectories": ["frontend"]
 }
