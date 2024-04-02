@@ -13,7 +13,7 @@ Designed to be extraordinarily lightweight (the _entire_ backend stack, excludin
 Articleman is built in Rust and TypeScript, and uses:
 
 ## backend
-1. [SurrealDB](https://surrealdb.com) as the database
+1. [IndraDB](https://indradb.github.io) as the database
 2. [KanIDM](https://kanidm.com) as the IAM backend
 3. [Meilisearch](https://www.meilisearch.com) as the search engine
 4. [Coerce-rs](https://github.com/leonhartley/coerce-rs) as the actor framework
