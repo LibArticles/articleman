@@ -1,5 +1,9 @@
 # Articleman
 
+[![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
+![GitHub License](https://img.shields.io/github/license/LibArticles/articleman)
+
+
 I don't like running things on spreadsheets - they're just not the best option. They work for one person, _maybe,_ but with two people suddenly either email or Google Workspace gets involved and things only go downhill from there.
 
 "Please don't touch the A2:C13 range of cells!" -statements made by the utterly deranged.
