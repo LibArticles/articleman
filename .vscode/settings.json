@@ -1,5 +1,7 @@
 {
-  "github-actions.workflows.pinned.workflows": [],
-  "glint.libraryPath": "app/frontend",
-  "eslint.workingDirectories": ["app/frontend", "app/backend", "app/shared"],
+	"rust-analyzer": {
+		"linkedProjects": [
+			"backend/Cargo.toml"
+		]
+	}
 }
