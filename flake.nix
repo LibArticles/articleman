@@ -6,9 +6,9 @@
     flake-utils.lib.eachDefaultSystem
       (system:
         let pkgs = nixpkgs.legacyPackages.${system};
-         in
+        in
         {
-          devShells.${system} = {
+          devShells = {
             backend = pkgs.mkShell {
               packages = with pkgs; [ 
                 rustc
