@@ -50,8 +50,11 @@
           packages =
 
             rec {
-              articleman-backend = { };
-              articleman-backend-docker = pkgs.dockerTools.buildLayeredImage { };
+              # articleman-backend = { };
+              # articleman-backend-docker = pkgs.dockerTools.buildLayeredImage {
+              #   name = "am-backend";
+
+              # };
 
               # THANK YOU OMG
               # https://github.com/knarkzel/sveltekit-nix/blob/master/flake.nix
@@ -61,7 +64,7 @@
                   gitignoreSource = gitignore.lib.gitignoreSource;
                 in
                 pkgs.mkYarnPackage rec {
-                  name = "${packageJSON.name}-site-${version}";
+                  name = "${packageJSON.name}-${version}";
                   version = packageJSON.version;
                   src = gitignoreSource ./frontend;
                   packageJson = "${src}/package.json";
@@ -71,7 +74,8 @@
                   '';
                   distPhase = "true";
                   installPhase = ''
-                    mv ./deps/${packageJSON.name}/build $out/
+                    mkdir -p $out/frontend
+                    mv ./deps/${packageJSON.name}/build $out/frontend
                   '';
                 };
             };
