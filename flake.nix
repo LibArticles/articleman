@@ -6,7 +6,7 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils }@inputs:
+  outputs = { self, nixpkgs, flake-utils, frontend-src }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let pkgs = nixpkgs.legacyPackages.${system};
@@ -62,12 +62,13 @@
                   mods = js2nix.buildEnv {
                     package-json = ./frontend/package.json;
                     yarn-lock = ./frontend/yarn.lock;
+                    
                   };
                 in
                 pkgs.stdenv.mkDerivation {
                   name = "articleman-frontend";
                   version = "0.2.0";
-                  src = inputs.frontend-src;
+                  src = frontend-src;
 
                   unpackPhase = ''
                     ln -sT ${mods.nodeModules} ./node_modules || true
