@@ -18,17 +18,24 @@
         "type": "github"
       }
     },
-    "frontend-src": {
-      "flake": false,
+    "gitignore": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-knEN7ATqmUkV/aP8lwdI4stO9VegNC9M+2DLC3JLRgM=",
-        "path": "frontend",
-        "type": "path"
+        "lastModified": 1709087332,
+        "narHash": "sha256-HG2cCnktfHsKV0s4XW83gU3F57gaTljL9KNSuG6bnQs=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
+        "type": "github"
       },
       "original": {
-        "path": "frontend",
-        "type": "path"
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -50,7 +57,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "frontend-src": "frontend-src",
+        "gitignore": "gitignore",
         "nixpkgs": "nixpkgs"
       }
     },

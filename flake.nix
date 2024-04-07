@@ -1,12 +1,13 @@
 {
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/ff1a94e523ae9fb272e0581f068baee5d1068476";
-  inputs.frontend-src = {
-    url = "path:frontend";
-    flake = false;
+  inputs.gitignore = {
+    url = "github:hercules-ci/gitignore.nix";
+    # Use the same nixpkgs
+    inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, flake-utils, frontend-src }:
+  outputs = { self, nixpkgs, flake-utils, gitignore }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let pkgs = nixpkgs.legacyPackages.${system};
@@ -39,8 +40,9 @@
             };
             frontend = pkgs.mkShell {
               packages = with pkgs; [
-                bun
+                yarn
                 nodejs_21
+                yarn2nix
               ];
             };
           };
@@ -51,68 +53,26 @@
               articleman-backend = { };
               articleman-backend-docker = pkgs.dockerTools.buildLayeredImage { };
 
-              articleman-frontend =
-                pkgs.stdenv.mkDerivation rec {
-                  name = "articleman-frontend";
-                  version = "0.2.0";
-                  src = frontend-src;
-
-                  yarnOfflineCache = pkgs.fetchYarnDeps {
-                    yarnLock = src + "/yarn.lock";
-                    hash = "sha256-ea70azelNB9ygjPHj1+/fU7TiWHDhjc28lS/BtpoLyQ=";
-                  };
-
-                  configurePhase = ''
-                    runHook preConfigure
-
-                    echo '--install.offline true' >> .yarnrc
-
-
-                    ls $yarnOfflineCache
-
-
-                    export HOME=$PWD
-                    yarn config --offline set yarn-offline-mirror $yarnOfflineCache
-
-                    fixup-yarn-lock yarn.lock
-
-                    cat yarn.lock
-
-
-                    yarn --offline --frozen-lockfile --ignore-platform --ignore-scripts --no-progress --non-interactive install
-
-
-                    patchShebangs ./node_modules
-
-                    runHook postConfigure
-                  '';
-
-                  nativeBuildInputs = with pkgs; [
-                    nodejs_21
-                    yarn
-                    prefetch-yarn-deps
-                  ];
-
-                  # TODO: add check phase w/ vitest
-
-
+              # THANK YOU OMG
+              # https://github.com/knarkzel/sveltekit-nix/blob/master/flake.nix
+              frontend =
+                let
+                  packageJSON = pkgs.lib.importJSON ./frontend/package.json;
+                  gitignoreSource = gitignore.lib.gitignoreSource;
+                in
+                pkgs.mkYarnPackage rec {
+                  name = "${packageJSON.name}-site-${version}";
+                  version = packageJSON.version;
+                  src = gitignoreSource ./frontend;
+                  packageJson = "${src}/package.json";
+                  yarnLock = "${src}/yarn.lock";
                   buildPhase = ''
-                    runHook preBuild
-
-                    export NODE_OPTIONS=--openssl-legacy-provider
                     yarn --offline build
-
-                    runHook postBuild
                   '';
-
+                  distPhase = "true";
                   installPhase = ''
-                    runHook preInstall
-
-                    mv build $out
-
-                    runHook postInstall
+                    mv ./deps/${packageJSON.name}/build $out/
                   '';
-
                 };
             };
 

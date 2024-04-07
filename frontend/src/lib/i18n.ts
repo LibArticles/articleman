@@ -12,7 +12,6 @@ i18nextInstance
 	.use(i18nextHttpBackend)
 	.init<HttpBackendOptions>({
 		load: 'languageOnly',
-		debug: true,
 
 		fallbackLng: 'en',
 		lng: 'en',

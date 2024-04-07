@@ -45,4 +45,6 @@ To run with Flakes enabled:
 	$ nix develop .#frontend
 ```
 
-Once you're there, just use Cargo or the Bun package manager in the corresponding directory as you usually would.
+Once you're there, just use Cargo or the Yarn package manager in the corresponding directory as you usually would.
+
+To build the frontend through nix, just run `nix build .#frontend`.
