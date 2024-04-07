@@ -6,5 +6,5 @@ save = true
 # only "yarn" is supported
 print = "yarn"
 
-[install]
-frozenLockfile = true
+# [install]
+# frozenLockfile = true
