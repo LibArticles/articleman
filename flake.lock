@@ -18,6 +18,19 @@
         "type": "github"
       }
     },
+    "frontend-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1,
+        "narHash": "sha256-knEN7ATqmUkV/aP8lwdI4stO9VegNC9M+2DLC3JLRgM=",
+        "path": "./frontend",
+        "type": "path"
+      },
+      "original": {
+        "path": "./frontend",
+        "type": "path"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1710814491,
@@ -37,6 +50,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "frontend-src": "frontend-src",
         "nixpkgs": "nixpkgs"
       }
     },
