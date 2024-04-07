@@ -52,41 +52,65 @@
               articleman-backend-docker = pkgs.dockerTools.buildLayeredImage { };
 
               articleman-frontend =
-                let
-                  js2nix = pkgs.callPackage
-                    (builtins.fetchGit {
-                      url = "ssh://git@github.com/canva-public/js2nix.git";
-                      ref = "main";
-                    })
-                    { };
-                  mods = js2nix.buildEnv {
-                    package-json = ./frontend/package.json;
-                    yarn-lock = ./frontend/yarn.lock;
-                    
-                  };
-                in
-                pkgs.stdenv.mkDerivation {
+                pkgs.stdenv.mkDerivation rec {
                   name = "articleman-frontend";
                   version = "0.2.0";
                   src = frontend-src;
 
-                  unpackPhase = ''
-                    ln -sT ${mods.nodeModules} ./node_modules || true
+                  yarnOfflineCache = pkgs.fetchYarnDeps {
+                    yarnLock = src + "/yarn.lock";
+                    hash = "sha256-ea70azelNB9ygjPHj1+/fU7TiWHDhjc28lS/BtpoLyQ=";
+                  };
+
+                  configurePhase = ''
+                    runHook preConfigure
+
+                    echo '--install.offline true' >> .yarnrc
+
+
+                    ls $yarnOfflineCache
+
+
+                    export HOME=$PWD
+                    yarn config --offline set yarn-offline-mirror $yarnOfflineCache
+
+                    fixup-yarn-lock yarn.lock
+
+                    cat yarn.lock
+
+
+                    yarn --offline --frozen-lockfile --ignore-platform --ignore-scripts --no-progress --non-interactive install
+
+
+                    patchShebangs ./node_modules
+
+                    runHook postConfigure
                   '';
 
-                  buildInputs = with pkgs; [
+                  nativeBuildInputs = with pkgs; [
                     nodejs_21
-
+                    yarn
+                    prefetch-yarn-deps
                   ];
-
-                  buildPhase = ''
-                    ./node_modules/.bin/vite build --mode production
-                  '';
 
                   # TODO: add check phase w/ vitest
 
+
+                  buildPhase = ''
+                    runHook preBuild
+
+                    export NODE_OPTIONS=--openssl-legacy-provider
+                    yarn --offline build
+
+                    runHook postBuild
+                  '';
+
                   installPhase = ''
-                    cp ./build/* $out/
+                    runHook preInstall
+
+                    mv build $out
+
+                    runHook postInstall
                   '';
 
                 };
