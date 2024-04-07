@@ -40,6 +40,16 @@
               ];
             };
           };
+
+          packages = rec {
+            articleman-backend = {
+              
+            };
+            articleman-backend-docker = pkgs.dockerTools.buildLayeredImage {
+              
+            };
+            
+          };
           
         }
       );
