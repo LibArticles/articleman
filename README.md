@@ -13,10 +13,9 @@ Designed to be extraordinarily lightweight (the _entire_ backend stack, excludin
 Articleman is built in Rust and TypeScript, and uses:
 
 ## backend
-1. [FerretDB](https://ferretdb.io) as the database
+1. [PostgreSQL](https://postgresql.org) as the database
 2. [KanIDM](https://kanidm.com) as the IAM backend
 3. [Meilisearch](https://www.meilisearch.com) as the search engine
-4. [Coerce-rs](https://github.com/leonhartley/coerce-rs) as the actor framework
 
 ## frontend
 1. [SvelteKit](https://kit.svelte.dev) as the web frontend
