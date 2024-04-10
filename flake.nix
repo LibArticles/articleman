@@ -1,6 +1,6 @@
 {
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/ff1a94e523ae9fb272e0581f068baee5d1068476";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/release-23.11";
   inputs.gitignore = {
     url = "github:hercules-ci/gitignore.nix";
     # Use the same nixpkgs
@@ -16,9 +16,11 @@
           devShells = {
             backend = pkgs.mkShell {
               packages = with pkgs; [
-                rustc
-                cargo
+                rustup
+                rust-analyzer
                 protobuf
+                podman
+                podman-compose
                 llvmPackages.libclang
                 clang
                 llvmPackages.clangUseLLVM

@@ -2,3 +2,4 @@ node_modules
 frontend/config/depconfig.json
 target
 result
+.direnv
