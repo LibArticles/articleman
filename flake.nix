@@ -26,7 +26,8 @@
                 llvmPackages.clangUseLLVM
                 rust-bindgen
               ];
-
+              # https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/5
+              RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
               LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
               BINDGEN_EXTRA_CLANG_ARGS = (builtins.map (a: ''-I"${a}/include"'') [
                 # add dev libraries here (e.g. pkgs.libvmi.dev)
