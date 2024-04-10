@@ -25,6 +25,8 @@
                 clang
                 llvmPackages.clangUseLLVM
                 rust-bindgen
+                lld
+                llvm
               ];
 
               LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
