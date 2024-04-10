@@ -1,0 +1,11 @@
+version: "3.2"
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./container_db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: amdev
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
