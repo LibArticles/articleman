@@ -1,0 +1,6 @@
+[book]
+authors = ["blue linden"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Articleman Architecture Guide"
