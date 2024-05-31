@@ -1,5 +1,7 @@
 node_modules
+container_db
 frontend/config/depconfig.json
 target
 result
 .direnv
+.env
