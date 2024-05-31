@@ -19,6 +19,7 @@
                 rustup
                 rust-analyzer
                 protobuf
+                sea-orm-cli
                 podman
                 podman-compose
                 llvmPackages.libclang
@@ -27,6 +28,9 @@
                 rust-bindgen
                 lld
                 llvm
+                mysql
+                sqlite
+                diesel-cli
               ];
 
               LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
