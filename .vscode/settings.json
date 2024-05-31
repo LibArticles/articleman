@@ -8,5 +8,37 @@
 	"eslint.workingDirectories": [
 		"frontend"
 	],
-	"rust-analyzer.showUnlinkedFileNotification": false
+	"rust-analyzer.showUnlinkedFileNotification": false,
+	"sqltools.connections": [
+		{
+			"previewLimit": 50,
+			"server": "localhost",
+			"driver": "PostgreSQL",
+			"name": "Articleman Development",
+			"group": "Articleman",
+			"connectString": "postgres://amdev:password@localhost/amdev"
+		}
+	],
+	"sqlfluff.dialect": "postgres",
+	// "sqlfluff.excludeRules": ["L009"],
+	"sqlfluff.executablePath": "sqlfluff",
+	"sqlfluff.ignoreLocalConfig": false,
+	"sqlfluff.ignoreParsing": false,
+	"sqlfluff.rules": [],
+	"sqlfluff.suppressNotifications": true,
+	"sqlfluff.workingDirectory": "",
+	/* Linter */
+	"sqlfluff.linter.arguments": [],
+	"sqlfluff.linter.run": "onType",
+	"sqlfluff.linter.diagnosticSeverity": "error",
+	"sqlfluff.linter.diagnosticSeverityByRule": [
+	  {
+		 "rule": "L010",
+		 "severity": "warning"
+	  }
+	],
+	"sqlfluff.linter.lintEntireProject": true,
+	/* Formatter */
+	"sqlfluff.format.arguments": ["--FIX-EVEN-UNPARSABLE"],
+	"sqlfluff.format.enabled": true,
 }
