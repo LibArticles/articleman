@@ -8,8 +8,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rocket = { version = "0.5.1", features = ["json", "msgpack", "tls", "uuid", "secrets"]}
 diesel = { version = "2.1.0", features = ["postgres"] }
 entity = { path = "entity" }
-clap = { version = "4.5.4", features = ["derive"] }
+clap = { version = "4.5.4", features = ["derive", "color"] }
 tokio = { version = "1.37.0", features = ["full"] }
 mdbook = "0.4.37"
+clap-nested = "0.4.0"
