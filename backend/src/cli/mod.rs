@@ -1,33 +1,46 @@
-use clap::{command, Parser, Subcommand, ValueHint};
+pub mod action;
 
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args {
-    /// run Articleman in development mode
-    #[arg(short, long)]
-    dev: bool,
+use clap::{builder::styling, crate_authors, crate_name, Command};
 
-    /// set a PostgreSQL connection string to use for this instance of Articleman
-    #[arg(short = 'c', long, value_hint = ValueHint::Url)]
-    database_connection: Option<String>,
+use self::action::Action;
 
-    #[command(subcommand)]
-    cmd: Commands,
+pub async fn gen_cmd_iface() -> Command {
+    let styles = styling::Styles::styled()
+        .header(styling::AnsiColor::Yellow.on_default() | styling::Effects::BOLD);
+    Command::new(crate_name!())
+        .help_expected(true)
+        .styles(styles)
+        .author(crate_authors!(" and "))
+        .about("Articleman: The best project management tool on the planet.")
+        .long_about("Articleman Oxide: The fastest API server for the best project management tool on the planet.")
+        .subcommand(Command::new("server").subcommand(Command::new("start")))
 }
 
-#[derive(Subcommand, Debug)]
-enum Commands {
-    /// Manually run an ordinarily scheduled job
-    Task {
-        #[arg(short, long, required = true)]
-        name: String,
-    },
-}
+pub async fn parse() -> Action {
+    let iface = gen_cmd_iface().await;
+    let matches = iface.get_matches();
 
-pub async fn parse() {
-    let args = Args::parse();
-
-    let is_dev = args.dev;
-
-    println!("{is_dev}")
+    if let Some((opt_name, opt_sub_matches)) = matches.subcommand() {
+        match opt_name {
+            "server" => {
+                if let Some((server_opt_name, server_opt_sub_matches)) =
+                    opt_sub_matches.subcommand()
+                {
+                    match server_opt_name {
+                        "start" => {
+                            return Action::ServerStart(action::ServerTarget::APIOnly)
+                        }
+                        _ => {
+                            return Action::NoOp;
+                        }
+                    }
+                } else {
+                    return Action::NoOp;
+                }
+            }
+            _ => return Action::NoOp,
+        }
+    } else {
+        return Action::NoOp;
+    }
 }
