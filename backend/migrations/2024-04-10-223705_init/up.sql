@@ -34,7 +34,7 @@ CREATE TABLE "bill_recipient" (
 CREATE TYPE "organization_transparency_status" AS ENUM (
     'open', /* all entities in the organization can view overviews of sibling
     orgs and the parent org, even if they don't have write access */
-    'liaison' /* managing entities can view overviews of parent + sibling orgs
+    'liaison', /* managing entities can view overviews of parent + sibling orgs
     without write access */
     'closed' /* no org members can interact with anything outside of the
     organization without explicit access */
@@ -55,7 +55,7 @@ CREATE TABLE "organization" (
 
     /* the organization's parent. for standalone orgs, this is the
     system root org, and for nested orgs it's just the parent. */
-    "parent_organization" REFERENCES "organization",
+    "parent_organization" char(40) REFERENCES "organization",
     "parent_transparency" organization_transparency_status NOT NULL,
     "managing_entity" char(40),
     "bill_recipient" char(40) REFERENCES "bill_recipient",
@@ -65,7 +65,7 @@ CREATE TABLE "organization" (
     "settings" jsonb
 );
 
-CREATE TYPE entity_class AS ENUM (
+CREATE TYPE "entity_class" AS ENUM (
     'person', -- a human-looking user
     'group', -- a group consisting of and representing multiple other entities
     'machine' -- 
@@ -106,7 +106,7 @@ CREATE TABLE "group" (
 
 CREATE TABLE "group_membership" (
     "group_id" char(40) NOT NULL REFERENCES "group",
-    "entity_id" char(40) NOT NULL REFERENCES "entity"
+    "entity_id" char(40) NOT NULL PRIMARY KEY REFERENCES "entity"
 );
 
 CREATE TABLE "machine" (
@@ -131,41 +131,70 @@ ALTER TABLE entity ADD CONSTRAINT "fk_mid" FOREIGN KEY (
     "machine_id"
 ) REFERENCES "person";
 
-CREATE TABLE "project_extradata_schema" (
+CREATE OR REPLACE FUNCTION check_json_schema_validity()
+RETURNS trigger AS $$
+BEGIN
+    -- check if the json schema is valid
+    IF NOT jsonschema_is_valid(NEW.data) THEN
+        RAISE EXCEPTION 'Invalid JSON schema';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Schema
+CREATE TABLE "project_type_schema" (
     "id" char(40) PRIMARY KEY,
     "org" char(40) NOT NULL REFERENCES "organization",
     "manager" char(40) NOT NULL REFERENCES "entity",
     -- this was originally like three separate fields,
     -- but i realized it could just be a json schema.
-    "data" json NOT NULL,
-    CONSTRAINT "json_schema" CHECK (
-        jsonschema_is_valid("data")
-    )
+    "data" json NOT NULL
 );
 
-CREATE TABLE "project_type" {
+-- create the trigger to call the function before insert or update
+CREATE TRIGGER json_schema_validation_trigger
+BEFORE INSERT OR UPDATE ON "project_type_schema"
+FOR EACH ROW EXECUTE FUNCTION check_json_schema_validity();
+
+-- for custom project types
+CREATE TABLE "project_type" (
     "id" char(40) PRIMARY KEY,
+    "org" char(40) NOT NULL REFERENCES "organization",
     "slug" varchar NOT NULL,
-    "schema" NOT NULL REFERENCES "schema",
-    "single_item_term" varchar,
-    "multi_item_term" varchar,
-};
+    "schema" char(40) NOT NULL REFERENCES "project_type_schema",
+    "name" varchar,
+    "localized_names" jsonb
+);
 
 CREATE TABLE "project" (
     "id" char(40) PRIMARY KEY,
     "title" varchar NOT NULL,
     "org" char(40) NOT NULL REFERENCES "organization",
     "manager" char(40) NOT NULL REFERENCES "entity",
-    "schema_id" char(40) NOT NULL REFERENCES "project_extradata_schema",
-    "data" jsonb,
-    CONSTRAINT "json_schema_compliance" CHECK (
-        EXISTS (
-            SELECT 1 FROM "project_extradata_schema", "project"
-            WHERE
-                "project_extradata_schema"."id" = "project"."schema_id"
-                AND jsonb_valid_schema(
-                    "project_extradata_schema"."schema", "project"."data"
-                )
-        )
-    )
+    "schema_id" char(40) NOT NULL REFERENCES "project_type_schema",
+    "data" jsonb
 );
+
+-- create the function to check json schema compliance
+CREATE OR REPLACE FUNCTION check_project_json_schema_compliance()
+RETURNS trigger AS $$
+BEGIN
+    -- check if the json data is valid against the schema
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM project_type_schema
+        WHERE 
+            project_type_schema.id = NEW.schema_id
+            AND jsonb_valid_schema(project_type_schema.schema, NEW.data)
+    ) THEN
+        RAISE EXCEPTION 'JSON schema validation failed';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- create the trigger to call the function before insert or update
+CREATE TRIGGER json_schema_compliance_trigger
+BEFORE INSERT OR UPDATE ON project
+FOR EACH ROW EXECUTE FUNCTION check_project_json_schema_compliance();
