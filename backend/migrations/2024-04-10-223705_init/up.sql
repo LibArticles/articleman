@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE EXTENSION pg_jsonschema;
 
 /* any char(40) types are UUIDv7s with a three-character prefix,
@@ -198,3 +200,5 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER json_schema_compliance_trigger
 BEFORE INSERT OR UPDATE ON project
 FOR EACH ROW EXECUTE FUNCTION check_project_json_schema_compliance();
+
+COMMIT;

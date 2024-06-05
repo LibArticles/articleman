@@ -1,3 +1,5 @@
+BEGIN;
+
 DROP EXTENSION IF EXISTS pg_jsonschema;
 
 DROP TYPE IF EXISTS "billing_status";
@@ -40,3 +42,5 @@ DROP FUNCTION IF EXISTS check_project_json_schema_compliance;
 
 -- create the trigger to call the function before insert or update
 DROP TRIGGER IF EXISTS json_schema_compliance_trigger;
+
+COMMIT;
