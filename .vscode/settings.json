@@ -16,7 +16,7 @@
 			"driver": "PostgreSQL",
 			"name": "Articleman Development",
 			"group": "Articleman",
-			"connectString": "postgres://amdev:password@localhost/amdev"
+			"connectString": "postgres://postgres:password@localhost/postgres"
 		}
 	],
 	"sqlfluff.dialect": "postgres",

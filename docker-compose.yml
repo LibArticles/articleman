@@ -1,17 +1,9 @@
 version: "3.2"
 services:
   db:
-    container_name: pg_jsonschema_db
-    build:
-        context: .
-        dockerfile: ./dockerfiles/db/Dockerfile
-    healthcheck:
-      test: ["CMD-SHELL", "PGUSER=amdev", "pg_isready"]
-      interval: 1s
-      timeout: 10s
-      retries: 5
+    container_name: pg_postgres
+    image: "supabase/postgres"
     environment:
-      POSTGRES_USER: amdev
       POSTGRES_PASSWORD: password
     ports:
       - 5432:5432
