@@ -1,8 +1,4 @@
-pub mod action;
-
 use clap::{builder::styling, crate_authors, crate_name, Command};
-
-use self::action::Action;
 
 pub async fn gen_cmd_iface() -> Command {
     let styles = styling::Styles::styled()
@@ -28,7 +24,7 @@ pub async fn parse() -> Action {
                 {
                     match server_opt_name {
                         "start" => {
-                            return Action::ServerStart(action::ServerTarget::APIOnly)
+                            return Action::ServerStart(ServerTarget::APIOnly)
                         }
                         _ => {
                             return Action::NoOp;
@@ -43,4 +39,17 @@ pub async fn parse() -> Action {
     } else {
         return Action::NoOp;
     }
+}
+
+pub enum Action {
+    ServerStart(ServerTarget),
+    ServerStop(ServerTarget),
+    
+    NoOp
+}
+
+pub enum ServerTarget {
+    APIOnly,
+    FrontendOnly,
+    AllServices,
 }

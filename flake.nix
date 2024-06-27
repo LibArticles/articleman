@@ -1,6 +1,6 @@
 {
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/release-23.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/release-24.05";
   inputs.gitignore = {
     url = "github:hercules-ci/gitignore.nix";
     # Use the same nixpkgs

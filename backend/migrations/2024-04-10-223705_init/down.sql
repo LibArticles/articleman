@@ -10,6 +10,8 @@ DROP TYPE IF EXISTS "organization_transparency_status";
 
 DROP TABLE IF EXISTS "organization";
 
+DROP TABLE IF EXISTS "organization_membership";
+
 DROP TYPE IF EXISTS "entity_class";
 
 DROP TABLE IF EXISTS "entity";
@@ -21,8 +23,6 @@ DROP TABLE IF EXISTS "group";
 DROP TABLE IF EXISTS "group_membership";
 
 DROP TABLE IF EXISTS "machine";
-
-DROP TABLE IF EXISTS "account";
 
 DROP FUNCTION IF EXISTS check_json_schema_validity;
 

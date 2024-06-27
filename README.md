@@ -15,6 +15,7 @@ Articleman is built in Rust and TypeScript, and uses:
 ## backend
 1. [PostgreSQL](https://postgresql.org) as the database
 2. [KanIDM](https://kanidm.com) as the IAM backend
+3. 
 3. [Meilisearch](https://www.meilisearch.com) as the search engine
 
 ## frontend

@@ -1,4 +1,4 @@
-BEGIN;
+-- BEGIN;
 
 CREATE EXTENSION pg_jsonschema;
 
@@ -34,8 +34,8 @@ CREATE TABLE "bill_recipient" (
 );
 
 CREATE TYPE "organization_transparency_status" AS ENUM (
-    'open', /* all entities in the organization can view overviews of sibling
-    orgs and the parent org, even if they don't have write access */
+    'open',
+    /* all entities in the organization are essentially members of the parent organization */
     'liaison', /* managing entities can view overviews of parent + sibling orgs
     without write access */
     'closed' /* no org members can interact with anything outside of the
@@ -78,15 +78,24 @@ CREATE TYPE "entity_class" AS ENUM (
    entities can be managed by other entities. */
 CREATE TABLE "entity" (
     "id" char(40) NOT NULL PRIMARY KEY,
-    "org" char(40) NOT NULL REFERENCES organization,
     "type" entity_class NOT NULL,
-    "person_id" char(40),
-    "group_id" char(40),
-    "machine_id" char(40),
+    "person_id" char(40) UNIQUE,
+    "group_id" char(40) UNIQUE,
+    "machine_id" char(40) UNIQUE,
+    "idm_id" char(40) UNIQUE NULLS NOT DISTINCT -- not every entity has an idm id
     CONSTRAINT check_existence CHECK (
         num_nonnulls("person_id", "group_id", "machine_id") = 1
     )
 );
+
+/* Users can be members of multiple organizations or teams. */
+CREATE TABLE "organization_membership" (
+    "org_id" char(40) NOT NULL REFERENCES "organization",
+    "entity_id" char(40) NOT NULL PRIMARY KEY REFERENCES "entity"
+);
+
+CREATE INDEX "idx_organization_membership_org" ON "organization_membership" ("org_id");
+
 
 
 ALTER TABLE "organization" ADD CONSTRAINT "fk_manent" FOREIGN KEY (
@@ -95,8 +104,15 @@ ALTER TABLE "organization" ADD CONSTRAINT "fk_manent" FOREIGN KEY (
 
 CREATE TABLE "person" (
     "id" char(40) NOT NULL PRIMARY KEY,
-    "entity_id" char(40) NOT NULL REFERENCES "entity",
+    "entity_id" char(40) UNIQUE NOT NULL REFERENCES "entity",
     "settings" jsonb
+);
+
+-- a person may have multiple names
+CREATE TABLE "person_name" (
+    "id" char(40) NOT NULL PRIMARY KEY,
+    "person_id" char(40) NOT NULL REFERENCES "person",
+    "name_text" varchar(1024) NOT NULL
 );
 
 CREATE TABLE "group" (
@@ -111,27 +127,26 @@ CREATE TABLE "group_membership" (
     "entity_id" char(40) NOT NULL PRIMARY KEY REFERENCES "entity"
 );
 
+CREATE INDEX "idx_group_membership_group" ON "group_membership" ("group_id");
+
+
 CREATE TABLE "machine" (
     "id" char(40) NOT NULL PRIMARY KEY,
-    "entity_id" char(40) NOT NULL REFERENCES entity,
+    "entity_id" char(40) UNIQUE NOT NULL REFERENCES "entity",
     "name" varchar(255),
     "settings" jsonb
 );
 
-CREATE TABLE "account" (
-    "id" char(40) NOT NULL PRIMARY KEY,
-    "idm_id" char(40) NOT NULL
-);
 
 ALTER TABLE entity ADD CONSTRAINT "fk_pid" FOREIGN KEY (
     "person_id"
 ) REFERENCES "person";
 ALTER TABLE entity ADD CONSTRAINT "fk_gid" FOREIGN KEY (
     "group_id"
-) REFERENCES "person";
+) REFERENCES "group";
 ALTER TABLE entity ADD CONSTRAINT "fk_mid" FOREIGN KEY (
     "machine_id"
-) REFERENCES "person";
+) REFERENCES "machine";
 
 CREATE OR REPLACE FUNCTION check_json_schema_validity()
 RETURNS trigger AS $$
@@ -201,4 +216,4 @@ CREATE TRIGGER json_schema_compliance_trigger
 BEFORE INSERT OR UPDATE ON project
 FOR EACH ROW EXECUTE FUNCTION check_project_json_schema_compliance();
 
-COMMIT;
+-- COMMIT;

@@ -6,7 +6,7 @@ indent_style = space
 indent_size = 4
 indent_style = space
 
-[*.sql]
+[*.sql, *.pgsql]
 indent_size = 4
 indent_style = space
 insert_final_newline = true
