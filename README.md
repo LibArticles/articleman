@@ -1,6 +1,7 @@
 # Articleman
 
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
+[![Human Made Mark](https://humanmademark.com/white-logo.svg)](https://humanmademark.com)
 ![GitHub License](https://img.shields.io/github/license/LibArticles/articleman)
 
 
