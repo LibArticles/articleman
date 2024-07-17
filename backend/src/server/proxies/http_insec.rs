@@ -1,0 +1,2 @@
+/// this proxy serves the "insecure" version of the articleman api that revokes all keys sent to it. should generally 403 or (more likely) 421.
+/// perhaps this just calls a universal "/revoke" endpoint for every request.

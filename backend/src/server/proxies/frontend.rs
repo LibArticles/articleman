@@ -1,0 +1,1 @@
+/// This module is a proxy for the frontend, where if a hoster wants to self-host Articleman they can put frontend files in a folder and have Articleman itself serve the files with low latency and high performance. There will probably be some limited caching functionality.
