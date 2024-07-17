@@ -1,55 +1,39 @@
-use clap::{builder::styling, crate_authors, crate_name, Command};
+use crate::config;
+use clap::{builder::styling, command, crate_authors, crate_name, Command, CommandFactory, Parser};
 
-pub async fn gen_cmd_iface() -> Command {
-    let styles = styling::Styles::styled()
-        .header(styling::AnsiColor::Yellow.on_default() | styling::Effects::BOLD);
-    Command::new(crate_name!())
-        .help_expected(true)
-        .styles(styles)
-        .author(crate_authors!(" and "))
-        .about("Articleman: The best project management tool on the planet.")
-        .long_about("Articleman Oxide: The fastest API server for the best project management tool on the planet.")
-        .subcommand(Command::new("server").subcommand(Command::new("start")))
+/// Articleman
+#[derive(Parser, Debug)]
+#[command(version, about, help_expected = true, next_display_order = None)]
+pub enum Cli {
+    #[command(subcommand, name = "server")]
+    Server(ServerCli),
 }
 
-pub async fn parse() -> Action {
-    let iface = gen_cmd_iface().await;
-    let matches = iface.get_matches();
+#[derive(Parser, Debug)]
+#[command(version, help_expected = true, next_display_order = None)]
+pub enum ServerCli {
+    // #[command(subcommand, name = "start")]
+    Start(config::AMOpt),
+}
 
-    if let Some((opt_name, opt_sub_matches)) = matches.subcommand() {
-        match opt_name {
-            "server" => {
-                if let Some((server_opt_name, server_opt_sub_matches)) =
-                    opt_sub_matches.subcommand()
-                {
-                    match server_opt_name {
-                        "start" => {
-                            return Action::ServerStart(ServerTarget::APIOnly)
-                        }
-                        _ => {
-                            return Action::NoOp;
-                        }
-                    }
-                } else {
-                    return Action::NoOp;
-                }
-            }
-            _ => return Action::NoOp,
+pub async fn parse() -> Result<Action, anyhow::Error> {
+    let matches = Cli::parse();
+    tracing::debug!("parsed CLI arguments");
+    let final_options: config::AMOpt;
+    let Cli::Server(ServerCli::Start(ref options)) = matches;
+    match config::AMOpt::try_build_options(options.clone()).await {
+        Ok((recvd_options, _config_path, _is_writable)) => {
+            final_options = recvd_options;
+            Ok(Action::ServerStart(final_options))
         }
-    } else {
-        return Action::NoOp;
+        Err(err_reason) => {
+            anyhow::bail!("Couldn't parse CLI options: {:?}", err_reason);
+        }
     }
 }
 
 pub enum Action {
-    ServerStart(ServerTarget),
-    ServerStop(ServerTarget),
-    
-    NoOp
-}
+    ServerStart(config::AMOpt),
 
-pub enum ServerTarget {
-    APIOnly,
-    FrontendOnly,
-    AllServices,
+    NoOp,
 }

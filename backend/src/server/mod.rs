@@ -1,20 +1,41 @@
-mod services;
+use axum::Router;
+use axum_server::Handle;
 
-pub async fn run_server() {
-    let app_routes = axum::Router::new()
+use crate::config::AMOpt;
+use std::{net::{Ipv4Addr, SocketAddr, SocketAddrV4}, time::Duration};
+
+mod services;
+mod db;
+mod state;
+mod idm;
+
+pub async fn run_api_server(config: AMOpt) {
+    
+    let app = Router::new()
         .route("/hello-world", axum::routing::get(hello_world))
         .layer(tower_http::trace::TraceLayer::new_for_http());
 
-    let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 3000));
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    tracing::info!("listening on {}", &listener.local_addr().unwrap());
-    let server = axum::serve(listener, app_routes)
-        .with_graceful_shutdown(shutdown_signal())
+    let addr: SocketAddrV4 = config
+        .insec_api_listen_addr
+        .parse()
+        .expect("Was unable to parse the IP address given.");
+    let shutdown_handle = Handle::new();
+    tokio::spawn(handle_graceful_shutdown(shutdown_handle.clone()));
+    let _server = axum_server::bind(SocketAddr::from(addr))
+        // TODO: .with_graceful_shutdown(shutdown_signal())
+        .handle(shutdown_handle)
+        .serve(app.into_make_service())
         .await
         .unwrap();
 }
 
-/// Graceful shutdown code from https://github.com/matze/wastebin/blob/master/src/main.rs#L58C1-L82C2
+async fn handle_graceful_shutdown(handle: Handle) {
+    shutdown_signal().await;
+    tracing::info!("Waiting 10 seconds for a graceful shutdown. {} requests in flight.", handle.connection_count());
+    handle.graceful_shutdown(Some(Duration::from_secs(10)));
+    tracing::info!("Articleman's web server has been shut down.");
+}
+
 async fn shutdown_signal() {
     let ctrl_c = async {
         tokio::signal::ctrl_c()
@@ -37,8 +58,6 @@ async fn shutdown_signal() {
         () = ctrl_c => {},
         () = terminate => {},
     }
-
-    tracing::info!("received signal, exiting ...");
 }
 
 #[tracing::instrument]
