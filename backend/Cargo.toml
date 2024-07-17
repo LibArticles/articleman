@@ -32,3 +32,9 @@ axum-extra = { version = "0.9.3", features = [
 serde = { version = "1.0.203", features = ["derive"] }
 thiserror = "1.0.61"
 kanidm_client = "1.2.2"
+toml = "0.8.14"
+anyhow = "1.0.86"
+merge = "0.1.0"
+axum-server = { version = "0.6.0", features = ["tls-rustls"] }
+diesel-async = { version = "0.4.1", features = ["deadpool", "postgres", "tokio"] }
+futures-util = { version = "0.3.30", features = ["tokio-io"] }
