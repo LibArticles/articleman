@@ -5,9 +5,9 @@ use crate::config::AMOpt;
 use std::{net::{Ipv4Addr, SocketAddr, SocketAddrV4}, time::Duration};
 
 mod services;
-mod db;
+
 mod state;
-mod idm;
+
 
 pub async fn run_api_server(config: AMOpt) {
     
