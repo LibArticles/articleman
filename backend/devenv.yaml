@@ -1,0 +1,17 @@
+inputs:
+  supa_postgres:
+    url: github:supabase/postgres
+  nixpkgs:
+    url: github:cachix/devenv-nixpkgs/rolling
+  fenix:
+    url: github:nix-community/fenix
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
+  local_overrides:
+    url: github:bluelinden/supabase-postgres-overlay
+    overlays:
+    - cargo-pgrx
+    - gdal-small
+    - postgis
+    - psql_16-oriole
