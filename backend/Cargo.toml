@@ -38,3 +38,9 @@ merge = "0.1.0"
 axum-server = { version = "0.6.0", features = ["tls-rustls"] }
 diesel-async = { version = "0.4.1", features = ["deadpool", "postgres", "tokio"] }
 futures-util = { version = "0.3.30", features = ["tokio-io"] }
+kanidm_proto = "1.2.2"
+uuid7 = "1.0.0"
+native_db = { version = "0.7.1", features = ["tokio"] }
+native_model = "0.4.19"
+once_cell = "1.19.0"
+crossbeam-channel = "0.5.13"
