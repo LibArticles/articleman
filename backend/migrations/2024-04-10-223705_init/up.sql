@@ -8,40 +8,6 @@ CREATE EXTENSION pg_jsonschema;
    and extra assurance that between different parts of Articleman, there
    won't be any UUID collisions. it's basically a namespace. */
 
-
-/* Create the Bill Recipients table.
-   All payment is handled by external systems like Lago,
-   or even stripe billing, too big of a security risk for us. */
-CREATE TYPE "billing_status" AS ENUM (
-    'none', -- hasn't set up billing at all
-    'complimentary', -- was manually given special free status
-    'trial', -- is in a trial mode and has not paid yet
-    'active', -- is able to receive and pay invoices
-    'grace_period', -- failed to pay invoices but still has time to do so
-    'bad_standing', -- entity is repeatedly failing to pay invoices
-    'ended', -- has stopped paying for subscriptions and must re-activate
-    'dead' -- entity can't be billed anymore and will be culled on opportunity
-);
-
-CREATE TABLE "bill_recipient" (
-    "id" char(40) NOT NULL PRIMARY KEY,
-    "iso_country" char(3) NOT NULL,
-    -- id for external payment gateway
-    "gateway_id" char(40) NOT NULL,
-    -- is the account in good standing / should it be treated as a trial, etc.
-    "status" billing_status NOT NULL,
-    "settings" jsonb
-);
-
-CREATE TYPE "organization_transparency_status" AS ENUM (
-    'open',
-    /* all entities in the organization are essentially members of the parent organization */
-    'liaison', /* managing entities can view overviews of parent + sibling orgs
-    without write access */
-    'closed' /* no org members can interact with anything outside of the
-    organization without explicit access */
-);
-
 /* all organizations have a managing_entity that retains full power over
    the org. in standalone organizations, this managing_entity is created
    specifically to manage the organization and it's typically a group.
@@ -83,7 +49,7 @@ CREATE TABLE "entity" (
     "group_id" char(40) UNIQUE,
     "machine_id" char(40) UNIQUE,
     "idm_id" char(40) UNIQUE NULLS NOT DISTINCT -- not every entity has an idm id
-    CONSTRAINT check_existence CHECK (
+    CONSTRAINT check_ent_only_is_one_type CHECK (
         num_nonnulls("person_id", "group_id", "machine_id") = 1
     )
 );
@@ -118,7 +84,7 @@ CREATE TABLE "person_name" (
 CREATE TABLE "group" (
     "id" char(40) NOT NULL PRIMARY KEY,
     "entity_id" char(40) NOT NULL REFERENCES "entity",
-    "name" varchar(255),
+    "name" varchar(255) NOT NULL,
     "settings" jsonb
 );
 
@@ -215,5 +181,15 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER json_schema_compliance_trigger
 BEFORE INSERT OR UPDATE ON project
 FOR EACH ROW EXECUTE FUNCTION check_project_json_schema_compliance();
+
+-- security task system - should probably be moved to a separate database for speed - perhaps sqlite??
+-- tasks are tokens that Articleman validates in order to let an action be taken.
+-- there is no such thing as a "system" action - everything must be associated with a task id.
+-- tasks will have scopes and affected projects/items/entities, when i figure out the architecture.
+-- ex: task-<UUID> approved for 
+CREATE TABLE "task" (
+    "id" char(40) PRIMARY KEY,
+    "actor" char(40) NOT NULL REFERENCES "entity"
+);
 
 -- COMMIT;

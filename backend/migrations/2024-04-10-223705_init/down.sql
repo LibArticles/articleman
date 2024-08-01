@@ -2,12 +2,6 @@ BEGIN;
 
 DROP EXTENSION IF EXISTS pg_jsonschema;
 
-DROP TYPE IF EXISTS "billing_status";
-
-DROP TABLE IF EXISTS "bill_recipient";
-
-DROP TYPE IF EXISTS "organization_transparency_status";
-
 DROP TABLE IF EXISTS "organization";
 
 DROP TABLE IF EXISTS "organization_membership";
